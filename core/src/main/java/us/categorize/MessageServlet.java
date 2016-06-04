@@ -15,6 +15,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 public class MessageServlet extends HttpServlet {
+	
+	private String message;
+	public MessageServlet(String message){
+		super();
+		this.message = message;		
+	}
+	
 	@Override
     protected void doGet( HttpServletRequest request,
                           HttpServletResponse response ) throws ServletException,
@@ -22,6 +29,6 @@ public class MessageServlet extends HttpServlet {
     {
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("<h1>Checking that wiring is up?</h1>");
+        response.getWriter().println("<h1>Checking that wiring is up?"+message+"</h1>");
     }
 }
