@@ -5,6 +5,9 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Hello world!
  *
@@ -13,6 +16,9 @@ public class App
 {
     public static void main( String[] args ) throws Exception
     {
+    	ObjectMapper mapper = new ObjectMapper();
+    	JsonNode actualObj = mapper.readTree("{\"k1\":\"v1\"}");
+    	System.out.println("Verifying Jackson Install " + actualObj.get("k1").asText());
     	int port = Integer.parseInt(System.getenv("CATEGORIZEUS_PORT"));
     	System.out.println("Starting Server on Port " + port);
         Server server = new Server(port); 
