@@ -1,8 +1,8 @@
 package us.categorize;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
@@ -13,18 +13,22 @@ public class App
 {
     public static void main( String[] args ) throws Exception
     {
-        Server server = new Server(8080); 
+    	int port = Integer.parseInt(System.getenv("CATEGORIZEUS_PORT"));
+    	System.out.println("Starting Server on Port " + port);
+        Server server = new Server(port); 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
+        String staticDir = System.getenv("CATEGORIZEUS_STATIC");
+        System.out.println("Preparing to serve static files from " + staticDir);
+        context.setResourceBase(staticDir);
         server.setHandler(context);
-        MessageServlet messageServlet = new MessageServlet("base");
-        context.addServlet(new ServletHolder(messageServlet), "/");
-        MessageServlet messageServlet2 = new MessageServlet("msg");
-        context.addServlet(new ServletHolder(messageServlet2), "/msg/*");
-        MessageServlet messageServlet3 = new MessageServlet("thread");
-        context.addServlet(new ServletHolder(messageServlet3), "/thread/*");
-        MessageServlet messageServlet4 = new MessageServlet("tag");
-        context.addServlet(new ServletHolder(messageServlet4), "/tag/*");
+        MessageServlet messageServlet = new MessageServlet("msg");
+        context.addServlet(new ServletHolder(messageServlet), "/msg/*");
+        ThreadServlet threadServlet = new ThreadServlet();
+        context.addServlet(new ServletHolder(threadServlet), "/thread/*");
+        TagServlet tagServlet = new TagServlet();
+        context.addServlet(new ServletHolder(tagServlet), "/tag/*");
+        context.addServlet(DefaultServlet.class, "/");
         server.start();
         server.join();
     }
