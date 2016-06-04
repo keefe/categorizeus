@@ -31,4 +31,20 @@ public class MessageServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().println("<h1>Checking that wiring is up?"+message+"</h1>");
     }
+	
+	@Override
+	public void doPut( HttpServletRequest request,
+            HttpServletResponse response ) throws ServletException,
+    IOException
+    {
+		
+    }
+	
+	@Override
+	public void doPost( HttpServletRequest request,
+            HttpServletResponse response ) throws ServletException,
+    IOException
+    {
+		
+    }
 }
