@@ -19,8 +19,12 @@ public class App
         server.setHandler(context);
         MessageServlet messageServlet = new MessageServlet("base");
         context.addServlet(new ServletHolder(messageServlet), "/");
-        MessageServlet messageServlet2 = new MessageServlet("inner");
-        context.addServlet(new ServletHolder(messageServlet2), "/test");
+        MessageServlet messageServlet2 = new MessageServlet("msg");
+        context.addServlet(new ServletHolder(messageServlet2), "/msg/*");
+        MessageServlet messageServlet3 = new MessageServlet("thread");
+        context.addServlet(new ServletHolder(messageServlet3), "/thread/*");
+        MessageServlet messageServlet4 = new MessageServlet("tag");
+        context.addServlet(new ServletHolder(messageServlet4), "/tag/*");
         server.start();
         server.join();
     }
