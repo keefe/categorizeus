@@ -15,5 +15,8 @@ public class Tag {
 	public void setId(long id) {
 		this.id = id;
 	}
+	public String toString(){
+		return id+":"+tag;
+	}
 	
 }
