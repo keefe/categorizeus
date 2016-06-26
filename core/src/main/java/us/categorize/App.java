@@ -15,6 +15,9 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.categorize.repository.SQLTagRepository;
+import us.categorize.repository.TagRepository;
+
 /**
  * Hello world!
  *
@@ -39,7 +42,8 @@ public class App {
 			initializeDB(args);
 		}
 		System.out.println("Initialization Complete");
-		serverUp(args);
+		testRepos(args);
+		//serverUp(args);
 	}
 
 	public static void initializeDB(String args[]) throws ClassNotFoundException, SQLException, IOException {
@@ -81,6 +85,15 @@ public class App {
 		context.addServlet(DefaultServlet.class, "/");
 		server.start();
 		server.join();
+	}
+	
+	public static void testRepos(String[] args) throws Exception {
+		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
+		System.out.println(conn);
+		TagRepository tagRepository = new SQLTagRepository(conn);
+		System.out.println(tagRepository.tagFor("replies"));
+		System.out.println(tagRepository.tagFor("replies"));
+
 	}
 
 	public static void test(String[] args) throws Exception {
