@@ -27,20 +27,28 @@ public class SQLTagRepository implements TagRepository {
 		//yep, hand tooled SQL
 		Tag tag = lookupTag(label);
 		if(tag==null){
-			PreparedStatement insertStatement = connection.prepareStatement("insert into tags(tag) values(?)");
+			PreparedStatement insertStatement = connection.prepareStatement("insert into tags(tag) values(?)", Statement.RETURN_GENERATED_KEYS);
 			insertStatement.setString(1, label);
 			insertStatement.executeUpdate();//this is synchronous, right?
-			//#TODO error checking for concurrent writes here
-			tag = lookupTag(label);
+			ResultSet rs = insertStatement.getGeneratedKeys();
+			rs.next();
+			long key = rs.getLong(1);
+			if(!label2Tag.containsKey(label)){//#TODO does this prevent concurrency or no?
+				tag = new Tag();
+				tag.setId(key);
+				tag.setTag(label);
+				label2Tag.put(label, tag);
+			}
 		}
 		return tag;
 	}
 
 	private Tag lookupTag(String label) throws SQLException {
 		Tag tag = null;
-		String findTag = "select * from tags where tag='"+label+"'";
-		Statement stmt = connection.createStatement();
-		ResultSet rs = stmt.executeQuery(findTag);
+		String findTag = "select * from tags where tag=?";
+		PreparedStatement stmt = connection.prepareStatement(findTag);
+		stmt.setString(1, label);
+		ResultSet rs = stmt.executeQuery();
 		if(rs.next()){
 			tag = new Tag();
 			tag.setId(rs.getLong("id"));
