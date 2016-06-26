@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import us.categorize.model.Message;
 import us.categorize.repository.MessageRepository;
 
 /**
@@ -22,7 +25,7 @@ public class MessageServlet extends HttpServlet {
 	
 	public MessageServlet(MessageRepository repository){
 		super();
-		this.messageRepository = messageRepository;
+		this.messageRepository = repository;
 	}
 	
 	@Override
@@ -30,9 +33,30 @@ public class MessageServlet extends HttpServlet {
                           HttpServletResponse response ) throws ServletException,
                                                         IOException
     {
-        response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("<h1>Checking that wiring is up?"+"</h1>");
+		System.out.println("Request made to " + request.getPathInfo());
+		String path = request.getPathInfo();
+		if(path!=null && path.length()>0){
+			try {
+				Long id = Long.parseLong(path.replace("/", ""));
+				Message message = messageRepository.getMessage(id);
+				if(message!=null){
+					ObjectMapper mapper = new ObjectMapper();
+					String jsonMessage = mapper.writeValueAsString(message);
+			        response.setContentType("application/json");
+			        response.setStatus(HttpServletResponse.SC_OK);
+			        response.getWriter().println(jsonMessage);
+			        response.getWriter().close();
+			        return;
+				}
+		        
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        response.getWriter().println("Not Found");
+        response.getWriter().close();
     }
 	
 	@Override
