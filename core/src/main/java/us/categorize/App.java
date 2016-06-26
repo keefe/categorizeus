@@ -20,12 +20,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 public class App {
-	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir;
+	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql;
 	private static  int port;
 
 	public static void main(String args[]) throws Exception {
 		clearSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/clear.sql";
 		createSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/tables.sql";
+		indexSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/indices.sql";
+
 		dbName = System.getenv("CATEGORIZEUS_DB");
 		dbUser = System.getenv("CATEGORIZEUS_DB_USER");
 		dbPass = System.getenv("CATEGORIZEUS_DB_PASS");
@@ -45,6 +47,7 @@ public class App {
 		Statement st = conn.createStatement();
 		executeFile(clearSql, st);
 		executeFile(createSql, st);
+		executeFile(indexSql, st);
 		st.close();
 		conn.close();
 	}
@@ -52,7 +55,12 @@ public class App {
 	private static void executeFile(String filename, Statement st) throws IOException, SQLException {
 		SQLReader init = new SQLReader(filename);
 		for (String sql : init.getStatements()) {
-			System.out.println("Executing " + sql + " returns " + st.execute(sql));
+			System.out.println("Executing " + sql);
+			try {
+				st.execute(sql);
+			} catch (Exception e) {
+				System.out.println("Error " + e.getMessage());
+			}
 		}
 	}
 	
