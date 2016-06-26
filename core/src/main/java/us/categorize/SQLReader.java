@@ -19,7 +19,7 @@ public class SQLReader {
 		while((line = reader.readLine())!=null){
 			currentStatement = currentStatement + line;
 			if(line.contains(";")){
-				statements.add(currentStatement);
+				statements.add(currentStatement.trim());
 				currentStatement = "";
 			}
 		}
