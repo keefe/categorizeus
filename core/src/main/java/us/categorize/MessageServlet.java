@@ -3,6 +3,7 @@
  */
 package us.categorize;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -10,10 +11,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.categorize.model.Message;
+import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
+import us.categorize.repository.UserRepository;
 
 /**
  * @author keefe
@@ -22,10 +26,12 @@ import us.categorize.repository.MessageRepository;
 public class MessageServlet extends HttpServlet {
 	
 	private MessageRepository messageRepository; 
+	private UserRepository userRepository;
 	
-	public MessageServlet(MessageRepository repository){
+	public MessageServlet(MessageRepository repository, UserRepository userRepository){
 		super();
 		this.messageRepository = repository;
+		this.userRepository = userRepository;
 	}
 	
 	@Override
@@ -72,6 +78,35 @@ public class MessageServlet extends HttpServlet {
             HttpServletResponse response ) throws ServletException,
     IOException
     {
+		ObjectMapper mapper = new ObjectMapper();
+		String body = "";
+		BufferedReader reader = request.getReader();
+		String line = null;
+		while((line = reader.readLine())!=null){
+			body = body + line;
+		}
+		System.out.println("Read Body as " + body);
+		JsonNode bodyObj = mapper.readTree(body);
+		String messageBody = bodyObj.get("body").asText();
+		String messageTitle = bodyObj.get("title").asText();
+		try {
+			User user = userRepository.find(1);//#TODO add authentication, replace this hard coded value
+			Message message = new Message();
+			message.setBody(messageBody);
+			message.setTitle(messageTitle);
+			message.setPostedBy(user);
+			messageRepository.addMessage(message);
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        response.getWriter().println(message.getId());
+	        response.getWriter().close();
+	        return;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getWriter().println("Could not add new message for some reason");
+        response.getWriter().close();
     }
 }
