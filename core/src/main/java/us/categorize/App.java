@@ -1,8 +1,10 @@
 package us.categorize;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.eclipse.jetty.server.Server;
@@ -18,15 +20,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class App 
 {
-    public static void main( String[] args ) throws Exception
+	private static String clearSql, createSql, dbName, dbUser, dbPass;
+	
+	public static void main(String args[]) throws ClassNotFoundException, SQLException, IOException{
+		 clearSql = System.getProperty("user.home")+"/projects/categorizeus/core/src/main/resources/sql/clear.sql";
+		 createSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/tables.sql";
+    	 dbName = System.getenv("CATEGORIZEUS_DB");
+    	 dbUser = System.getenv("CATEGORIZEUS_DB_USER");
+    	 dbPass = System.getenv("CATEGORIZEUS_DB_PASS");
+		if(args.length>0 && "initialize".equals(args[0])){
+			initializeDB(args);
+		}
+		System.out.println("Initialization Complete");
+	}
+	public static void initializeDB(String args[]) throws ClassNotFoundException, SQLException, IOException{
+    	Class.forName("org.postgresql.Driver");
+    	Connection conn = DriverManager.getConnection("jdbc:postgresql:"+dbName, dbUser, dbPass);
+    	Statement st = conn.createStatement();
+    	executeFile(clearSql, st);
+    	executeFile(createSql, st);
+    	st.close();
+    	conn.close();
+	}
+
+	private static void executeFile(String filename, Statement st) throws IOException, SQLException {
+		SQLReader init = new SQLReader(filename);
+    	for(String sql : init.getStatements()){
+    		System.out.println("Executing " + sql + " returns " + st.execute(sql));
+    	}
+	}
+	
+    public static void test( String[] args ) throws Exception
     {
     	ObjectMapper mapper = new ObjectMapper();
     	JsonNode actualObj = mapper.readTree("{\"k1\":\"v1\"}");
     	System.out.println("Verifying Jackson Install " + actualObj.get("k1").asText());
-    	
-    	String dbName = System.getenv("CATEGORIZEUS_DB");
-    	String dbUser = System.getenv("CATEGORIZEUS_DB_USER");
-    	String dbPass = System.getenv("CATEGORIZEUS_DB_PASS");
     	
     	Class.forName("org.postgresql.Driver");
     	Connection conn = DriverManager.getConnection("jdbc:postgresql:"+dbName, dbUser, dbPass);
