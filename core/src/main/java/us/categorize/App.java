@@ -48,8 +48,8 @@ public class App {
 			initializeDB(args);
 		}
 		System.out.println("Initialization Complete");
-		testRepos(args);
-		//serverUp(args);
+		//testRepos(args);
+		serverUp(args);
 	}
 
 	public static void initializeDB(String args[]) throws ClassNotFoundException, SQLException, IOException {
@@ -75,18 +75,25 @@ public class App {
 	}
 	
 	public static void serverUp(String args[]) throws Exception{
+		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
+		UserRepository userRepository = new SQLUserRepository(conn);
+		TagRepository tagRepository = new SQLTagRepository(conn);
+		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
+
+
+		
 		System.out.println("Starting Server on Port " + port);
 		Server server = new Server(port);
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
 		context.setContextPath("/");
 		System.out.println("Preparing to serve static files from " + staticDir);
 		context.setResourceBase(staticDir);
 		server.setHandler(context);
-		MessageServlet messageServlet = new MessageServlet("msg");
+		MessageServlet messageServlet = new MessageServlet(messageRepository);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet();
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
-		TagServlet tagServlet = new TagServlet();
+		TagServlet tagServlet = new TagServlet(messageRepository, tagRepository);
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
 		context.addServlet(DefaultServlet.class, "/");
 		server.start();
