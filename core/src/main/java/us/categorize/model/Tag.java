@@ -1,19 +1,19 @@
 package us.categorize.model;
 
 public class Tag {
+	private long id;
 	private String tag; 
-	private Double rating = null;//optional
 	public String getTag() {
 		return tag;
 	}
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
-	public Double getRating() {
-		return rating;
+	public long getId() {
+		return id;
 	}
-	public void setRating(Double rating) {
-		this.rating = rating;
+	public void setId(long id) {
+		this.id = id;
 	}
 	
 }
