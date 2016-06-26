@@ -5,6 +5,9 @@ public class User {
 	private String passhash;
 	private String email; 
 	private long userId;
+	public String toString(){
+		return userId+":"+userName+":"+email;
+	}
 	public String getUserName() {
 		return userName;
 	}

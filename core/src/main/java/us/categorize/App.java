@@ -15,8 +15,14 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.categorize.model.Message;
+import us.categorize.model.User;
+import us.categorize.repository.MessageRepository;
+import us.categorize.repository.SQLMessageRepository;
 import us.categorize.repository.SQLTagRepository;
+import us.categorize.repository.SQLUserRepository;
 import us.categorize.repository.TagRepository;
+import us.categorize.repository.UserRepository;
 
 /**
  * Hello world!
@@ -93,7 +99,24 @@ public class App {
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		System.out.println(tagRepository.tagFor("replies"));
 		System.out.println(tagRepository.tagFor("replies"));
-
+		UserRepository userRepository = new SQLUserRepository(conn);
+		User me = new User();
+		me.setEmail("keefe@categorize.us");
+		me.setUserName("keefe");
+		me.setPasshash("redacted");
+		userRepository.register(me);
+		System.out.println(me);
+		User lookupMe = userRepository.find(me.getUserId());
+		System.out.println(lookupMe + " is the same " + (me==lookupMe));
+		Message message = new Message();
+		message.setBody("This is the body of the document");
+		message.setTitle("a title, yes");
+		message.setPostedBy(me);
+		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
+		messageRepository.addMessage(message);
+		System.out.println(message);
+		Message lookupMessage = messageRepository.getMessage(message.getId());
+		System.out.println(lookupMessage + " is same " + (lookupMessage==message));
 	}
 
 	public static void test(String[] args) throws Exception {
