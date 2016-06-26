@@ -3,6 +3,8 @@ package us.categorize.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import us.categorize.model.Message;
@@ -37,9 +39,24 @@ public class SQLMessageRepository implements MessageRepository {
 	}
 
 	@Override
-	public boolean addMessage(Message message) {
-		
-		return false;
+	public boolean addMessage(Message message){
+		String insert = "insert into messages(body,title,posted_by) values (?,?,?)";
+		try {
+			PreparedStatement stmt = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, message.getBody());
+			stmt.setString(2, message.getTitle());
+			stmt.setLong(3, message.getPostedBy().getUserId());
+			stmt.executeUpdate();
+			ResultSet rs = stmt.getGeneratedKeys();
+			rs.next();
+			long key = rs.getLong(1);
+			message.setId(key);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	@Override

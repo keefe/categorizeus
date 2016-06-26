@@ -10,6 +10,11 @@ public class Message {
 	private String body;
 	private User postedBy;
 	private long id;
+	
+	public String toString(){
+		return id+":"+title+":"+body+":"+postedBy;
+	}
+	
 	public long getId() {
 		return id;
 	}
