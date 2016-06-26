@@ -7,8 +7,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.categorize.repository.MessageRepository;
+import us.categorize.repository.TagRepository;
+
 @SuppressWarnings("serial")
 public class TagServlet extends HttpServlet {
+	
+	private MessageRepository messageRepository; 
+	private TagRepository tagRepository;
+	
+	public TagServlet(MessageRepository messageRepository, TagRepository tagRepository){
+		this.messageRepository = messageRepository;
+		this.tagRepository = tagRepository;
+	}
 
 	@Override
 	public void doGet( HttpServletRequest request,

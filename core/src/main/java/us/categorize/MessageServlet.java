@@ -10,16 +10,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.categorize.repository.MessageRepository;
+
 /**
  * @author keefe
  *
  */
 public class MessageServlet extends HttpServlet {
 	
-	private String message;
-	public MessageServlet(String message){
+	private MessageRepository messageRepository; 
+	
+	public MessageServlet(MessageRepository repository){
 		super();
-		this.message = message;		
+		this.messageRepository = messageRepository;
 	}
 	
 	@Override
@@ -29,7 +32,7 @@ public class MessageServlet extends HttpServlet {
     {
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("<h1>Checking that wiring is up?"+message+"</h1>");
+        response.getWriter().println("<h1>Checking that wiring is up?"+"</h1>");
     }
 	
 	@Override
