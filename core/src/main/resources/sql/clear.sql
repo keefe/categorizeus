@@ -1,3 +1,7 @@
+drop index messagetag;
+drop index related_messages;
+drop index user_messages;
+drop index taglookup;
 drop table tags;
 drop table messages;
 drop table users;

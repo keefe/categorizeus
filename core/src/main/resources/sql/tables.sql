@@ -8,7 +8,7 @@ create table if not exists messages(
 	id bigserial primary key,
 	body text,
 	title text,
-	postedBy bigint
+	posted_by bigint
 );
 
 create table if not exists users(
