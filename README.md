@@ -22,4 +22,11 @@ export CATEGORIZEUS_DB_PASS="password"
 export CATEGORIZEUS_DB="categories"
 
 
+Run the main application as such:
+
+ mvn exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args=""
+
+In order to initialize the database, run this command
+
+ mvn exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args="initialize"
 
