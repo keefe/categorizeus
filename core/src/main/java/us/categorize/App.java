@@ -48,7 +48,7 @@ public class App {
 			initializeDB(args);
 		}
 		System.out.println("Initialization Complete");
-		//testRepos(args);
+		testRepos(args);
 		serverUp(args);
 	}
 
