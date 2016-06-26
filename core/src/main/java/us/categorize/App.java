@@ -89,7 +89,7 @@ public class App {
 		System.out.println("Preparing to serve static files from " + staticDir);
 		context.setResourceBase(staticDir);
 		server.setHandler(context);
-		MessageServlet messageServlet = new MessageServlet(messageRepository);
+		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet();
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");

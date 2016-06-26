@@ -30,3 +30,12 @@ In order to initialize the database, run this command
 
  mvn exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args="initialize"
 
+
+To checkout some basic functionality, get a message:
+
+http://localhost:8080/msg/1
+
+to create a new message
+
+
+ curl -X POST -H 'Content-Type:application/json' -d@message.json http://localhost:8080/msg
