@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 
 import us.categorize.model.Message;
@@ -29,12 +30,18 @@ public class SQLMessageRepository implements MessageRepository {
 		ResultSet rs = stmt.executeQuery();
 		Message message = null;
 		if(rs.next()){
-			message = new Message();
-			message.setBody(rs.getString("body"));
-			message.setTitle(rs.getString("title"));
-			message.setPostedBy(userRepository.find(rs.getLong("posted_by")));
-			message.setId(rs.getLong("id"));
+			message = mapMessageRow(rs);
 		}
+		return message;
+	}
+
+	private Message mapMessageRow(ResultSet rs) throws SQLException, Exception {
+		Message message;
+		message = new Message();
+		message.setBody(rs.getString("body"));
+		message.setTitle(rs.getString("title"));
+		message.setPostedBy(userRepository.find(rs.getLong("posted_by")));
+		message.setId(rs.getLong("id"));
 		return message;
 	}
 
@@ -73,8 +80,28 @@ public class SQLMessageRepository implements MessageRepository {
 
 	@Override
 	public List<Message> findMessages(List<Tag> tags) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		String tagClause = "";
+		for(Tag tag : tags){
+			if("".equals(tagClause)) tagClause = tagClause + " or ";
+			tagClause = tagClause + "tag_id = " + tag.getId();
+		}
+		String sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND "+tagClause;
+		System.out.println(sql);
+		List<Message> messages = new LinkedList<Message>(); 
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				messages.add(mapMessageRow(rs));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return messages;		
+		
 	}
 
 	@Override
@@ -85,7 +112,20 @@ public class SQLMessageRepository implements MessageRepository {
 
 	@Override
 	public boolean tag(Message message, List<Tag> tags) {
-		// TODO Auto-generated method stub
+		String tagStatement = "insert into message_tags(message_id, tag_id) values (?,?)";
+		try {
+			for(Tag tag: tags){
+				PreparedStatement stmt = connection.prepareStatement(tagStatement);
+				stmt.setLong(1, message.getId());
+				stmt.setLong(2, tag.getId());
+				stmt.executeUpdate();
+			}	
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block, this is particularly important because of unique constraint violations
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
