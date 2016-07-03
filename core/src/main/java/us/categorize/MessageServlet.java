@@ -85,6 +85,7 @@ public class MessageServlet extends HttpServlet {
 		while((line = reader.readLine())!=null){
 			body = body + line;
 		}
+		System.out.println("Request Content Type " + request.getContentType());
 		System.out.println("Read Body as " + body);
 		JsonNode bodyObj = mapper.readTree(body);
 		String messageBody = bodyObj.get("body").asText();
@@ -97,7 +98,7 @@ public class MessageServlet extends HttpServlet {
 			message.setPostedBy(user);
 			messageRepository.addMessage(message);
 	        response.setStatus(HttpServletResponse.SC_OK);
-	        response.getWriter().println(message.getId());
+	        response.getWriter().println(message.getId());//#TODO replace this with json structure
 	        response.getWriter().close();
 	        return;
 		} catch (Exception e) {
