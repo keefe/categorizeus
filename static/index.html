@@ -12,10 +12,21 @@
 				</div>
 			</div>
 		</script>
+		<script id="tmplBasicDocumentEdit" type="text/x-handlebars-template">
+			<div class="basicDocumentEdit">
+				<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
+				<p>Title <input class="inputMsgTitle" type="text" value="{{title}}"/></p>
+				<p>Body <input class="inputMsgBody" type="text"value="{{body}}"/></p>
+				<input type="button" class="inputMsgBtn" value="Submit"/>
+			</div>
+		</script>
 	</head>
 	<body>
 		<div id="controls">
-			Document Id <input id = "txtDocId" type="text"><input id="btnLoadDoc" type="button" value="load"/>
+			Document Id <input id = "txtDocId" type="text"/><input id="btnLoadDoc" type="button" value="load"/>
+			<input id="btnClearDoc" type="button" value="clear"/>
+		</div>
+		<div id="editor">
 		</div>
 		<div id="content">
 			<h1>This is going to be the static files</h1>
