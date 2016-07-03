@@ -14,14 +14,16 @@ var loadMessage = function(id, cb){
 
 };
 
-var createMessage = function(id, cb){
+var createMessage = function(message, cb){
 	$.ajax({
-		url:'/msg/'+id,
-		accepts:'application/json'
-	}).done(function(message, statusCode){
+		url:'/msg/',
+		method:'POST',
+		contentType:"application/json",
+		data:JSON.stringify(message)
+	}).done(function(response, statusCode){
 		console.log("In Response " + statusCode);
 		if(cb){
-			cb(message);
+			cb(response);
 		}
 	});
 
@@ -37,6 +39,13 @@ var dynamicEditSubmit = function(el){
 		var isNew = (!id) || id.length==0;
 		console.log(id + " is new? " + isNew + " " + title + " & " + body);
 		if(isNew){
+			var newMessage = {
+				body:body,
+				title:title
+			};
+			createMessage(newMessage, function(response){
+				console.log(response); 
+			});
 			
 		}else{
 			console.log("Currently, editing existing docs not supported");
