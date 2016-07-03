@@ -4,8 +4,21 @@
 		<script type="text/javascript" src="scripts/handlebars-v4.0.5.js"></script>
 		<script type="text/javascript" src="scripts/categorizeus.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/categorizeus.css"></script>
+		<script id="tmplBasicDocument" type="text/x-handlebars-template">
+			<div class="basicDocument">
+				<h1>{{title}}</h1>
+				<div class="body">
+					{{body}}
+				</div>
+			</div>
+		</script>
 	</head>
 	<body>
-		<h1>This is going to be the static files</h1>
+		<div id="controls">
+			Document Id <input id = "txtDocId" type="text"><input id="btnLoadDoc" type="button" value="load"/>
+		</div>
+		<div id="content">
+			<h1>This is going to be the static files</h1>
+		</div>
 	</body>
 </html>
