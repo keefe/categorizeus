@@ -44,11 +44,11 @@ var dynamicEditSubmit = function(el){
 				title:title
 			};
 			createMessage(newMessage, function(response){
-				console.log(response); 
+				$("#status").append("<p>Created new document with id " + response + "</p>");
 			});
 			
 		}else{
-			console.log("Currently, editing existing docs not supported");
+			$("#status").append("<p>Currently, editing existing docs not supported. Clear and try again.</p>");
 		}
 
 	};

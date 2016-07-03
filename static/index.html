@@ -16,7 +16,7 @@
 			<div class="basicDocumentEdit">
 				<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
 				<p>Title <input class="inputMsgTitle" type="text" value="{{title}}"/></p>
-				<p>Body <input class="inputMsgBody" type="text"value="{{body}}"/></p>
+				<p>Body <textarea class="inputMsgBody" rows="4" cols="87" type="text">{{body}}</textarea></p>
 				<input type="button" class="inputMsgBtn" value="Submit"/>
 			</div>
 		</script>
@@ -30,7 +30,7 @@
 		<div id="editor">
 		</div>
 		<div id="content">
-			<h1>This is going to be the static files</h1>
+			<h1>This is a very rudimentary viewer and editor for messages in the system.</h1>
 		</div>
 	</body>
 </html>
