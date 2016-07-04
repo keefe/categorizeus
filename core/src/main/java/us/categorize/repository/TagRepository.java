@@ -6,4 +6,5 @@ import us.categorize.model.Tag;
 
 public interface TagRepository {
 	Tag tagFor(String label)  throws Exception;
+	Tag[] tagsFor(String labels[]) throws Exception;
 }

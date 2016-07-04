@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import us.categorize.model.Tag;
@@ -56,6 +58,18 @@ public class SQLTagRepository implements TagRepository {
 			label2Tag.put(tag.getTag(), tag);
 		}
 		return tag;
+	}
+
+	@Override
+	public Tag[] tagsFor(String[] labels) throws Exception {
+		Set<String> labelSet = new HashSet<String>();
+		for(String label : labels) labelSet.add(label);
+		Tag tags[] = new Tag[labelSet.size()];
+		int i =0;
+		for(String label : labelSet){
+			tags[i++] = tagFor(label);
+		}
+		return tags;
 	}
 	
 	
