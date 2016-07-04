@@ -14,6 +14,6 @@ public interface MessageRepository {
 	MessageThread getThread(String id);
 	List<Message> findMessages(List<Tag> tags);
 	List<Message> findThreads(List<Tag> tags);
-	boolean tag(Message message, List<Tag> tags);
+	boolean tag(Message message, Tag[] tags);
 	
 }

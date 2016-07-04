@@ -111,7 +111,7 @@ public class SQLMessageRepository implements MessageRepository {
 	}
 
 	@Override
-	public boolean tag(Message message, List<Tag> tags) {
+	public boolean tag(Message message, Tag[] tags) {
 		String tagStatement = "insert into message_tags(message_id, tag_id) values (?,?)";
 		try {
 			for(Tag tag: tags){
