@@ -18,6 +18,7 @@ import us.categorize.model.Message;
 import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.UserRepository;
+import us.categorize.util.ServletUtil;
 
 /**
  * @author keefe
@@ -80,17 +81,8 @@ public class MessageServlet extends HttpServlet {
             HttpServletResponse response ) throws ServletException,
     IOException
     {
-		ObjectMapper mapper = new ObjectMapper();
-		String body = "";
-		BufferedReader reader = request.getReader();
-		String line = null;
-		while((line = reader.readLine())!=null){
-			body = body + line;
-		}
-		System.out.println("Request Content Type " + request.getContentType());
-		System.out.println("Read Body as " + body);
+		JsonNode bodyObj = ServletUtil.readyBody(request);
 		System.out.println("Session Check " + request.getSession().getAttribute("testToken"));
-		JsonNode bodyObj = mapper.readTree(body);
 		String messageBody = bodyObj.get("body").asText();
 		String messageTitle = bodyObj.get("title").asText();
 		try {
