@@ -6,10 +6,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -88,7 +93,10 @@ public class App {
 		context.setContextPath("/");
 		System.out.println("Preparing to serve static files from " + staticDir);
 		context.setResourceBase(staticDir);
-		server.setHandler(context);
+		
+		ServletHandler handler = new ServletHandler();
+		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
+		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet();
@@ -96,6 +104,7 @@ public class App {
 		TagServlet tagServlet = new TagServlet(messageRepository, tagRepository);
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
 		context.addServlet(DefaultServlet.class, "/");
+		server.setHandler(context);
 		server.start();
 		server.join();
 	}

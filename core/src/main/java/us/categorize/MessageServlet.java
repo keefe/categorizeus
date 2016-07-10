@@ -40,6 +40,8 @@ public class MessageServlet extends HttpServlet {
                                                         IOException
     {
 		System.out.println("Request made to " + request.getPathInfo());
+		System.out.println("Session Check " + request.getSession().getAttribute("testToken"));
+
 		String path = request.getPathInfo();
 		if(path!=null && path.length()>0){
 			try {
@@ -87,6 +89,7 @@ public class MessageServlet extends HttpServlet {
 		}
 		System.out.println("Request Content Type " + request.getContentType());
 		System.out.println("Read Body as " + body);
+		System.out.println("Session Check " + request.getSession().getAttribute("testToken"));
 		JsonNode bodyObj = mapper.readTree(body);
 		String messageBody = bodyObj.get("body").asText();
 		String messageTitle = bodyObj.get("title").asText();
