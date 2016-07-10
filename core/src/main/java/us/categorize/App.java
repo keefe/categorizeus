@@ -53,7 +53,6 @@ public class App {
 			initializeDB(args);
 		}
 		System.out.println("Initialization Complete");
-		testRepos(args);
 		serverUp(args);
 	}
 
@@ -113,46 +112,4 @@ public class App {
 		server.join();
 	}
 	
-	public static void testRepos(String[] args) throws Exception {
-		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
-		System.out.println(conn);
-		TagRepository tagRepository = new SQLTagRepository(conn);
-		System.out.println(tagRepository.tagFor("replies"));
-		System.out.println(tagRepository.tagFor("replies"));
-		UserRepository userRepository = new SQLUserRepository(conn);
-		User me = userRepository.register("keefe", "redacted");
-		System.out.println(me);
-		User lookupMe = userRepository.find(me.getUserId());
-		System.out.println(lookupMe + " is the same " + (me==lookupMe));
-		Message message = new Message();
-		message.setBody("This is the body of the document");
-		message.setTitle("a title, yes");
-		message.setPostedBy(me);
-		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
-		messageRepository.addMessage(message);
-		System.out.println(message);
-		Message lookupMessage = messageRepository.getMessage(message.getId());
-		System.out.println(lookupMessage + " is same " + (lookupMessage==message));
-	}
-
-	public static void test(String[] args) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode actualObj = mapper.readTree("{\"k1\":\"v1\"}");
-		System.out.println("Verifying Jackson Install " + actualObj.get("k1").asText());
-
-		Class.forName("org.postgresql.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
-
-		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery("SELECT * FROM testing");
-		while (rs.next()) {
-			System.out.print("Column 1 returned ");
-			System.out.println(rs.getString(1));
-		}
-		rs.close();
-		st.close();
-
-		conn.close();
-
-	}
 }
