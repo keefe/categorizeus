@@ -44,6 +44,9 @@ public class SQLUserRepository implements UserRepository {
 	public User validateUser(String username, String passhash) throws Exception {
 		String findUser = "select * from users where username=? and passhash=?";
 		PreparedStatement stmt = connection.prepareStatement(findUser);
+		stmt.setString(1, username);
+		stmt.setString(2, passhash);
+		System.out.println(stmt.toString());
 		ResultSet rs = stmt.executeQuery();
 		if(rs!=null && rs.next()){
 			return find(rs.getLong("id"));			

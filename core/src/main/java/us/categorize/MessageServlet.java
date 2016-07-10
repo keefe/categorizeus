@@ -86,7 +86,7 @@ public class MessageServlet extends HttpServlet {
 		String messageBody = bodyObj.get("body").asText();
 		String messageTitle = bodyObj.get("title").asText();
 		try {
-			User user = userRepository.find(1);//#TODO add authentication, replace this hard coded value
+			User user = (User) request.getSession().getAttribute("user");
 			Message message = new Message();
 			message.setBody(messageBody);
 			message.setTitle(messageTitle);

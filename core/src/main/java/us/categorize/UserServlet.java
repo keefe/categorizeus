@@ -28,10 +28,11 @@ public class UserServlet extends HttpServlet {
 		JsonNode bodyObj = ServletUtil.readyBody(request);
 		String username = bodyObj.get("username").asText();
 		String password = DigestUtils.sha256Hex(bodyObj.get("password").asText());
+		System.out.println(password);
 		try {
 			User user = userRepository.validateUser(username, password);
 			if(user!=null){
-				request.setAttribute("user", user);
+				request.getSession().setAttribute("user", user);
 				response.setStatus(HttpServletResponse.SC_OK);
 				response.getWriter().close();
 			}
