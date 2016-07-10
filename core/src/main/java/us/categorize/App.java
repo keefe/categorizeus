@@ -103,6 +103,10 @@ public class App {
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
 		TagServlet tagServlet = new TagServlet(messageRepository, tagRepository);
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
+		
+		UserServlet userServlet = new UserServlet(userRepository);
+		context.addServlet(new ServletHolder(userServlet), "/user/*");
+		
 		context.addServlet(DefaultServlet.class, "/");
 		server.setHandler(context);
 		server.start();
@@ -116,11 +120,7 @@ public class App {
 		System.out.println(tagRepository.tagFor("replies"));
 		System.out.println(tagRepository.tagFor("replies"));
 		UserRepository userRepository = new SQLUserRepository(conn);
-		User me = new User();
-		me.setEmail("keefe@categorize.us");
-		me.setUserName("keefe");
-		me.setPasshash("redacted");
-		userRepository.register(me);
+		User me = userRepository.register("keefe", "redacted");
 		System.out.println(me);
 		User lookupMe = userRepository.find(me.getUserId());
 		System.out.println(lookupMe + " is the same " + (me==lookupMe));

@@ -42,21 +42,26 @@ public class SQLUserRepository implements UserRepository {
 
 	@Override
 	public User validateUser(String username, String passhash) throws Exception {
-		// TODO Auto-generated method stub
+		String findUser = "select * from users where username=? and passhash=?";
+		PreparedStatement stmt = connection.prepareStatement(findUser);
+		ResultSet rs = stmt.executeQuery();
+		if(rs!=null && rs.next()){
+			return find(rs.getLong("id"));			
+		}
 		return null;
 	}
 
 	@Override
-	public User register(User user) throws Exception{
-		String insertUser = "insert into users(username, email, passhash) values (?,?,?)";
+	public User register(String username, String passhash) throws Exception{
+		String insertUser = "insert into users(username, passhash) values (?,?)";
 		PreparedStatement stmt = connection.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS);
-		stmt.setString(1, user.getUserName());
-		stmt.setString(2, user.getEmail());
-		stmt.setString(3, user.getPasshash());
+		stmt.setString(1, username);
+		stmt.setString(2, passhash);
 		stmt.executeUpdate();
 		ResultSet rs = stmt.getGeneratedKeys();
 		rs.next();
-		user.setUserId(rs.getLong(1));
+		long newId = rs.getLong(1);
+		User user = find(newId);
 		id2user.put(user.getUserId(), user);
 		return user;
 	}
