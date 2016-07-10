@@ -15,6 +15,7 @@ import us.categorize.model.Message;
 import us.categorize.model.Tag;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.TagRepository;
+import us.categorize.util.ServletUtil;
 
 @SuppressWarnings("serial")
 public class TagServlet extends HttpServlet {
@@ -48,17 +49,7 @@ public class TagServlet extends HttpServlet {
             HttpServletResponse response ) throws ServletException,
     IOException
     {
-		//TODO yuck, copy paste
-		ObjectMapper mapper = new ObjectMapper();
-		String body = "";
-		BufferedReader reader = request.getReader();
-		String line = null;
-		while((line = reader.readLine())!=null){
-			body = body + line;
-		}
-		System.out.println("Request Content Type " + request.getContentType());
-		System.out.println("Read Body as " + body);
-		JsonNode bodyObj = mapper.readTree(body);
+		JsonNode bodyObj = ServletUtil.readyBody(request);
 		JsonNode tagNode = bodyObj.get("tags");
 		long messageId = bodyObj.get("messageId").asLong();
 		if(tagNode.isArray()){
