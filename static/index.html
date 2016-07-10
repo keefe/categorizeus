@@ -5,10 +5,11 @@
 		<script type="text/javascript" src="scripts/categorizeus.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/categorizeus.css"></script>
 		<script id="tmplBasicDocument" type="text/x-handlebars-template">
-			<div class="basicDocument">
+			<div class="basicDocument" id="{{id}}">
 				<h1>{{title}}</h1>
 				<div class="postedBy">
 					posted by {{postedBy.userName}}
+					<input type="checkbox" name="{{id}}" class="chkTag"/>Tag this?
 				</div>
 				<div class="body">
 					{{body}}
@@ -41,10 +42,19 @@
 	<body>
 		<div id="status"></div>
 		<div id="controls">
-			Document Id <input id = "txtDocId" type="text"/><input id="btnLoadDoc" type="button" value="load"/>
-			<input id="btnClearDoc" type="button" value="clear"/>
+			<p>
 			<input id="btnLogin" type="button" value="login"/>
 			<input id="btnRegister" type="button" value="register"/>
+			</p>
+			<p>
+			Document Id <input id = "txtDocId" type="text"/><input id="btnLoadDoc" type="button" value="load"/>
+			<input id="btnClearDoc" type="button" value="create"/>
+			</p>
+			<p>
+			Tags <input id="txtTags" type="text" width="101"/>
+			<input id="btnTagLookup" type="button" value="tag search"/>
+			<input id="btnTagMessages" type="button" value="tag selected"/>
+			</p>
 		</div>
 		<div id="editor">
 		</div>

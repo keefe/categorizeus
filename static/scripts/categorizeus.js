@@ -4,6 +4,52 @@ var tmplLogin;
 var tmplRegister;
 
 
+var tagMessages = function(tagArray, messageArray, cb){
+	var payload = {
+		tags:tagArray,
+		messages:messageArray
+	};
+	$.ajax({
+		url:'/tag/',
+		accepts:'application/json',
+		method:'PUT',
+		contentType:"application/json",
+		data:JSON.stringify(payload)
+	}).done(function(message, statusCode){
+		$("#status").html("Tagged Messages Successfully");
+		if(cb){
+			cb(message);
+		}
+	}).fail(function(){
+		$("#status").html("Can't tag messages for some reason");
+	});
+};
+
+var tagSearch = function(tagArray, cb){
+	var payload = {
+		tags:tagArray
+	};
+	$.ajax({
+		url:'/tag/',
+		accepts:'application/json',
+		method:'POST',
+		contentType:"application/json",
+		data:JSON.stringify(payload)
+	}).done(function(message, statusCode){
+		if(cb){
+			cb(message);
+		}
+	});
+};
+
+var displayMessages = function(messages){
+	$("#content").empty();
+	for(var i=0; i<messages.length;i++){
+		console.log(messages[i]);
+		$("#content").append(tmplBasicDocument(messages[i]))
+	}
+};
+
 var loadMessage = function(id, cb){
 	$.ajax({
 		url:'/msg/'+id,
@@ -27,9 +73,13 @@ var createMessage = function(message, cb){
 	}).done(function(response, statusCode){
 		console.log("In Response " + statusCode);
 		console.log(response);
-		if(cb){
+		if(statusCode!='success'){
+			$("#status").html("Please Login to Post");
+		}else if(cb){
 			cb(response);
 		}
+	}).fail(function(){
+		$("#status").html("Please Login to Post");
 	});
 };
 
@@ -136,14 +186,14 @@ var displayRegisterForm = function(container){ //#TODO hey we are seeing a templ
 	controls.find(".btnRegister").click(dynamicRegister(controls));
 }
 
+
+
 $(document).ready(function(){
 	console.log("We're up");
 	tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
 	tmplBasicDocumentEdit = Handlebars.compile($("#tmplBasicDocumentEdit").html());//notice the pattern
 	tmplLogin = Handlebars.compile($("#tmplLogin").html());
 	tmplRegister = Handlebars.compile($("#tmplRegister").html());
-
-	displayEditForm("#editor", {});
 
 	$("#btnLoadDoc").click(function(){
 		var id = $("#txtDocId").val();
@@ -164,6 +214,46 @@ $(document).ready(function(){
 
 	$("#btnRegister").click(function(){
 		displayRegisterForm("#editor");
+	});
+
+	$("#btnTagLookup").click(function(){
+		var tags = $("#txtTags").val();
+		var allTags = tags.split(" ");
+		var tagArray = [];
+		for(var i=0; i<allTags.length;i++){
+			if(allTags[i].length>0){
+				tagArray.push(allTags[i]);
+			}
+		}
+		tagSearch(tagArray, displayMessages);	
+	});
+
+	$("#btnTagMessages").click(function(){
+
+		var tags = $("#txtTags").val();
+		var allTags = tags.split(" ");
+		var tagArray = [];
+		for(var i=0; i<allTags.length;i++){
+			if(allTags[i].length>0){
+				tagArray.push(allTags[i]);
+			}		}
+
+		var whichTagged = [];
+		$('input:checkbox.chkTag').each(function () {
+			if(this.checked){
+				whichTagged.push(this.name);
+			}
+		});
+		console.log(whichTagged);
+		if(tagArray.length==0){
+			$("#status").html("<h1>Please provide tags when tagging</h1>");
+			return;
+		}
+		if(whichTagged.length==0){
+			$("#status").html("<h1>Please select messages when tagging</h1>");
+			return;
+		}
+		tagMessages(tagArray, whichTagged);
 	});
 
 

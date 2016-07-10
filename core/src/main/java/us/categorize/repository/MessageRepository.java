@@ -12,8 +12,9 @@ public interface MessageRepository {
 	boolean addMessage(Message message);//are messages immutable?
 	boolean postMessage(String body);//#TODO figure this out, for the post stuff
 	MessageThread getThread(String id);
-	List<Message> findMessages(List<Tag> tags);
+	List<Message> findMessages(Tag[] tags);
 	List<Message> findThreads(List<Tag> tags);
 	boolean tag(Message message, Tag[] tags);
+	boolean tag(long messageIds[], Tag[] tags);
 	
 }

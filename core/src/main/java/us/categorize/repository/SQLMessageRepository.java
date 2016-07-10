@@ -79,14 +79,17 @@ public class SQLMessageRepository implements MessageRepository {
 	}
 
 	@Override
-	public List<Message> findMessages(List<Tag> tags) {
+	public List<Message> findMessages(Tag[] tags) {
 		
 		String tagClause = "";
 		for(Tag tag : tags){
-			if("".equals(tagClause)) tagClause = tagClause + " or ";
+			if(!"".equals(tagClause)) tagClause = tagClause + " or ";
 			tagClause = tagClause + "tag_id = " + tag.getId();
 		}
-		String sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND "+tagClause;
+		String sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND ("+tagClause+")";
+		if(tags.length==0){
+			sql = "SELECT messages.* from messages";
+		}
 		System.out.println(sql);
 		List<Message> messages = new LinkedList<Message>(); 
 		try {
@@ -109,14 +112,12 @@ public class SQLMessageRepository implements MessageRepository {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public boolean tag(Message message, Tag[] tags) {
+	public boolean tag(long messageId, Tag[] tags) {
 		String tagStatement = "insert into message_tags(message_id, tag_id) values (?,?)";
 		try {
 			for(Tag tag: tags){
 				PreparedStatement stmt = connection.prepareStatement(tagStatement);
-				stmt.setLong(1, message.getId());
+				stmt.setLong(1, messageId);
 				stmt.setLong(2, tag.getId());
 				stmt.executeUpdate();
 			}	
@@ -128,5 +129,19 @@ public class SQLMessageRepository implements MessageRepository {
 
 		return false;
 	}
+	
+	@Override
+	public boolean tag(Message message, Tag[] tags) {
+		return tag(message.getId(), tags);
+	}
+	
+	public boolean tag(long messageIds[], Tag[] tags){
+		boolean allGood = true;
+		for(long messageId : messageIds){
+			allGood = allGood && tag(messageId, tags);
+		}
+		return allGood;
+	}
+
 
 }
