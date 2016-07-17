@@ -39,3 +39,27 @@ to create a new message
 
 
  curl -X POST -H 'Content-Type:application/json' -d@message.json http://localhost:8080/msg
+ 
+ For deploying on EC2 free tier, spin up a postgres RDS instance. 
+ Startup a new instance and install java 8 and nginx. 
+ 
+ For https, let's encrypt offers a great free solution, so install certbot and configure it with nginx
+ https://certbot.eff.org/#ubuntutrusty-nginx
+ for me, this is 
+ sudo ./certbot-auto certonly --webroot -w /usr/share/nginx/html/ -d categorize.us -d www.categorize.us 
+ 
+ This will verify domain ownership automatically and generate the appropriate certificates. 
+ 
+ Verify the SSL settings using a simple file server, for example add the following to the nginx config:
+ 
+ server {
+    listen 443 ssl;
+    server_name categorize.us www.categorize.us;
+    root /usr/share/nginx/html;
+    ssl_certificate /etc/letsencrypt/live/categorize.us/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/categorize.us/privkey.pem;
+}
+
+A full example nginx.conf configuring upstream for the java server is included in this directory. 
+ 
+ 
