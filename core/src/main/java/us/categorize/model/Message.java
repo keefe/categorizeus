@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Message {
-	private Map<String, List<Message>> relatedMessages = new HashMap<>();
+	private Map<Tag, List<Message>> relatedMessages = new HashMap<>();
 	private String title;
 	private String body;
 	private User postedBy;
