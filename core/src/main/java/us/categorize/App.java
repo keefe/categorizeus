@@ -29,10 +29,6 @@ import us.categorize.repository.SQLUserRepository;
 import us.categorize.repository.TagRepository;
 import us.categorize.repository.UserRepository;
 
-/**
- * Hello world!
- *
- */
 public class App {
 	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql;
 	private static  int port;
