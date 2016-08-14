@@ -30,13 +30,14 @@ import us.categorize.repository.TagRepository;
 import us.categorize.repository.UserRepository;
 
 public class App {
-	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql;
+	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql;
 	private static  int port;
 
 	public static void main(String args[]) throws Exception {
 		clearSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/clear.sql";
 		createSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/tables.sql";
 		indexSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/indices.sql";
+		seedSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/seed.sql";
 
 		dbName = System.getenv("CATEGORIZEUS_DB");
 		dbUser = System.getenv("CATEGORIZEUS_DB_USER");
@@ -58,6 +59,7 @@ public class App {
 		executeFile(clearSql, st);
 		executeFile(createSql, st);
 		executeFile(indexSql, st);
+		executeFile(seedSql, st);
 		st.close();
 		conn.close();
 	}

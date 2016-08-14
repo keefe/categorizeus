@@ -21,10 +21,10 @@ public class Message {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public Map<String, List<Message>> getRelatedMessages() {
+	public Map<Tag, List<Message>> getRelatedMessages() {
 		return relatedMessages;
 	}
-	public void setRelatedMessages(Map<String, List<Message>> relatedMessages) {
+	public void setRelatedMessages(Map<Tag, List<Message>> relatedMessages) {
 		this.relatedMessages = relatedMessages;
 	}
 	public String getTitle() {
