@@ -26,7 +26,6 @@ create table if not exists message_tags(
 
 create table if not exists message_relations(
 	id bigserial primary key,
-	relation_tag bigint,
-	source_message_id bigint,
-	target_message_id bigint
+	tag_id bigint,
+	message_id bigint
 );
