@@ -1,10 +1,17 @@
 package us.categorize.model;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 public class User {
 	private String userName;
 	private String passhash;
 	private String email; 
 	private long userId;
+	
+	public static void main(String args[]){
+		String password = "";
+		System.out.println(DigestUtils.sha256Hex(password));
+	}
 	public String toString(){
 		return userId+":"+userName+":"+email;
 	}
