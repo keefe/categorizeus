@@ -2,8 +2,12 @@ package us.categorize.model;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class User {
 	private String userName;
+	
+	@JsonIgnore
 	private String passhash;
 	private String email; 
 	private long userId;
