@@ -1,0 +1,83 @@
+<html>
+  <head>
+	<script type="text/javascript" src="scripts/jquery-3.0.0.js"></script>
+	<script type="text/javascript" src="scripts/handlebars-v4.0.5.js"></script>
+	<script type="text/javascript" src="scripts/categorizeus.js"></script>
+	<script type="text/javascript" src="scripts/mainui.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/categorizeus.css"></script>
+	<link rel="stylesheet" type="text/css" href="css/mainui.css"></script>
+	<script id="tmplBasicDocument" type="text/x-handlebars-template">
+		<div class="basicDocument" id="{{id}}">
+			<h1>{{title}}</h1>
+			<div class="postedBy">
+				posted by {{postedBy.userName}}
+				<input type="checkbox" name="{{id}}" class="chkTag"/>Tag this?
+			</div>
+			<div class="body">
+				{{body}}
+			</div>
+		</div>
+	</script>
+	<script id="tmplBasicDocumentEdit" type="text/x-handlebars-template">
+		<div class="basicDocumentEdit">
+			<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
+			<p>Title <input class="inputMsgTitle" type="text" value="{{title}}"/></p>
+			<p>Body <textarea class="inputMsgBody" rows="4" cols="87" type="text">{{body}}</textarea></p>
+			<input type="button" class="inputMsgBtn" value="Submit"/>
+		</div>
+	</script>
+	<script id="tmplLogin" type="text/x-handlebars-template">
+		<div class="login">
+			<p>Username <input class="txtUsername" type="text"/></p>
+			<p>Password <input class="txtPassword" type="password"/></p>
+			<input type="button" class="btnLogin" value="Login"/>
+		</div>
+	</script>
+	<script id="tmplRegister" type="text/x-handlebars-template">
+		<div class="register">
+			<p>Username <input class="txtUsername" type="text"/></p>
+			<p>Password <input class="txtPassword" type="password"/></p>
+			<input type="button" class="btnRegister" value="Register"/>
+		</div>
+	</script>
+  </head>
+  <body>
+    <div class="header">
+	<div id="btnCategorizeUs" class="categorizeUsButton">categorize.us</div>
+	<div id="btnNotifications" class="notificationsButton">Notifications</div>
+	<input type="text" placeholder="tag search" width=100/>
+	<div id="btnSearch" class="searchButton">Search</div>
+	<div id="btnPost" class="postButton">Post</div>
+	<div id="btnAbout" class="aboutButton">About</div>
+
+    </div>
+    <div id='main'>
+      <div class="article">
+	<div id="content">
+		content
+	</div>
+      </div>
+      <div class="nav">
+	<div id="status">
+		status
+	</div>
+	<div id="editor">
+		editor
+	</div>
+      </div>
+      <div class="aside unseen">
+	(c) Keefe Roedersheimer
+	icons courtesy https://thenounproject.com
+	Specific Icon Credits:
+	enso by Bluetip Design
+	search by Bernar Novalyi
+	tag by Bryn Taylor
+	camera by Arthur Shlain
+	thumbs by Justin Blake
+	envelope by David Nesbitt
+	about by Umesh Vgl
+	edit by abhishek rana 
+     </div>
+    </div>
+  </body>
+</html>

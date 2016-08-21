@@ -1,0 +1,17 @@
+$(document).ready(function(){
+	$("#btnCategorizeUs").click(function(event){
+		location.reload(true);
+	});	
+	$("#btnNotifications").click(function(event){
+		$("#content").append("notifications");
+	});
+	$("#btnSearch").click(function(event){
+		$("#content").append("search");
+	});
+	$("#btnPost").click(function(event){
+		$("#content").append("post");
+	});
+	$("#btnAbout").click(function(event){
+		$(".aside").toggle("unseen");
+	});
+});
