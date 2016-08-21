@@ -1,0 +1,114 @@
+    body {
+        font: 24px Helvetica;
+        background: #999999;
+    }
+
+    #main {
+        min-height: 800px;
+        margin: 0px;
+        padding: 0px;
+        display: flex;
+        flex-flow: row;
+    }
+ 
+    .article {
+        margin: 2px;
+        padding: 3px;
+        border: 1px solid;
+	border-color: rgba(192, 217, 197, 0.25);
+        border-radius: 5pt;
+	background-color: rgba(192, 217, 197, 0.25);
+        flex: 3 1 60%;
+        order: 2;
+    }
+
+    .nav {
+        margin: 2px;
+        padding: 3px;
+        border: 1px solid;
+	border-color: rgba(187, 247, 200, 0.25);
+        border-radius: 5pt;
+	background-color: rgba(187, 247, 200, 0.25);
+        flex: 1 6 20%;
+        order: 1;
+    }
+  
+   .aside {
+        margin: 2px;
+        padding: 3px;
+        border: 1px solid;
+	border-color: rgba(184, 247, 198, 0.25);
+        border-radius: 5pt;
+	background-color: rgba(184, 247, 198, 0.25);
+        flex: 1 6 20%;
+        order: 3;
+    }
+    .unseen {
+	display: none;
+    }
+ 
+    .header {
+        display: block;
+        margin: 2px;
+        padding: 3x;
+        min-height: 35px;
+        border: 1px solid;
+	border-color: rgba(250, 189, 196, 0.25);
+        border-radius: 6pt;
+        background-color: rgba(250, 189, 196, 0.5);
+    }
+     .categorizeUsButton {
+	background: url('/images/enso.png') no-repeat left center;
+	padding-left: 27px;
+	background-size: 25px 25px;
+	display: inline-block;
+	cursor: pointer;
+     }
+
+     .notificationsButton {
+	background: url('/images/message.png') no-repeat left center;
+	padding-left: 27px;
+	background-size: 25px 25px;
+	display: inline-block;
+	cursor: pointer;
+     }
+     .postButton {
+	background: url('/images/edit.png') no-repeat left center;
+	padding-left: 27px;
+	background-size: 25px 25px;
+	display: inline-block;
+	cursor: pointer;
+     }
+
+     .aboutButton {
+	background: url('/images/about.png') no-repeat left center;
+	padding-left: 27px;
+	background-size: 25px 25px;
+	display: inline-block;
+	cursor: pointer;
+     }
+
+     .searchButton {
+	background: url('/images/search.png') no-repeat left center;
+	padding-left: 27px;
+	background-size: 25px 25px;
+	display: inline-block;
+	cursor: pointer;
+     }
+
+    /* Too narrow to support three columns */
+    @media all and (max-width: 640px) {
+        #main, #page {
+            flex-direction: column;
+        }
+
+        .article, .nav, .aside {
+        /* Return them to document order */
+            order: 0;
+        }
+  
+        .nav, .aside, .header {
+            min-height: 50px;
+            max-height: 50px;
+        }
+    }
