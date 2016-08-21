@@ -33,20 +33,69 @@
 			<input type="button" class="btnLogin" value="Login"/>
 		</div>
 	</script>
-	<script id="tmplRegister" type="text/x-handlebars-template">
-		<div class="register">
-			<p>Username <input class="txtUsername" type="text"/></p>
-			<p>Password <input class="txtPassword" type="password"/></p>
-			<input type="button" class="btnRegister" value="Register"/>
-		</div>
-	</script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				console.log("We're up");
+				tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
+				tmplBasicDocumentEdit = Handlebars.compile($("#tmplBasicDocumentEdit").html());//notice the pattern
+				tmplLogin = Handlebars.compile($("#tmplLogin").html());
+				displayLoginForm(".userInfo");
+				tagSearch([], displayMessages);
+				$("#btnPost").click(function(){
+					displayEditForm("#editor", {});
+				});
+
+				$("#btnSearch").click(function(){
+					var tags = $("#txtTagSearch").val();
+					var allTags = tags.split(" ");
+					var tagArray = [];
+					for(var i=0; i<allTags.length;i++){
+						if(allTags[i].length>0){
+							tagArray.push(allTags[i]);
+						}
+					}
+					tagSearch(tagArray, displayMessages);	
+				});
+
+				$("#btnTag").click(function(){
+
+					var tags = $("#txtTagSearch").val();
+					var allTags = tags.split(" ");
+					var tagArray = [];
+					for(var i=0; i<allTags.length;i++){
+						if(allTags[i].length>0){
+							tagArray.push(allTags[i]);
+						}		}
+
+					var whichTagged = [];
+					$('input:checkbox.chkTag').each(function () {
+						if(this.checked){
+							whichTagged.push(this.name);
+						}
+					});
+					console.log(whichTagged);
+					if(tagArray.length==0){
+						$("#status").html("<h1>Please provide tags when tagging</h1>");
+						return;
+					}
+					if(whichTagged.length==0){
+						$("#status").html("<h1>Please select messages when tagging</h1>");
+						return;
+					}
+					tagMessages(tagArray, whichTagged);
+				});
+
+
+			});
+		</script>
   </head>
   <body>
     <div class="header">
 	<div id="btnCategorizeUs" class="categorizeUsButton">categorize.us</div>
 	<div id="btnNotifications" class="notificationsButton">Notifications</div>
-	<input type="text" placeholder="tag search" width=100/>
+	<input id="txtTagSearch" type="text" placeholder="tags to apply or search" width=100/>
 	<div id="btnSearch" class="searchButton">Search</div>
+	<div id="btnTag" class="tagButton">Tag</div>
 	<div id="btnPost" class="postButton">Post</div>
 	<div id="btnAbout" class="aboutButton">About</div>
 
@@ -54,15 +103,16 @@
     <div id='main'>
       <div class="article">
 	<div id="content">
-		content
 	</div>
       </div>
       <div class="nav">
 	<div id="status">
-		status
+		<div class="userInfo">
+			<input id="btnLogin" type="button" value="login"/>
+		</div>
 	</div>
 	<div id="editor">
-		editor
+
 	</div>
       </div>
       <div class="aside unseen">
