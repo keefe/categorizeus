@@ -95,6 +95,13 @@
 	display: inline-block;
 	cursor: pointer;
      }
+     .tagButton {
+	background: url('/images/tag.png') no-repeat left center;
+	padding-left: 27px;
+	background-size: 25px 25px;
+	display: inline-block;
+	cursor: pointer;
+     }
 
     /* Too narrow to support three columns */
     @media all and (max-width: 640px) {
