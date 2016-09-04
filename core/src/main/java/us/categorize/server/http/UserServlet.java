@@ -1,4 +1,4 @@
-package us.categorize;
+package us.categorize.server.http;
 import java.io.IOException;
 
 import javax.servlet.ServletException;

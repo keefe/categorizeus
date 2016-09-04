@@ -7,6 +7,7 @@ import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
 
 //#TODO pagination, using continuation token style
+//#TODO add support for saving, deleting messages, even if not exposed at the web layer
 public interface MessageRepository {
 	Message getMessage(long id) throws Exception;
 	boolean addMessage(Message message);//are messages immutable?

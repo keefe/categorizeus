@@ -3,7 +3,6 @@ package us.categorize;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.EnumSet;
@@ -17,27 +16,32 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import us.categorize.model.Message;
-import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.SQLMessageRepository;
 import us.categorize.repository.SQLTagRepository;
 import us.categorize.repository.SQLUserRepository;
 import us.categorize.repository.TagRepository;
 import us.categorize.repository.UserRepository;
+import us.categorize.server.FilesystemMultipartHandler;
+import us.categorize.server.http.AuthFilter;
+import us.categorize.server.http.MessageServlet;
+import us.categorize.server.http.MultipartHandler;
+import us.categorize.server.http.TagServlet;
+import us.categorize.server.http.ThreadServlet;
+import us.categorize.server.http.UploadServlet;
+import us.categorize.server.http.UserServlet;
 
 public class App {
-	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql;
+	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
 	private static  int port;
 
 	public static void main(String args[]) throws Exception {
+		//#TODO let's get rid of this crazy and use a properties file and relative references
 		clearSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/clear.sql";
 		createSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/tables.sql";
 		indexSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/indices.sql";
 		seedSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/seed.sql";
+		fileBase = System.getProperty("user.home") + "/.tmp";
 
 		dbName = System.getenv("CATEGORIZEUS_DB");
 		dbUser = System.getenv("CATEGORIZEUS_DB_USER");
@@ -94,6 +98,10 @@ public class App {
 		ServletHandler handler = new ServletHandler();
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
+		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository, fileBase);
+		UploadServlet uploadServlet = new UploadServlet(messageRepository, tagRepository, multipartHandler);
+		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
+		
 		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet();
