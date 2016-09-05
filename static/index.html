@@ -21,6 +21,7 @@
 				<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
 				<p>Title <input class="inputMsgTitle" type="text" value="{{title}}"/></p>
 				<p>Body <textarea class="inputMsgBody" rows="4" cols="87" type="text">{{body}}</textarea></p>
+				<p>Attachment <input class="inputFileAttachment" type="file" id="fileAttachment"/></p>
 				<input type="button" class="inputMsgBtn" value="Submit"/>
 			</div>
 		</script>
@@ -39,6 +40,87 @@
 			</div>
 		</script>
 		<script type="text/javascript">
+			var tmplBasicDocument;
+			var tmplBasicDocumentEdit;
+			var tmplLogin;
+			var tmplRegister;
+			var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
+				var controls = $(container).html(tmplBasicDocumentEdit(sourceMsg));
+				controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
+			}
+
+			var displayLoginForm = function(container){ //#TODO hey we are seeing a template pattern here, let's generalize it
+				var controls = $(container).html(tmplLogin({}));
+				controls.find(".btnLogin").click(dynamicLogin(controls));
+			}
+
+			var displayRegisterForm = function(container){ //#TODO hey we are seeing a template pattern here, let's generalize it
+				var controls = $(container).html(tmplRegister({}));
+				controls.find(".btnRegister").click(dynamicRegister(controls));
+			}
+			var displayMessages = function(err, messages){
+				$("#content").empty();
+				for(var i=0; i<messages.length;i++){
+					console.log(messages[i]);
+					$("#content").append(tmplBasicDocument(messages[i]))
+				}
+			};
+			var dynamicLogin = function(el){
+				return function(){
+					var username = el.find(".txtUsername").val();
+					var password = el.find(".txtPassword").val();
+					loginUser(username, password, function(err, user){
+						if(err!=null){
+							$("#status").html("<h1>"+err+"</h1>");
+						}else{
+							$("#status").html("<h1>Logged in successfully, welcome!</h1>");
+						}
+					});
+				};
+			}
+
+			var dynamicRegister = function(el){
+				return function(){
+					var username = el.find(".txtUsername").val();
+					var password = el.find(".txtPassword").val();
+					registerUser(username, password,function(err, user){
+						if(err!=null){
+							$("#status").html("<h1>"+err+"</h1>");
+						}else{
+							$("#status").html("<h1>Registered successfully, welcome!</h1>");
+						}
+					});
+				};
+			}
+
+			var dynamicEditSubmit = function(el){
+	
+				return function(){
+					console.log("Dynamically bound control OK");
+					var title = el.find(".inputMsgTitle").val();
+					var body = el.find(".inputMsgBody").val();
+					var id = el.find(".inputMsgId").val();
+					var isNew = (!id) || id.length==0;
+					console.log(id + " is new? " + isNew + " " + title + " & " + body);
+					if(isNew){
+						var newMessage = {
+							body:body,
+							title:title
+						};
+						createMessage(newMessage, function(err, response){
+							if(err!=null){
+								$("#status").append("<p>Error: " + err + "</p>");
+							}else{
+								$("#status").append("<p>Created new document with id " + response + "</p>");
+							}
+						});
+			
+					}else{
+						$("#status").append("<p>Currently, editing existing docs not supported. Clear and try again.</p>");
+					}
+
+				};
+			}
 			$(document).ready(function(){
 				console.log("We're up");
 				tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
@@ -48,7 +130,7 @@
 
 				$("#btnLoadDoc").click(function(){
 					var id = $("#txtDocId").val();
-					loadMessage(id, function(doc){
+					loadMessage(id, function(err, doc){
 						$("#content").html(tmplBasicDocument(doc));
 						displayEditForm("#editor", doc);
 					});
@@ -104,7 +186,13 @@
 						$("#status").html("<h1>Please select messages when tagging</h1>");
 						return;
 					}
-					tagMessages(tagArray, whichTagged);
+					tagMessages(tagArray, whichTagged, function(err, message){
+						if(err!=null){
+							$("#status").html(err);
+						}else{
+							$("#status").html("Tagged Messages Successfully");	
+						}
+					});
 				});
 
 
