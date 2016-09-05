@@ -29,8 +29,8 @@ public abstract class MessageMultipartHandler extends MultipartHandler {
 		message.setTitle(formFields.get("title"));
 		message.setPostedBy(user);
 		messageRepository.addMessage(message);
-		name = name + "." + message.getId();
-		handleFileUpload(name, filename, inputStream);
+		System.out.println("Uploaded new file message to " + message.getId());
+		handleFileUpload(""+message.getId(), filename, inputStream);//TODO think through this mapping more
 	}
 
 }
