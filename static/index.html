@@ -100,6 +100,7 @@
 					var title = el.find(".inputMsgTitle").val();
 					var body = el.find(".inputMsgBody").val();
 					var id = el.find(".inputMsgId").val();
+					var file = el.find(".inputFileAttachment");
 					var isNew = (!id) || id.length==0;
 					console.log(id + " is new? " + isNew + " " + title + " & " + body);
 					if(isNew){
@@ -107,6 +108,18 @@
 							body:body,
 							title:title
 						};
+						if(file.val()!==''){//file[0].files.length?
+							console.log("Found an attached file");
+							console.log(file[0].files);
+							uploadMessage(newMessage, file[0].files, function(err, response){
+								if(err!=null){
+									$("#status").append("<p>Error: " + err + "</p>");
+								}else{
+									$("#status").append("<p>Created new document with id " + response + "</p>");
+								}
+							});
+							return;
+						}
 						createMessage(newMessage, function(err, response){
 							if(err!=null){
 								$("#status").append("<p>Error: " + err + "</p>");

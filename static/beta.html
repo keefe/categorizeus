@@ -23,7 +23,7 @@
 			<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
 			<p>Title <input class="inputMsgTitle" type="text" value="{{title}}"/></p>
 			<p>Body <textarea class="inputMsgBody" rows="4" cols="87" type="text">{{body}}</textarea></p>
-			<p>Attachment <input class="inputFileAttachment" type="file" id="fileAttachment"/></p>
+			<p>Attachment <input class="inputFileAttachment" type="file"/></p>
 			<input type="button" class="inputMsgBtn" value="Submit"/>
 		</div>
 	</script>
@@ -95,6 +95,8 @@
 					var title = el.find(".inputMsgTitle").val();
 					var body = el.find(".inputMsgBody").val();
 					var id = el.find(".inputMsgId").val();
+					var file = el.find(".inputFileAttachment");
+					console.log(file);
 					var isNew = (!id) || id.length==0;
 					console.log(id + " is new? " + isNew + " " + title + " & " + body);
 					if(isNew){

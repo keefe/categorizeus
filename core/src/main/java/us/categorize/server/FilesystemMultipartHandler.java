@@ -20,10 +20,13 @@ public class FilesystemMultipartHandler extends MessageMultipartHandler{
 	public void handleFileUpload(String name, String filename, InputStream stream) {
 		BufferedInputStream bufferedStream = null;
 		BufferedOutputStream outputStream = null;
+		System.out.println("We're doing the actual upload with " + filebase);
 		
 		try {
 			bufferedStream = new BufferedInputStream(stream);
-			outputStream = new BufferedOutputStream(new FileOutputStream(new File(filebase+name)));
+			String fname = filebase+File.separator+name;
+			System.out.println("Writing to this file " + fname);
+			outputStream = new BufferedOutputStream(new FileOutputStream(new File(fname)));
 			byte[] buff = new byte[8192];
 			int readThisBatch = 0;
 			while((readThisBatch = bufferedStream.read(buff)) != -1){

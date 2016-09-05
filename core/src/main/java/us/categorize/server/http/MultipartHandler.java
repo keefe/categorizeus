@@ -29,10 +29,11 @@ public abstract class MultipartHandler {
 		
 		FileItemIterator it = upload.getItemIterator(request);
 		Map<String, String> formFields = new HashMap<>();
+		//now, we are at this moment dependent on client ordering, due to FileItemStream.ItemSkippedException
+		//we can look at updating the message after in case the ordering comes out weird
 		
-		//fields and files sent in client order, we want the fields to process the files
-		List<DeferredUpload> fileStreams = new LinkedList<DeferredUpload>();
-		
+		User user = (User) request.getSession().getAttribute("user");
+
 		while(it.hasNext()){
 			FileItemStream item = it.next();
 			String name = item.getFieldName();
@@ -40,27 +41,11 @@ public abstract class MultipartHandler {
 				formFields.put(name, Streams.asString(item.openStream()));
 			}else{
 				//think about the impact of opening the file here
-				fileStreams.add(new DeferredUpload(item.getFieldName(), item.getName(), item.openStream()));
+				handleFileUpload(user, formFields, item.getFieldName(), item.getName(), item.openStream());
 			}
 		}
-		User user = (User) request.getSession().getAttribute("user");
-		
-		for(DeferredUpload deferredUpload : fileStreams)
-			handleFileUpload(user, formFields, deferredUpload.name, deferredUpload.filename, deferredUpload.stream);
-		
+				
 		return true;
-		
-	}
-	
-	private class DeferredUpload{
-		public String name;
-		public String filename;
-		public InputStream stream;
-		public DeferredUpload(String name, String filename, InputStream stream) {
-			this.name = name;
-			this.filename = filename;
-			this.stream = stream;
-		}
 		
 	}
 }

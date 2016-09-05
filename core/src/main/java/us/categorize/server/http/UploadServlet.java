@@ -33,12 +33,11 @@ public class UploadServlet extends HttpServlet{
     IOException
     {
 		try {
-			if(multipartHandler.handle(request)){//should we be returning an id here or just putting it at the top of user queue
+			if(!multipartHandler.handle(request)){//should we be returning an id here or just putting it at the top of user queue
 		        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		        response.getWriter().println("No Multipart Data");//#TODO replace this with json structure
 		        response.getWriter().close();
 			}else{
-				multipartHandler.handle(request);//TODO threading
 		        response.setStatus(HttpServletResponse.SC_OK);
 		        response.getWriter().println("OK");//#TODO replace this with json structure
 		        response.getWriter().close();
