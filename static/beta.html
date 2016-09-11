@@ -188,12 +188,10 @@
 						}		}
 
 					var whichTagged = [];
-					$('input:checkbox.chkTag').each(function () {
-						if(this.checked){
-							whichTagged.push(this.name);
-						}
+					$('.basicDocument.selected').each(function () {
+						whichTagged.push(this.id);
 					});
-					console.log(whichTagged);
+					
 					if(tagArray.length==0){
 						$("#status").html("<h1>Please provide tags when tagging</h1>");
 						return;
