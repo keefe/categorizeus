@@ -19,7 +19,7 @@ import us.categorize.model.User;
 
 public abstract class MultipartHandler {
 	
-	public abstract void handleFileUpload(User user, Map<String, String> formFields, String name, String filename, InputStream inputStream);
+	public abstract void handleFileUpload(User user, Map<String, String> formFields, String name, String filename, String contentType, InputStream inputStream);
 	
 	public boolean handle(HttpServletRequest request) throws FileUploadException, IOException{
 		if(!ServletFileUpload.isMultipartContent(request)){
@@ -41,7 +41,7 @@ public abstract class MultipartHandler {
 				formFields.put(name, Streams.asString(item.openStream()));
 			}else{
 				//think about the impact of opening the file here
-				handleFileUpload(user, formFields, item.getFieldName(), item.getName(), item.openStream());
+				handleFileUpload(user, formFields, item.getFieldName(), item.getName(), item.getContentType(), item.openStream());
 			}
 		}
 				
