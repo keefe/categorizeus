@@ -151,6 +151,15 @@
 				tmplBasicDocumentEdit = Handlebars.compile($("#tmplBasicDocumentEdit").html());//notice the pattern
 				tmplLogin = Handlebars.compile($("#tmplLogin").html());
 				displayLoginForm(".userInfo");
+				fetchCurrentUser(function(err, user){
+					if(err!=null){
+						console.log("Nobody is logged in");
+						console.log(err);
+						return; 
+					}
+					$("#status").html("<h1>Welcome back "+user.userName+"</h1>");
+					console.log(user);
+				});
 				tagSearch([], displayMessages);
 				$("#btnPost").click(function(){
 					displayEditForm("#editor", {});
