@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.categorize.model.User;
 import us.categorize.repository.UserRepository;
@@ -22,6 +23,26 @@ public class UserServlet extends HttpServlet {
 	public UserServlet(UserRepository userRepository){
 		this.userRepository = userRepository;
 	}
+	public void doGet( HttpServletRequest request,
+            HttpServletResponse response ) throws ServletException,
+    IOException
+    {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user==null){
+	        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	        response.getWriter().println("Not Found");
+	        response.getWriter().close();
+	        return;
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonMessage = mapper.writeValueAsString(user);
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().println(jsonMessage);
+        response.getWriter().close();
+    }
+	
 	
 	public void doPost( HttpServletRequest request,
             HttpServletResponse response ) throws ServletException,
