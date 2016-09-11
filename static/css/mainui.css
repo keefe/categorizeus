@@ -10,7 +10,31 @@
         display: flex;
         flex-flow: row;
     }
+
+    #content {
+	display: flex;
+	flex-wrap: wrap;
+
+    }
  
+    .basicDocument {
+	margin: 6px;
+     }
+    .basicDocument.selected {
+	border: 3px solid black;
+
+    }
+    .basicDocument h1 {
+	font-size: 14px;
+
+    }
+    .basicDocument .postedBy {
+	font-size: 10px;
+    }
+    .basicDocument .body {
+	font-size: 11px;
+     }
+
     .article {
         margin: 2px;
         padding: 3px;
@@ -18,7 +42,7 @@
 	border-color: rgba(192, 217, 197, 0.25);
         border-radius: 5pt;
 	background-color: rgba(192, 217, 197, 0.25);
-        flex: 3 1 60%;
+        flex: 6;
         order: 2;
     }
 
@@ -29,7 +53,7 @@
 	border-color: rgba(187, 247, 200, 0.25);
         border-radius: 5pt;
 	background-color: rgba(187, 247, 200, 0.25);
-        flex: 1 6 20%;
+        flex: 1;
         order: 1;
     }
   
@@ -40,12 +64,13 @@
 	border-color: rgba(184, 247, 198, 0.25);
         border-radius: 5pt;
 	background-color: rgba(184, 247, 198, 0.25);
-        flex: 1 6 20%;
+        flex: 1;
         order: 3;
     }
     .unseen {
 	display: none;
     }
+    
  
     .header {
         display: block;
@@ -56,7 +81,13 @@
 	border-color: rgba(250, 189, 196, 0.25);
         border-radius: 6pt;
         background-color: rgba(250, 189, 196, 0.5);
+        display: flex;
+        flex-flow: row;
     }
+    .navItem {
+	flex: 1;
+
+     }
      .categorizeUsButton {
 	background: url('/images/enso.png') no-repeat left center;
 	padding-left: 27px;
