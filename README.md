@@ -62,4 +62,4 @@ to create a new message
 
 A full example nginx.conf configuring upstream for the java server is included in this directory. 
  
- 
+ Remember to create static/files, currently not automated
