@@ -9,9 +9,13 @@
 	<script id="tmplBasicDocument" type="text/x-handlebars-template">
 		<div class="basicDocument" id="{{id}}">
 			<h1>{{title}}</h1>
+			{{#if link}}
+				<a href="{{link}}" target="_blank">
+					<img src="{{link}}" width="200px" height="200px"/>
+				</a>
+			{{/if}}
 			<div class="postedBy">
 				posted by {{postedBy.userName}}
-				<input type="checkbox" name="{{id}}" class="chkTag"/>Tag this?
 			</div>
 			<div class="body">
 				{{body}}
@@ -57,7 +61,19 @@
 				$("#content").empty();
 				for(var i=0; i<messages.length;i++){
 					console.log(messages[i]);
-					$("#content").append(tmplBasicDocument(messages[i]))
+					var appliedTemplate = $(tmplBasicDocument(messages[i]));
+					var newMessage = $("#content").append(appliedTemplate);
+					appliedTemplate.bind('click',
+					   (function(template, message){ 
+						return function(event){
+							console.log(message);
+							if(event.target.tagName != "IMG"){
+								template.toggleClass('selected');
+							}
+
+						}
+					   })(appliedTemplate, messages[i])
+					);
 				}
 			};
 			var dynamicLogin = function(el){
@@ -192,13 +208,13 @@
   </head>
   <body>
     <div class="header">
-	<div id="btnCategorizeUs" class="categorizeUsButton">categorize.us</div>
-	<div id="btnNotifications" class="notificationsButton">Notifications</div>
+	<div id="btnCategorizeUs" class="navItem categorizeUsButton">categorize.us</div>
+	<div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
 	<input id="txtTagSearch" type="text" placeholder="tags to apply or search" width=100/>
-	<div id="btnSearch" class="searchButton">Search</div>
-	<div id="btnTag" class="tagButton">Tag</div>
-	<div id="btnPost" class="postButton">Post</div>
-	<div id="btnAbout" class="aboutButton">About</div>
+	<div id="btnSearch" class="navItem searchButton">Search</div>
+	<div id="btnTag" class="navItem tagButton">Tag</div>
+	<div id="btnPost" class="navItem postButton">Post</div>
+	<div id="btnAbout" class="navItem aboutButton">About</div>
 
     </div>
     <div id='main'>
