@@ -20,17 +20,17 @@ public abstract class MessageMultipartHandler extends MultipartHandler {
 	}
 
 	//TODO abstract class is def not right here, but want to push forward
-	public abstract void handleFileUpload(String name, String filename, InputStream inputStream);
+	public abstract void handleFileUpload(String name, String filename, String contentType, InputStream inputStream);
 	
 	public void handleFileUpload(User user, Map<String, String> formFields, String name, String filename,
-			InputStream inputStream) {
+			String contentType, InputStream inputStream) {
 		Message message = new Message();
 		message.setBody(formFields.get("body"));
 		message.setTitle(formFields.get("title"));
 		message.setPostedBy(user);
 		messageRepository.addMessage(message);
 		System.out.println("Uploaded new file message to " + message.getId());
-		handleFileUpload(""+message.getId(), filename, inputStream);//TODO think through this mapping more
+		handleFileUpload(""+message.getId(), filename, contentType, inputStream);//TODO think through this mapping more
 	}
 
 }

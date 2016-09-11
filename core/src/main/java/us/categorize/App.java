@@ -41,13 +41,14 @@ public class App {
 		createSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/tables.sql";
 		indexSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/indices.sql";
 		seedSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/seed.sql";
-		fileBase = System.getProperty("user.home") + "/.tmp";
 
 		dbName = System.getenv("CATEGORIZEUS_DB");
 		dbUser = System.getenv("CATEGORIZEUS_DB_USER");
 		dbPass = System.getenv("CATEGORIZEUS_DB_PASS");
 		port = Integer.parseInt(System.getenv("CATEGORIZEUS_PORT"));
 		staticDir = System.getenv("CATEGORIZEUS_STATIC");
+		fileBase = staticDir + "/files";
+
 		Class.forName("org.postgresql.Driver");
 
 		if (args.length > 0 && "initialize".equals(args[0])){
