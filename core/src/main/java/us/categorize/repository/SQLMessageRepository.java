@@ -42,17 +42,19 @@ public class SQLMessageRepository implements MessageRepository {
 		message.setTitle(rs.getString("title"));
 		message.setPostedBy(userRepository.find(rs.getLong("posted_by")));
 		message.setId(rs.getLong("id"));
+		message.setLink(rs.getString("link"));
 		return message;
 	}
 
 	@Override
 	public boolean addMessage(Message message){
-		String insert = "insert into messages(body,title,posted_by) values (?,?,?)";
+		String insert = "insert into messages(body,title,posted_by,link) values (?,?,?,?)";
 		try {
 			PreparedStatement stmt = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, message.getBody());
 			stmt.setString(2, message.getTitle());
 			stmt.setLong(3, message.getPostedBy().getUserId());
+			stmt.setString(4, message.getLink());
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
 			rs.next();
@@ -65,6 +67,24 @@ public class SQLMessageRepository implements MessageRepository {
 		}
 		return true;
 	}
+	
+	public boolean updateMessage(Message message){
+		String update = "update messages set(body, title, posted_by, link) = (?,?,?,?) where id = ?";
+		try{
+			PreparedStatement stmt = connection.prepareStatement(update);//fold this into the insert?
+			stmt.setString(1, message.getBody());
+			stmt.setString(2, message.getTitle());
+			stmt.setLong(3, message.getPostedBy().getUserId());
+			stmt.setString(4, message.getLink());
+			stmt.setLong(5, message.getId());
+			stmt.executeUpdate();
+		}catch(SQLException e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 
 	@Override
 	public boolean postMessage(String body) {
