@@ -12,12 +12,13 @@ import us.categorize.repository.MessageRepository;
 public class FilesystemMultipartHandler extends MessageMultipartHandler{
 
 	private String filebase;
+	private String fileURIBase = "/files/";//TODO this needs to be pulled out
 	public FilesystemMultipartHandler(MessageRepository messageRepository, String filebase) {
 		super(messageRepository);
 		this.filebase = filebase;
 	}
 
-	public void handleFileUpload(String name, String filename, String contentType, InputStream stream) {
+	public String handleFileUpload(String name, String filename, String contentType, InputStream stream) {
 		BufferedInputStream bufferedStream = null;
 		BufferedOutputStream outputStream = null;
 		System.out.println("We're doing the actual upload with " + filebase);
@@ -32,14 +33,17 @@ public class FilesystemMultipartHandler extends MessageMultipartHandler{
 		}
 		try {
 			bufferedStream = new BufferedInputStream(stream);
-			String fname = filebase+File.separator+name+"."+fileExtension;
-			System.out.println("Writing to this file " + fname);
-			outputStream = new BufferedOutputStream(new FileOutputStream(new File(fname)));
+			String fname = name+"."+fileExtension;
+			String fpath = filebase + File.separator + fname;
+			String furi = fileURIBase + fname;
+			System.out.println("Writing to this file " + fpath);
+			outputStream = new BufferedOutputStream(new FileOutputStream(new File(fpath)));
 			byte[] buff = new byte[8192];//arbitrary constant inline, yuck
 			int readThisBatch = 0;
 			while((readThisBatch = bufferedStream.read(buff)) != -1){
 				outputStream.write(buff, 0, readThisBatch);
 			}
+			return furi;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block, yep deal with this later
 			e.printStackTrace();
@@ -53,6 +57,7 @@ public class FilesystemMultipartHandler extends MessageMultipartHandler{
 				e.printStackTrace();
 			}
 		}
+		return null;
 	}
 	
 	

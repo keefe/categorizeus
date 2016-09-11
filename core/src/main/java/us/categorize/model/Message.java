@@ -10,6 +10,7 @@ public class Message {
 	private String body;
 	private User postedBy;
 	private long id;
+	private String link;
 	
 	public String toString(){
 		return id+":"+title+":"+body+":"+postedBy;
@@ -44,5 +45,13 @@ public class Message {
 	}
 	public void setPostedBy(User postedBy) {
 		this.postedBy = postedBy;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 }

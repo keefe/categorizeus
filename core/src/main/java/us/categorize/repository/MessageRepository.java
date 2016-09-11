@@ -12,6 +12,7 @@ public interface MessageRepository {
 	Message getMessage(long id) throws Exception;
 	boolean addMessage(Message message);//are messages immutable?
 	boolean postMessage(String body);//#TODO figure this out, for the post stuff
+	boolean updateMessage(Message message);
 	MessageThread getThread(String id);
 	List<Message> findMessages(Tag[] tags);
 	List<Message> findThreads(List<Tag> tags);
