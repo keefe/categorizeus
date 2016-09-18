@@ -136,7 +136,7 @@ public class SQLMessageRepository implements MessageRepository {
 		thread.setThread(rootMessages);
 		List<Long> newMessageIds = new LinkedList<>();
 		List<long[]> relations = new LinkedList<>();
-		loadTransitiveThread(thread, messageIds, seenMessages,newMessageIds, relations, 1);
+		loadTransitiveThread(thread, messageIds, seenMessages,newMessageIds, relations, 0);
 		for(long newId : newMessageIds){//TODO this is obviously very inefficient, but efficiency after correctness
 			try {
 				Message message = getMessage(newId);
@@ -200,7 +200,16 @@ public class SQLMessageRepository implements MessageRepository {
 					seenMessages.add(source);
 					newIds.add(source);
 				}
-				relations.add(new long[]{source, tag, sink});
+				boolean found = false;//TODO this is really horrible, but this whole part is getting rewritten
+				for(long[] oldRel:relations){
+					if(oldRel[0]==source && oldRel[1]==tag&&oldRel[2]==sink){
+						found = true;
+						break;
+					}
+				}
+				if(!found){
+					relations.add(new long[]{source, tag, sink});					
+				}
 			}
 			level++;
 			if(level < thread.getSearchCriteria().getMaxTransitiveDepth() && currentLevel.size()>0){

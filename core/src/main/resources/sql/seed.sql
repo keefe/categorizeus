@@ -34,7 +34,11 @@ insert into message_relations(tag_id, message_source_id, message_sink_id) values
 insert into messages(body, title, posted_by) values ('Reply to (Reply to (Reply to Reply One 1) 2) 1', 'Reply* Title', 3);/*12*/
 insert into message_relations(tag_id, message_source_id, message_sink_id) values (6, 12,11);
 
+
+
+
 insert into message_tags(message_id, tag_id) values (1, 1);
+insert into message_tags(message_id, tag_id) values (6, 1);
 insert into message_tags(message_id, tag_id) values (1, 2);
 insert into message_tags(message_id, tag_id) values (1, 3);
 insert into message_tags(message_id, tag_id) values (2, 1);
