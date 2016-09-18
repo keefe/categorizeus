@@ -6,7 +6,20 @@ import java.util.List;
 public class MessageThread {
 	private List<Message> thread = new LinkedList<>();
 	private ThreadCriteria searchCriteria;
-	private List<MessageRelation> relations;
+	private List<MessageRelation> relations= new LinkedList<>();
+	
+	
+	public String toString(){
+		String result = "All Messages In Thread";
+		for(Message message:thread){
+			result = result + ","+message.getId();
+		}
+		result = result +"\n Relationships Involved \n";
+		for(MessageRelation relation: relations){
+			
+		}
+		return result;
+	}
 	
 	public List<Message> getThread() {
 		return thread;
