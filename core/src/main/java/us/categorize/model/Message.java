@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Message {
-	private Map<Tag, List<Message>> relatedMessages = new HashMap<>();
 	private String title;
 	private String body;
 	private User postedBy;
 	private long id;
-	private String link;
+	private String link;//TODO what belongs in this class, what belongs in a relationship?
 	
 	public String toString(){
 		return id+":"+title+":"+body+":"+postedBy;
@@ -21,12 +20,6 @@ public class Message {
 	}
 	public void setId(long id) {
 		this.id = id;
-	}
-	public Map<Tag, List<Message>> getRelatedMessages() {
-		return relatedMessages;
-	}
-	public void setRelatedMessages(Map<Tag, List<Message>> relatedMessages) {
-		this.relatedMessages = relatedMessages;
 	}
 	public String getTitle() {
 		return title;

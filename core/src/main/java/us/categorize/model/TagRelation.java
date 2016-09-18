@@ -2,7 +2,7 @@ package us.categorize.model;
 
 public class TagRelation {
 	private Tag tag;
-	private double rating;
+	private double rating;//TODO what am I going towards here, storing feature vectors?
 	private Message message;
 	public Tag getTag() {
 		return tag;

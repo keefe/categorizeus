@@ -22,11 +22,12 @@ create table if not exists users(
 create table if not exists message_tags(
 	message_id bigint,
 	tag_id bigint,
-	rating real
+	rating real DEFAULT 1.0
 );
 
 create table if not exists message_relations(
 	id bigserial primary key,
 	tag_id bigint,
-	message_id bigint
+	message_source_id bigint,
+	message_sink_id bigint
 );
