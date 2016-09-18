@@ -14,4 +14,16 @@ public class MessageThread {
 	public void setThread(List<Message> thread) {
 		this.thread = thread;
 	}
+	public ThreadCriteria getSearchCriteria() {
+		return searchCriteria;
+	}
+	public void setSearchCriteria(ThreadCriteria searchCriteria) {
+		this.searchCriteria = searchCriteria;
+	}
+	public List<MessageRelation> getRelations() {
+		return relations;
+	}
+	public void setRelations(List<MessageRelation> relations) {
+		this.relations = relations;
+	}
 }

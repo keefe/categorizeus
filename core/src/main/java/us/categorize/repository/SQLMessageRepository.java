@@ -11,6 +11,7 @@ import java.util.List;
 import us.categorize.model.Message;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
+import us.categorize.model.ThreadCriteria;
 
 public class SQLMessageRepository implements MessageRepository {
 
@@ -87,18 +88,6 @@ public class SQLMessageRepository implements MessageRepository {
 
 
 	@Override
-	public boolean postMessage(String body) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public MessageThread getThread(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public List<Message> findMessages(Tag[] tags) {
 		
 		String tagClause = "";
@@ -128,7 +117,7 @@ public class SQLMessageRepository implements MessageRepository {
 	}
 
 	@Override
-	public List<Message> findThreads(List<Tag> tags) {
+	public MessageThread loadThread(ThreadCriteria criteria) {
 		// TODO Auto-generated method stub
 		return null;
 	}
