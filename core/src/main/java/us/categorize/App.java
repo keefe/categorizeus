@@ -16,6 +16,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import us.categorize.model.MessageThread;
+import us.categorize.model.Tag;
+import us.categorize.model.ThreadCriteria;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.SQLMessageRepository;
 import us.categorize.repository.SQLTagRepository;
@@ -87,7 +90,10 @@ public class App {
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
 
-
+		Tag repliesTo = tagRepository.tagFor("repliesTo");
+		ThreadCriteria criteria = new ThreadCriteria();
+		criteria.setTransitiveTags(new Tag[]{repliesTo});
+		MessageThread thread = messageRepository.loadThread(criteria);
 		
 		System.out.println("Starting Server on Port " + port);
 		Server server = new Server(port);

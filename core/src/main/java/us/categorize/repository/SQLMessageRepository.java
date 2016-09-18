@@ -5,10 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import us.categorize.model.Message;
+import us.categorize.model.MessageRelation;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
 import us.categorize.model.ThreadCriteria;
@@ -88,7 +93,7 @@ public class SQLMessageRepository implements MessageRepository {
 
 
 	@Override
-	public List<Message> findMessages(Tag[] tags) {
+	public List<Message> findMessages(Tag[] tags) {//TODO think about callback form or streaming, something not in RAM
 		
 		String tagClause = "";
 		for(Tag tag : tags){
@@ -118,9 +123,97 @@ public class SQLMessageRepository implements MessageRepository {
 
 	@Override
 	public MessageThread loadThread(ThreadCriteria criteria) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO research combining these calls
+		List<Message> rootMessages = findMessages(criteria.getSearchTags());
+		Set<Long> seenMessages = new HashSet<>();
+		List<Long> messageIds = new LinkedList<>();
+		for(Message message: rootMessages){
+			seenMessages.add(message.getId());
+			messageIds.add(message.getId());
+		}
+		MessageThread thread = new MessageThread();
+		thread.setSearchCriteria(criteria);
+		thread.setThread(rootMessages);
+		List<Long> newMessageIds = new LinkedList<>();
+		List<long[]> relations = new LinkedList<>();
+		loadTransitiveThread(thread, messageIds, seenMessages,newMessageIds, relations, 1);
+		for(long newId : newMessageIds){//TODO this is obviously very inefficient, but efficiency after correctness
+			try {
+				Message message = getMessage(newId);
+				thread.getThread().add(message);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		Map<Long, Message> id2Message = new HashMap<>();//just more inefficient by the line, this is where maintaining 1:1 is good
+		for(Message message: thread.getThread()){
+			id2Message.put(message.getId(), message);
+		}
+		Map<Long, Tag> id2Tag = new HashMap<>();
+		for(Tag t : thread.getSearchCriteria().getTransitiveTags()){
+			id2Tag.put(t.getId(), t);
+		}
+		for(long[] rel : relations){
+			MessageRelation relation = new MessageRelation(id2Message.get(rel[0]), id2Tag.get(rel[1]),id2Message.get(rel[2]));
+			thread.getRelations().add(relation);
+		}
+		return thread;
 	}
+	private String buildTagOrList(Tag tags[]){//#TODO this is dying to be merged together into a nice generic function, like identity OrList and make an interface or something
+		if(tags.length==0){
+			return null;
+		}
+		String orList = "";//#TODO replace with stringbuilder, this is likely very expensive, also memoizable
+		for(Tag tag : tags){
+			if(!"".equals(orList))orList =orList+",";
+			orList = orList + tag.getId();
+		}
+		return "IN ("+orList+")";
+	}
+	private String buildMessageOrList(List<Long> identifiers){//#TODO this is dying to be merged together into a nice generic function, like identity OrList and make an interface or something
+		if(identifiers.size()==0){//yeah yeah copy paste, trying to nail down the basics
+			return null;
+		}
+		String orList = "";//#TODO replace with stringbuilder, this is likely very expensive, also memoizable
+		for(Long id : identifiers){
+			if(!"".equals(orList))orList =orList+",";
+			orList = orList + id;
+		}
+		return "IN ("+orList+")";
+	}
+	//TODO it is pretty confusing what source and sink means here and what to query, for things like repliesTo this is the pattern, maybe this is a property on the relationship or something, think about this
+	private void loadTransitiveThread(MessageThread thread, List<Long> currentLevel, Set<Long> seenMessages, List<Long> newIds, List<long[]> relations, int level) {
+		String sql = "SELECT message_relations.* from message_relations where";
+		sql = sql+" tag_id "+buildTagOrList(thread.getSearchCriteria().getTransitiveTags());
+		sql = sql+" AND message_sink_id " + buildMessageOrList(currentLevel);
+		currentLevel = new LinkedList<>();//dupes in here?
+		System.out.println("Finding Related with \n" + sql);
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet matching = stmt.executeQuery(sql);
+			while(matching.next()){
+				long source = matching.getLong("message_source_id");
+				long sink = matching.getLong("message_sink_id");
+				long tag = matching.getLong("tag_id");
+				currentLevel.add(source);
+				if(!seenMessages.contains(source)){
+					seenMessages.add(source);
+					newIds.add(source);
+				}
+				relations.add(new long[]{source, tag, sink});
+			}
+			level++;
+			if(level < thread.getSearchCriteria().getMaxTransitiveDepth() && currentLevel.size()>0){
+				loadTransitiveThread(thread, currentLevel, seenMessages, newIds, relations, level);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
 	public boolean tag(long messageId, Tag[] tags) {
 		String tagStatement = "insert into message_tags(message_id, tag_id) values (?,?)";
 		try {
