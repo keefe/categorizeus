@@ -92,9 +92,10 @@ public class App {
 
 		Tag repliesTo = tagRepository.tagFor("repliesTo");
 		ThreadCriteria criteria = new ThreadCriteria();
+		criteria.setSearchTags(new Tag[]{tagRepository.tagFor("tag1")});
 		criteria.setTransitiveTags(new Tag[]{repliesTo});
 		MessageThread thread = messageRepository.loadThread(criteria);
-		
+		System.out.println(thread);
 		System.out.println("Starting Server on Port " + port);
 		Server server = new Server(port);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		

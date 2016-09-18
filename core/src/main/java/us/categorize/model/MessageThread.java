@@ -14,9 +14,9 @@ public class MessageThread {
 		for(Message message:thread){
 			result = result + ","+message.getId();
 		}
-		result = result +"\n Relationships Involved \n";
+		result = result +"\nRelationships Involved\n";
 		for(MessageRelation relation: relations){
-			
+			result = result + "\n["+relation.getSource().getId()+","+relation.getRelation().getTag()+","+relation.getSink().getId()+"]";
 		}
 		return result;
 	}
