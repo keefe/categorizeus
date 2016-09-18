@@ -4,14 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MessageThread {
-	private Message root;
 	private List<Message> thread = new LinkedList<>();
-	public Message getRoot() {
-		return root;
-	}
-	public void setRoot(Message root) {
-		this.root = root;
-	}
+	private ThreadCriteria searchCriteria;
+	private List<MessageRelation> relations;
+	
 	public List<Message> getThread() {
 		return thread;
 	}
