@@ -61,6 +61,28 @@ var tagSearch = function(tagArray, cb){
 	});
 };
 
+var tagSearchThread = function(tagArray, cb){
+	var threadCriteria = {
+		searchTags:tagArray,
+		transitiveTags:["repliesTo"]
+	};
+	$.ajax({
+		url:'/thread/',
+		accepts:'application/json',
+		method:'POST',
+		contentType:"application/json",
+		data:JSON.stringify(threadCriteria)
+	}).done(function(messages, statusCode){
+		if(statusCode!='success'){
+			if(cb){
+				cb("Error doing tag search!");
+			}
+		}else if(cb){
+			cb(null, messages);
+		}
+	});
+};
+
 var loadMessage = function(id, cb){
 	$.ajax({
 		url:'/msg/'+id,

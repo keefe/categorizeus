@@ -112,7 +112,7 @@ public class App {
 		
 		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
-		ThreadServlet threadServlet = new ThreadServlet();
+		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
 		TagServlet tagServlet = new TagServlet(messageRepository, tagRepository);
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
