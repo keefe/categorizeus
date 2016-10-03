@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="css/categorizeus.css"></script>
 	<link rel="stylesheet" type="text/css" href="css/mainui.css"></script>
 	<script id="tmplBasicDocument" type="text/x-handlebars-template">
-		<div class="basicDocument" id="{{id}}">
+		<div class="basicDocument categorizeus{{id}}" id="{{id}}">
 			<h1>{{title}}</h1>
 			{{#if link}}
 				<a href="{{link}}" target="_blank">
@@ -16,9 +16,65 @@
 			{{/if}}
 			<div class="postedBy">
 				posted by {{postedBy.userName}}
+				<input type="button" class="viewButton" value="view"/>
 			</div>
 			<div class="body">
 				{{body}}
+			</div>
+		</div>
+	</script>
+	<script id="tmplIndividualComment" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
+		<div class="comment categorizeus{{id}}">
+			<div class="avatar">
+				<a href="javascript:void(0);"><img src="images/sillohuette.png"
+					width="55" height="55" alt="{{postedBy.userName}} avatar"></a>
+			</div>
+			<div class="comment-content">
+				<header>
+					<span class="title">{{title}}</span>
+					<a href="javascript:void(0);" class="userlink">{{postedBy.userName}}</a> - <span
+						class="pubdate">posted TODO time units ago</span>
+				</header>
+				{{#if link}}
+					<a href="{{link}}" target="_blank">
+						<img src="{{link}}" width="200px" height="200px"/>
+					</a>
+				{{/if}}
+				<p>
+					{{body}}
+				</p>
+			</div>
+			<ul class="replies categorizeus{{id}}">
+			</ul>
+		</div>
+	</script>
+	<script id="tmplFullMessage" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
+		<div class="fullMessage categorizeus{{id}} discussion" id="{{id}}">
+			<div class="commentsContainer">
+				<div class="comment primary">
+					<div class="avatar">
+						<a href="javascript:void(0);"><img src="images/sillohuette.png"
+							width="55" height="55" alt="{{postedBy.userName}} avatar"></a>
+					</div>
+					<div class="comment-content">
+						<header>
+							<span class="title">{{title}}</span>
+							<a href="javascript:void(0);" class="userlink">{{postedBy.userName}}</a> - <span
+								class="pubdate">posted TODO time units ago</span>
+							<input type="button" class="closeButton" value="close"/>
+						</header>
+						{{#if link}}
+							<a href="{{link}}" target="_blank">
+								<img src="{{link}}" width="200px" height="200px"/>
+							</a>
+						{{/if}}
+						<p>
+							{{body}}
+						</p>
+					</div>
+					<ul class="replies categorizeus{{id}}">
+					</ul>
+				</div>
 			</div>
 		</div>
 	</script>
@@ -43,6 +99,11 @@
 			var tmplBasicDocumentEdit;
 			var tmplLogin;
 			var tmplRegister;
+			var tmplFullMessage;
+			var currentThread;
+			var tmplIndividualComment;
+			var threadRelations = {};
+			var threadMessages = {};
 			var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
 				var controls = $(container).html(tmplBasicDocumentEdit(sourceMsg));
 				controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
@@ -52,28 +113,78 @@
 				var controls = $(container).html(tmplLogin({}));
 				controls.find(".btnLogin").click(dynamicLogin(controls));
 			}
+			var displayMessageComments = function(message, messageView){
+				if(threadRelations[message.id]!=null){
+					for(var relatedMessage in threadRelations[message.id]){
+						var replyId = threadRelations[message.id][relatedMessage];
+						console.log("Need to display " + replyId);
+						var appliedTemplate = $(tmplIndividualComment(threadMessages[replyId]));
+						var newComment = $("#content").find(".replies.categorizeus"+message.id);
+						newComment.append(appliedTemplate);
+						var newCommentView = $("#content").find(".comment.categorizeus"+replyId);
+						displayMessageComments(threadMessages[replyId], newCommentView);//DANGER infinite loop possible
+
+					}
+				}
+			}
+			var displayFullMessage = function(message){
+				console.log("View " + JSON.stringify(message));
+				var appliedTemplate = $(tmplFullMessage(message));
+				var newFullMessage = $("#content").append(appliedTemplate);
+				var newMessageView = $("#content").find(".fullMessage.categorizeus"+message.id);
+				newMessageView.find(".closeButton").click((function(message, messageView){
+						return function(event){
+							messageView.remove();
+						};
+				})(message, newMessageView));
+				displayMessageComments(message, newMessageView);
+				
+			}
 
 			var displayRegisterForm = function(container){ //#TODO hey we are seeing a template pattern here, let's generalize it
 				var controls = $(container).html(tmplRegister({}));
 				controls.find(".btnRegister").click(dynamicRegister(controls));
 			}
+			var displayMessageThread = function(err, messageThread){
+				currentThread = messageThread;
+				threadRelations = {};
+				threadMessages = {};
+				for(var message of currentThread.thread){
+					threadMessages[message.id] = message;
+				}
+				for(var relation of currentThread.relations){
+					console.log(relation);
+					if(threadRelations[relation.sink.id]==null){//TODO source/sink vocab here is iffy at best
+						threadRelations[relation.sink.id] = [];
+					}
+					threadRelations[relation.sink.id].push(relation.source.id);//this is obviously assuming one predicate a.t.m.
+				}
+				displayMessages(err, currentThread.thread);
+			}
 			var displayMessages = function(err, messages){
 				$("#content").empty();
 				for(var i=0; i<messages.length;i++){
-					console.log(messages[i]);
+
 					var appliedTemplate = $(tmplBasicDocument(messages[i]));
 					var newMessage = $("#content").append(appliedTemplate);
+
 					appliedTemplate.bind('click',
 					   (function(template, message){ 
 						return function(event){
-							console.log(message);
-							if(event.target.tagName != "IMG"){
+							if(event.target.tagName != "IMG" && event.target.tagName != "INPUT"){
+								console.log(message);
 								template.toggleClass('selected');
 							}
 
 						}
 					   })(appliedTemplate, messages[i])
 					);
+					var newMessageView = $("#content").find(".basicDocument.categorizeus"+messages[i].id);
+					newMessageView.find(".viewButton").click((function(message){
+						return function(event){
+							displayFullMessage(message);
+						};
+					})(messages[i]));
 				}
 			};
 			var dynamicLogin = function(el){
@@ -150,6 +261,8 @@
 				tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
 				tmplBasicDocumentEdit = Handlebars.compile($("#tmplBasicDocumentEdit").html());//notice the pattern
 				tmplLogin = Handlebars.compile($("#tmplLogin").html());
+				tmplFullMessage = Handlebars.compile($("#tmplFullMessage").html());
+				tmplIndividualComment = Handlebars.compile($("#tmplIndividualComment").html());
 				displayLoginForm(".userInfo");
 				fetchCurrentUser(function(err, user){
 					if(err!=null){
@@ -160,7 +273,7 @@
 					$("#status").html("<h1>Welcome back "+user.userName+"</h1>");
 					console.log(user);
 				});
-				tagSearch([], displayMessages);
+				tagSearchThread([], displayMessageThread);
 				$("#btnPost").click(function(){
 					displayEditForm("#editor", {});
 				});
@@ -174,7 +287,7 @@
 							tagArray.push(allTags[i]);
 						}
 					}
-					tagSearch(tagArray, displayMessages);	
+					tagSearchThread(tagArray, displayMessageThread);	
 				});
 
 				$("#btnTag").click(function(){
