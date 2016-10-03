@@ -72,13 +72,13 @@ var tagSearchThread = function(tagArray, cb){
 		method:'POST',
 		contentType:"application/json",
 		data:JSON.stringify(threadCriteria)
-	}).done(function(messages, statusCode){
+	}).done(function(messageThread, statusCode){//TODO fail handler
 		if(statusCode!='success'){
 			if(cb){
 				cb("Error doing tag search!");
 			}
 		}else if(cb){
-			cb(null, messages);
+			cb(null, messageThread);
 		}
 	});
 };
