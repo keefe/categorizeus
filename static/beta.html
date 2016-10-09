@@ -168,6 +168,9 @@
 				for(var message of currentThread.thread){
 					threadMessages[message.id] = message;
 				}
+				for(var message of currentThread.relatedMessages){
+					threadMessages[message.id] = message;
+				}
 				for(var relation of currentThread.relations){
 					console.log(relation);
 					if(threadRelations[relation.sink.id]==null){//TODO source/sink vocab here is iffy at best
@@ -316,7 +319,7 @@
 					$("#status").html("<h1>Welcome back "+user.userName+"</h1>");
 					console.log(user);
 				});
-				tagSearchThread([], displayMessageThread);
+				tagSearchThread(["top"], displayMessageThread);
 				$("#btnPost").click(function(){
 					displayEditForm("#editor", {});
 				});
@@ -324,7 +327,7 @@
 				$("#btnSearch").click(function(){
 					var tags = $("#txtTagSearch").val();
 					var allTags = tags.split(" ");
-					var tagArray = [];
+					var tagArray = ["top"];
 					for(var i=0; i<allTags.length;i++){
 						if(allTags[i].length>0){
 							tagArray.push(allTags[i]);

@@ -44,7 +44,13 @@ public class ThreadServlet extends HttpServlet {
 			int i =0;//TODO this needs to be a method
 			for(JsonNode aTag : tagNode){
 				try {
-					tags[i++] = tagRepository.tagFor(aTag.asText());
+					if(aTag.isTextual()){
+						tags[i++] = tagRepository.tagFor(aTag.asText());						
+					}else if(aTag.isObject() && aTag.has("tag")){
+						tags[i++] = tagRepository.tagFor(aTag.get("tag").asText());
+					}else{
+						System.out.println("What do I do now? " + aTag.asText());
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
