@@ -14,7 +14,9 @@ public class ThreadCriteria {
 	public String toString(){
 		String result ="Criteria\n";
 		result = result + "Search " + Arrays.toString(searchTags) + " \n ";
-		result = result + "Transitive Tags " + Arrays.toString(transitiveTags);
+		result = result + "Transitive Tags " + Arrays.toString(transitiveTags)+"\n";
+		result = result + " starting at " + startingId;
+		result = result + " reversed ? " + reverse;
 		return result;
 	}
 	public Tag[] getSearchTags() {

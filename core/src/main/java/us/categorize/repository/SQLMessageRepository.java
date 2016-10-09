@@ -108,7 +108,7 @@ public class SQLMessageRepository implements MessageRepository {
 		}
 		String sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND ("+tagClause+")";
 		if(startId!=null){
-			sql+=" where id"+idOp+startId;//TODO more sophisticated query for different ordering etc
+			sql+=" AND id"+idOp+startId;//TODO more sophisticated query for different ordering etc
 		}
 		if(tags.length==0){
 			sql = "SELECT messages.* from messages";
@@ -140,6 +140,7 @@ public class SQLMessageRepository implements MessageRepository {
 	@Override
 	public MessageThread loadThread(ThreadCriteria criteria) {
 		// TODO research combining these calls
+		System.out.println(criteria.toString());
 		List<Message> rootMessages = findMessages(criteria.getSearchTags(), criteria.getStartingId(), criteria.getMaxResults(), criteria.isReverse());
 		Set<Long> seenMessages = new HashSet<>();
 		List<Long> messageIds = new LinkedList<>();
@@ -156,13 +157,16 @@ public class SQLMessageRepository implements MessageRepository {
 		for(long newId : newMessageIds){//TODO this is obviously very inefficient, but efficiency after correctness
 			try {
 				Message message = getMessage(newId);
-				thread.getThread().add(message);
+				thread.getRelatedMessages().add(message);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		Map<Long, Message> id2Message = new HashMap<>();//just more inefficient by the line, this is where maintaining 1:1 is good
 		for(Message message: thread.getThread()){
+			id2Message.put(message.getId(), message);
+		}
+		for(Message message: thread.getRelatedMessages()){
 			id2Message.put(message.getId(), message);
 		}
 		Map<Long, Tag> id2Tag = new HashMap<>();
