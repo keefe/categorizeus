@@ -16,7 +16,15 @@
 	flex-wrap: wrap;
 
     }
-
+    .searchNavigation{
+	width: 100%;
+     }
+     .previousNavigation{
+	float: left;
+     }
+     .nextNavigation{
+	float: right;
+     }
     .fullMessage{
 	    background-color:#ddd;
 	    position: fixed;

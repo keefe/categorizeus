@@ -66,6 +66,10 @@ var tagSearchThread = function(tagArray, cb){
 		searchTags:tagArray,
 		transitiveTags:["repliesTo"]
 	};
+	searchThreadCriteria(threadCriteria, cb);
+};
+
+var searchThreadCriteria = function(threadCriteria, cb){
 	$.ajax({
 		url:'/thread/',
 		accepts:'application/json',

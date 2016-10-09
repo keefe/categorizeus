@@ -67,6 +67,9 @@ public class ThreadServlet extends HttpServlet {
 		if(bodyObj.has("startingId")){
 			criteria.setStartingId(bodyObj.get("startingId").asInt());//TODO validation
 		}
+		if(bodyObj.has("reverse")){
+			criteria.setReverse(bodyObj.get("reverse").asBoolean());
+		}
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
         MessageThread thread = messageRepository.loadThread(criteria);
