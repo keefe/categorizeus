@@ -41,7 +41,7 @@ public class TagServlet extends HttpServlet {
 	public void doPut( HttpServletRequest request,
             HttpServletResponse response ) throws ServletException,
     IOException
-    {
+    {//PUT is probably not a good verb here as there is no ID in the URI
 		JsonNode bodyObj = ServletUtil.readyBody(request);
 		JsonNode tagNode = bodyObj.get("tags");
 		String tags[] = null;		

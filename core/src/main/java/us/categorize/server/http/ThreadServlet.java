@@ -64,6 +64,9 @@ public class ThreadServlet extends HttpServlet {
 		ObjectMapper mapper = new ObjectMapper(); //how do I optionally load maxResults, just check for presence or...
 		criteria.setSearchTags(tagsFromJson(bodyObj.get("searchTags")));
 		criteria.setTransitiveTags(tagsFromJson(bodyObj.get("transitiveTags")));
+		if(bodyObj.has("startingId")){
+			criteria.setStartingId(bodyObj.get("startingId").asInt());//TODO validation
+		}
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
         MessageThread thread = messageRepository.loadThread(criteria);
