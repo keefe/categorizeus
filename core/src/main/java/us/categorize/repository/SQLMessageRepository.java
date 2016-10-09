@@ -90,10 +90,12 @@ public class SQLMessageRepository implements MessageRepository {
 		}
 		return true;
 	}
-
-
 	@Override
-	public List<Message> findMessages(Tag[] tags) {//TODO think about callback form or streaming, something not in RAM
+	public List<Message> findMessages(Tag[] tags) {
+		return findMessages(tags, null, null);
+	}
+
+	public List<Message> findMessages(Tag[] tags, Integer startId, Integer limit) {//TODO think about callback form or streaming, something not in RAM
 		
 		String tagClause = "";
 		for(Tag tag : tags){
@@ -101,8 +103,18 @@ public class SQLMessageRepository implements MessageRepository {
 			tagClause = tagClause + "tag_id = " + tag.getId();
 		}
 		String sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND ("+tagClause+")";
+		if(startId!=null){
+			sql+=" where id<"+startId;//TODO more sophisticated query for different ordering etc
+		}
 		if(tags.length==0){
 			sql = "SELECT messages.* from messages";
+			if(startId !=null){
+				sql+=" where id<"+startId;
+			}
+		}
+		sql+=" order by id DESC";
+		if(limit!=null){
+			sql+=" LIMIT " + limit;
 		}
 		System.out.println(sql);
 		List<Message> messages = new LinkedList<Message>(); 
@@ -124,7 +136,7 @@ public class SQLMessageRepository implements MessageRepository {
 	@Override
 	public MessageThread loadThread(ThreadCriteria criteria) {
 		// TODO research combining these calls
-		List<Message> rootMessages = findMessages(criteria.getSearchTags());
+		List<Message> rootMessages = findMessages(criteria.getSearchTags(), criteria.getStartingId(), criteria.getMaxResults());
 		Set<Long> seenMessages = new HashSet<>();
 		List<Long> messageIds = new LinkedList<>();
 		for(Message message: rootMessages){
@@ -159,18 +171,7 @@ public class SQLMessageRepository implements MessageRepository {
 		}
 		return thread;
 	}
-	private String buildTagOrList(Tag tags[]){//#TODO this is dying to be merged together into a nice generic function, like identity OrList and make an interface or something
-		if(tags.length==0){
-			return null;
-		}
-		String orList = "";//#TODO replace with stringbuilder, this is likely very expensive, also memoizable
-		for(Tag tag : tags){
-			if(!"".equals(orList))orList =orList+",";
-			orList = orList + tag.getId();
-		}
-		return "IN ("+orList+")";
-	}
-	private String buildMessageOrList(List<Long> identifiers){//#TODO this is dying to be merged together into a nice generic function, like identity OrList and make an interface or something
+	private String buildOrList(List<Long> identifiers){//#TODO this is dying to be merged together into a nice generic function, like identity OrList and make an interface or something
 		if(identifiers.size()==0){//yeah yeah copy paste, trying to nail down the basics
 			return null;
 		}
@@ -184,8 +185,10 @@ public class SQLMessageRepository implements MessageRepository {
 	//TODO it is pretty confusing what source and sink means here and what to query, for things like repliesTo this is the pattern, maybe this is a property on the relationship or something, think about this
 	private void loadTransitiveThread(MessageThread thread, List<Long> currentLevel, Set<Long> seenMessages, List<Long> newIds, List<long[]> relations, int level) {
 		String sql = "SELECT message_relations.* from message_relations where";
-		sql = sql+" tag_id "+buildTagOrList(thread.getSearchCriteria().getTransitiveTags());
-		sql = sql+" AND message_sink_id " + buildMessageOrList(currentLevel);
+		LinkedList<Long> tagIds = new LinkedList<>();
+		for(Tag t : thread.getSearchCriteria().getTransitiveTags()) tagIds.push(t.getId());
+		sql = sql+" tag_id "+buildOrList(tagIds);
+		sql = sql+" AND message_sink_id " + buildOrList(currentLevel);
 		currentLevel = new LinkedList<>();//dupes in here?
 		System.out.println("Finding Related with \n" + sql);
 		try {
