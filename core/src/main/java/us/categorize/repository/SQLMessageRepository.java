@@ -92,24 +92,28 @@ public class SQLMessageRepository implements MessageRepository {
 	}
 	@Override
 	public List<Message> findMessages(Tag[] tags) {
-		return findMessages(tags, null, null);
+		return findMessages(tags, null, null, false);
 	}
 
-	public List<Message> findMessages(Tag[] tags, Integer startId, Integer limit) {//TODO think about callback form or streaming, something not in RAM
+	public List<Message> findMessages(Tag[] tags, Integer startId, Integer limit, boolean reverse) {//TODO think about callback form or streaming, something not in RAM
 		
 		String tagClause = "";
 		for(Tag tag : tags){
 			if(!"".equals(tagClause)) tagClause = tagClause + " or ";
 			tagClause = tagClause + "tag_id = " + tag.getId();
 		}
+		String idOp = "<";
+		if(reverse){
+			idOp = ">";
+		}
 		String sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND ("+tagClause+")";
 		if(startId!=null){
-			sql+=" where id<"+startId;//TODO more sophisticated query for different ordering etc
+			sql+=" where id"+idOp+startId;//TODO more sophisticated query for different ordering etc
 		}
 		if(tags.length==0){
 			sql = "SELECT messages.* from messages";
 			if(startId !=null){
-				sql+=" where id<"+startId;
+				sql+=" where id"+idOp+startId;
 			}
 		}
 		sql+=" order by id DESC";
@@ -136,7 +140,7 @@ public class SQLMessageRepository implements MessageRepository {
 	@Override
 	public MessageThread loadThread(ThreadCriteria criteria) {
 		// TODO research combining these calls
-		List<Message> rootMessages = findMessages(criteria.getSearchTags(), criteria.getStartingId(), criteria.getMaxResults());
+		List<Message> rootMessages = findMessages(criteria.getSearchTags(), criteria.getStartingId(), criteria.getMaxResults(), criteria.isReverse());
 		Set<Long> seenMessages = new HashSet<>();
 		List<Long> messageIds = new LinkedList<>();
 		for(Message message: rootMessages){
