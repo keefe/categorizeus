@@ -20,26 +20,6 @@ var tagMessages = function(tagArray, messageArray, cb){
 	});
 };
 
-var fetchCurrentUser = function(cb){
-	$.ajax({
-		url:'/user/',
-		accepts:'application/json'
-	}).done(function(currentUser, statusCode){
-		console.log("In Response " + statusCode);
-		if(statusCode!='success'){
-			if(cb){
-				cb("User is not Logged In", response);
-			}
-		}else if(cb){
-			cb(null, currentUser);
-		}
-	}).fail(function(){
-		if(cb!=null){
-			cb("User is not Logged In");
-		}
-	});	
-};
-
 var tagSearch = function(tagArray, cb){
 	var payload = {
 		tags:tagArray
@@ -175,7 +155,49 @@ var loginUser = function(username, password, cb){
 		}
 
 	});
-}
+};
+
+var fetchCurrentUser = function(cb){
+	$.ajax({
+		url:'/user/',
+		accepts:'application/json'
+	}).done(function(currentUser, statusCode){
+		console.log("In Response " + statusCode);
+		if(statusCode!='success'){
+			if(cb){
+				cb("User is not Logged In", response);
+			}
+		}else if(cb){
+			cb(null, currentUser);
+		}
+	}).fail(function(){
+		if(cb!=null){
+			cb("User is not Logged In");
+		}
+	});	
+};
+
+var logoutUser = function(cb){
+	$.ajax({
+		url:'/user/',
+		method:'DELETE',
+		accepts:'application/json'
+	}).done(function(currentUser, statusCode){
+		console.log("In Response " + statusCode);
+		if(statusCode!='success'){
+			if(cb){
+				cb("User is not Logged In", response);
+			}
+		}else if(cb){
+			cb(null, currentUser);
+		}
+	}).fail(function(){
+		if(cb!=null){
+			cb("User is not Logged In");
+		}
+	});	
+};
+
 
 var registerUser = function(username, password, cb){
 	var user = {

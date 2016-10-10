@@ -42,7 +42,25 @@ public class UserServlet extends HttpServlet {
         response.getWriter().println(jsonMessage);
         response.getWriter().close();
     }
-	
+	public void doDelete( HttpServletRequest request,
+            HttpServletResponse response ) throws ServletException,
+    IOException
+    {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user==null){
+	        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	        response.getWriter().println("Not Found");
+	        response.getWriter().close();
+	        return;
+		}
+		request.getSession().removeAttribute("user");
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonMessage = mapper.writeValueAsString(user);
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().println(jsonMessage);
+        response.getWriter().close();	
+    }
 	
 	public void doPost( HttpServletRequest request,
             HttpServletResponse response ) throws ServletException,
