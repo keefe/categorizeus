@@ -109,6 +109,7 @@ var uploadMessage = function(message, files, cb){
 	var formData = new FormData();
 	formData.append('body', message.body);
 	formData.append('title', message.title);
+	formData.append('tags', message.tags);
 	formData.append('attachment', files[0]);
 	$.ajax({
 		url:'/msg/upload/',

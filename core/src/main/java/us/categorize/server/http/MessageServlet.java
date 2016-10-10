@@ -3,7 +3,6 @@
  */
 package us.categorize.server.http;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -15,8 +14,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.categorize.model.Message;
+import us.categorize.model.Tag;
 import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
+import us.categorize.repository.TagRepository;
 import us.categorize.repository.UserRepository;
 import us.categorize.util.ServletUtil;
 
@@ -28,11 +29,13 @@ public class MessageServlet extends HttpServlet {
 	
 	private MessageRepository messageRepository; 
 	private UserRepository userRepository;
+	private TagRepository tagRepository;
 	
-	public MessageServlet(MessageRepository repository, UserRepository userRepository){
+	public MessageServlet(MessageRepository repository, UserRepository userRepository,TagRepository tagRepository){
 		super();
 		this.messageRepository = repository;
 		this.userRepository = userRepository;
+		this.tagRepository = tagRepository;
 	}
 	
 	@Override
@@ -85,6 +88,8 @@ public class MessageServlet extends HttpServlet {
 		System.out.println("Session Check " + request.getSession().getAttribute("testToken"));
 		String messageBody = bodyObj.get("body").asText();
 		String messageTitle = bodyObj.get("title").asText();
+		String messageTags = bodyObj.get("tags").asText();
+		String tagArray[] = messageTags.split(" ");
 		try {
 			User user = (User) request.getSession().getAttribute("user");
 			Message message = new Message();
@@ -92,6 +97,11 @@ public class MessageServlet extends HttpServlet {
 			message.setTitle(messageTitle);
 			message.setPostedBy(user);
 			messageRepository.addMessage(message);
+			if(tagArray.length>0){
+				Tag tags[] = tagRepository.tagsFor(tagArray);
+				messageRepository.tag(message, tags);
+			}
+			messageRepository.tag(message, new Tag[]{tagRepository.tagFor("top")}); //TODO ugh, more refactoring
 	        response.setStatus(HttpServletResponse.SC_OK);
 	        response.getWriter().println(message.getId());//#TODO replace this with json structure
 	        response.getWriter().close();

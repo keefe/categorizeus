@@ -110,7 +110,7 @@ public class App {
 		UploadServlet uploadServlet = new UploadServlet(messageRepository, tagRepository, multipartHandler);
 		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
 		
-		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository);
+		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
