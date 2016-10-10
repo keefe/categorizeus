@@ -106,7 +106,7 @@ public class App {
 		ServletHandler handler = new ServletHandler();
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository, fileBase);
+		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository, tagRepository, fileBase);
 		UploadServlet uploadServlet = new UploadServlet(messageRepository, tagRepository, multipartHandler);
 		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
 		

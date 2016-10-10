@@ -145,6 +145,11 @@ var displayMessageComments = function(message, messageView){
 			var newComment = $("#content").find(".replies.categorizeus"+message.id);
 			newComment.append(appliedTemplate);
 			var newCommentView = $("#content").find(".comment.categorizeus"+replyId);
+			newCommentView.find(".replyButton").click((function(message, newCommentView){
+					return function(event){
+						console.log("Replying to " + message.id);
+					};
+			})(message, newCommentView));
 			displayMessageComments(threadMessages[replyId], newCommentView);//DANGER infinite loop possible
 
 		}
@@ -158,6 +163,11 @@ var displayFullMessage = function(message){
 	newMessageView.find(".closeButton").click((function(message, messageView){
 			return function(event){
 				messageView.remove();
+			};
+	})(message, newMessageView));
+	newMessageView.find(".replyButton").click((function(message, messageView){
+			return function(event){
+				console.log("Replying to " + message.id);
 			};
 	})(message, newMessageView));
 	displayMessageComments(message, newMessageView);
@@ -295,6 +305,8 @@ var dynamicEditSubmit = function(el){
 					}else{
 						$("#status").append("<p>Created new document with id " + response + "</p>");
 					}
+					el.empty();
+					searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
 				});
 				return;
 			}
@@ -304,6 +316,8 @@ var dynamicEditSubmit = function(el){
 				}else{
 					$("#status").append("<p>Created new document with id " + response + "</p>");
 				}
+				el.empty();
+				searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
 			});
 
 		}else{

@@ -8,13 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import us.categorize.repository.MessageRepository;
+import us.categorize.repository.TagRepository;
 
 public class FilesystemMultipartHandler extends MessageMultipartHandler{
 
 	private String filebase;
 	private String fileURIBase = "/files/";//TODO this needs to be pulled out
-	public FilesystemMultipartHandler(MessageRepository messageRepository, String filebase) {
-		super(messageRepository);
+	public FilesystemMultipartHandler(MessageRepository messageRepository, TagRepository tagRepository, String filebase) {
+		super(messageRepository,tagRepository);
 		this.filebase = filebase;
 	}
 
