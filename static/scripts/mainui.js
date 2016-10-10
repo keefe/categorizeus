@@ -125,7 +125,7 @@ var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
 	var controls = $(container).html(tmplBasicDocumentEdit(sourceMsg));
 	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
 	controls.find(".closeButton").click(function(event){
-		controls.remove();
+		controls.empty();
 	});
 }
 
@@ -250,7 +250,7 @@ var dynamicLogin = function(el){
 				$("#btnShowLogin").prop("value", "logout");
 				$("#status").html("<h1>Logged in successfully, welcome! " + currentUser.userName+"</h1>");
 			}
-			el.remove();
+			el.empty();
 		});
 	};
 }
@@ -274,6 +274,7 @@ var dynamicEditSubmit = function(el){
 	return function(){
 		console.log("Dynamically bound control OK");
 		var title = el.find(".inputMsgTitle").val();
+		var tags = el.find(".inputMsgTags").val();
 		var body = el.find(".inputMsgBody").val();
 		var id = el.find(".inputMsgId").val();
 		var file = el.find(".inputFileAttachment");
@@ -282,7 +283,8 @@ var dynamicEditSubmit = function(el){
 		if(isNew){
 			var newMessage = {
 				body:body,
-				title:title
+				title:title,
+				tags:tags
 			};
 			if(file.val()!==''){//file[0].files.length?
 				console.log("Found an attached file");
@@ -307,6 +309,7 @@ var dynamicEditSubmit = function(el){
 		}else{
 			$("#status").append("<p>Currently, editing existing docs not supported. Clear and try again.</p>");
 		}
+		el.empty();
 
 	};
 }
