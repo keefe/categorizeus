@@ -94,28 +94,34 @@ public class SQLMessageRepository implements MessageRepository {
 	public List<Message> findMessages(Tag[] tags) {
 		return findMessages(tags, null, null, false);
 	}
+	
+	private String tagSubquery(Tag tag){
+		String sql = "exists (select 1 from message_tags where messages.id = message_id and tag_id="+tag.getId();
+		sql = sql+")";
+		return sql;
+	}
 
 	public List<Message> findMessages(Tag[] tags, Integer startId, Integer limit, boolean reverse) {//TODO think about callback form or streaming, something not in RAM
-		
-		String tagClause = "";
-		for(Tag tag : tags){
-			if(!"".equals(tagClause)) tagClause = tagClause + " or ";
-			tagClause = tagClause + "tag_id = " + tag.getId();
-		}
 		String idOp = "<";
 		if(reverse){
 			idOp = ">";
 		}
-		String sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND ("+tagClause+")";
-		if(startId!=null){
-			sql+=" AND id"+idOp+startId;//TODO more sophisticated query for different ordering etc
-		}
+		String sql = "";
 		if(tags.length==0){
 			sql = "SELECT messages.* from messages";
 			if(startId !=null){
 				sql+=" where id"+idOp+startId;
 			}
+		}else{
+			sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND tag_id = "+tags[0].getId();
+			for(int i=1; i<tags.length;i++){
+				sql = sql + " AND " + tagSubquery(tags[i]);
+			}
 		}
+		if(startId!=null){
+			sql+=" AND id"+idOp+startId;//TODO more sophisticated query for different ordering etc
+		}
+
 		sql+=" order by id DESC";
 		if(limit!=null){
 			sql+=" LIMIT " + limit;
@@ -197,6 +203,7 @@ public class SQLMessageRepository implements MessageRepository {
 		for(Tag t : thread.getSearchCriteria().getTransitiveTags()) tagIds.push(t.getId());
 		sql = sql+" tag_id "+buildOrList(tagIds);
 		sql = sql+" AND message_sink_id " + buildOrList(currentLevel);
+		if(currentLevel.size()==0) return;
 		currentLevel = new LinkedList<>();//dupes in here?
 		System.out.println("Finding Related with \n" + sql);
 		try {
