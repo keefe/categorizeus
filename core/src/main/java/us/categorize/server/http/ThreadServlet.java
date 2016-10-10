@@ -70,7 +70,7 @@ public class ThreadServlet extends HttpServlet {
 		ObjectMapper mapper = new ObjectMapper(); //how do I optionally load maxResults, just check for presence or...
 		criteria.setSearchTags(tagsFromJson(bodyObj.get("searchTags")));
 		criteria.setTransitiveTags(tagsFromJson(bodyObj.get("transitiveTags")));
-		if(bodyObj.has("startingId")){
+		if(bodyObj.has("startingId") && bodyObj.get("startingId").isInt()){
 			criteria.setStartingId(bodyObj.get("startingId").asInt());//TODO validation
 		}
 		if(bodyObj.has("reverse")){

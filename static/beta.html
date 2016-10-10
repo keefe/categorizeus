@@ -48,6 +48,7 @@
 					<span class="title">{{title}}</span>
 					<a href="javascript:void(0);" class="userlink">{{postedBy.userName}}</a> - <span
 						class="pubdate">posted TODO time units ago</span>
+					<input type="button" class="replyButton" value="reply"/>
 				</header>
 				{{#if link}}
 					<a href="{{link}}" target="_blank">
@@ -76,6 +77,7 @@
 							<a href="javascript:void(0);" class="userlink">{{postedBy.userName}}</a> - <span
 								class="pubdate">posted TODO time units ago</span>
 							<input type="button" class="closeButton" value="close"/>
+							<input type="button" class="replyButton" value="reply"/>
 						</header>
 						{{#if link}}
 							<a href="{{link}}" target="_blank">
