@@ -3,6 +3,7 @@ package us.categorize.repository;
 import java.util.List;
 
 import us.categorize.model.Message;
+import us.categorize.model.MessageRelation;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
 import us.categorize.model.ThreadCriteria;
@@ -15,6 +16,7 @@ public interface MessageRepository {
 	boolean updateMessage(Message message);
 	List<Message> findMessages(Tag[] tags);
 	MessageThread loadThread(ThreadCriteria criteria);
+	boolean relate(MessageRelation relation);
 	boolean tag(Message message, Tag[] tags);
 	boolean tag(long messageIds[], Tag[] tags);
 }

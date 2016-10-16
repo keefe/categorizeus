@@ -110,7 +110,10 @@ var uploadMessage = function(message, files, cb){
 	formData.append('body', message.body);
 	formData.append('title', message.title);
 	formData.append('tags', message.tags);
-	formData.append('attachment', files[0]);
+	if(message.repliesToId!=null){
+		formData.append('repliesToId', message.repliesToId);
+	}
+	formData.append('attachment', files[0]);//TODO this must be last, think about how to handle this better
 	$.ajax({
 		url:'/msg/upload/',
 		method:'POST',

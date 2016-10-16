@@ -168,6 +168,16 @@ var displayFullMessage = function(message){
 	newMessageView.find(".replyButton").click((function(message, messageView){
 			return function(event){
 				console.log("Replying to " + message.id);
+				var replyForm = newMessageView.append(tmplBasicDocumentEdit({repliesToId:message.id}));
+				/*replyForm.find(".inputMsgBtn").click(function(event){
+					alert("Reply Click");
+				});*/
+				replyForm.find(".inputMsgBtn").click(dynamicEditSubmit(replyForm));
+				
+				replyForm.find(".closeButton").click(function(event){
+					replyForm.find(".basicDocumentEdit").remove();
+				});
+
 			};
 	})(message, newMessageView));
 	displayMessageComments(message, newMessageView);
@@ -287,15 +297,22 @@ var dynamicEditSubmit = function(el){
 		var tags = el.find(".inputMsgTags").val();
 		var body = el.find(".inputMsgBody").val();
 		var id = el.find(".inputMsgId").val();
+		var repliesToId = el.find(".repliesToId").val();
 		var file = el.find(".inputFileAttachment");
 		var isNew = (!id) || id.length==0;
 		console.log(id + " is new? " + isNew + " " + title + " & " + body);
+		if(repliesToId!=null && repliesToId.length>0){
+			console.log("Posting a reply to " + repliesToId);
+		}
 		if(isNew){
 			var newMessage = {
 				body:body,
 				title:title,
 				tags:tags
 			};
+			if(repliesToId!=null&& repliesToId.length>0){
+				newMessage.repliesToId = repliesToId;
+			}
 			if(file.val()!==''){//file[0].files.length?
 				console.log("Found an attached file");
 				console.log(file[0].files);
