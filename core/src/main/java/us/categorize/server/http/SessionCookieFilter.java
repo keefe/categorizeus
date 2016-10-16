@@ -36,10 +36,12 @@ public class SessionCookieFilter implements Filter{
 		HttpServletResponse httpResponse = (HttpServletResponse) response; 
 		if(httpRequest.getSession().getAttribute("categorizeus")==null){
 			Cookie categorizeusCookie = null;
-			for(Cookie cookie : httpRequest.getCookies()){
-				if(cookie.getName().equals("categorizeus")){
-					categorizeusCookie = cookie;
-					break;
+			if(httpRequest.getCookies()!=null){
+				for(Cookie cookie : httpRequest.getCookies()){
+					if(cookie.getName().equals("categorizeus")){
+						categorizeusCookie = cookie;
+						break;
+					}
 				}
 			}
 			if(categorizeusCookie==null){
