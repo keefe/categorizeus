@@ -2,6 +2,7 @@ package us.categorize.server.http;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +54,20 @@ public class UserServlet extends HttpServlet {
 	        response.getWriter().close();
 	        return;
 		}
+		String categorizeusCookieString = (String) request.getSession().getAttribute("categorizeus");
+		userRepository.destroySessionUser(categorizeusCookieString);
+		Cookie categorizeusCookie = null;
+		for(Cookie cookie : request.getCookies()){
+			if(cookie.getName().equals("categorizeus")){
+				categorizeusCookie = cookie;
+				break;
+			}
+		}
+		if(categorizeusCookie!=null){//TODO this doesn't appear to be actually removing the cookie, look into this further
+			categorizeusCookie.setMaxAge(0);
+			response.addCookie(categorizeusCookie);
+		}
+		request.getSession().removeAttribute("categorizeus");
 		request.getSession().removeAttribute("user");
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonMessage = mapper.writeValueAsString(user);
@@ -69,10 +84,11 @@ public class UserServlet extends HttpServlet {
 		JsonNode bodyObj = ServletUtil.readyBody(request);
 		String username = bodyObj.get("username").asText();
 		String password = DigestUtils.sha256Hex(bodyObj.get("password").asText());
-		System.out.println(password);
 		try {
 			User user = userRepository.validateUser(username, password);
 			if(user!=null){
+				String categorizeusUUID = (String) request.getSession().getAttribute("categorizeus");
+				userRepository.createSessionUser(categorizeusUUID, user);
 				request.getSession().setAttribute("user", user);
 				response.setStatus(HttpServletResponse.SC_OK);
 				response.getWriter().close();

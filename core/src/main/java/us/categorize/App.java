@@ -29,6 +29,7 @@ import us.categorize.server.FilesystemMultipartHandler;
 import us.categorize.server.http.AuthFilter;
 import us.categorize.server.http.MessageServlet;
 import us.categorize.server.http.MultipartHandler;
+import us.categorize.server.http.SessionCookieFilter;
 import us.categorize.server.http.TagServlet;
 import us.categorize.server.http.ThreadServlet;
 import us.categorize.server.http.UploadServlet;
@@ -103,8 +104,13 @@ public class App {
 		System.out.println("Preparing to serve static files from " + staticDir);
 		context.setResourceBase(staticDir);
 		
+		SessionCookieFilter sessionCookieFilter = new SessionCookieFilter(userRepository);
+		FilterHolder sessionCookieFilterHolder = new FilterHolder(sessionCookieFilter);
+		context.addFilter(sessionCookieFilterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
+		
 		ServletHandler handler = new ServletHandler();
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
+		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository, tagRepository, fileBase);
 		UploadServlet uploadServlet = new UploadServlet(messageRepository, tagRepository, multipartHandler);

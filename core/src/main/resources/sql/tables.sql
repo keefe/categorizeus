@@ -31,3 +31,8 @@ create table if not exists message_relations(
 	message_source_id bigint,
 	message_sink_id bigint
 );
+
+create table if not exists user_sessions(
+	session_uuid varchar(128) primary key,
+	user_id bigint
+);

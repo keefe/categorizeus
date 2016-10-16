@@ -3,6 +3,7 @@ package us.categorize.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,6 +68,54 @@ public class SQLUserRepository implements UserRepository {
 		User user = find(newId);
 		id2user.put(user.getUserId(), user);
 		return user;
+	}
+
+	@Override
+	public User findSessionUser(String sessionUUID) {
+		String findSessionUser = "select * from user_sessions where session_uuid=?";
+		try {
+			PreparedStatement stmt = connection.prepareStatement(findSessionUser);
+			stmt.setString(1,  sessionUUID);
+			ResultSet rs = stmt.executeQuery();
+			if(rs!=null && rs.next()){
+				return find(rs.getLong("user_id"));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	@Override
+	public boolean createSessionUser(String sessionUUID, User user) {
+		String createUserSession = "insert into user_sessions(session_uuid, user_id) values (?,?)";
+		try{
+			PreparedStatement stmt = connection.prepareStatement(createUserSession);
+			stmt.setString(1,sessionUUID);
+			stmt.setLong(2, user.getUserId());
+			stmt.executeUpdate();
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean destroySessionUser(String sessionUUID) {
+		String deleteUserSession = "delete from user_sessions where session_uuid = ?";
+		try {
+			PreparedStatement stmt = connection.prepareStatement(deleteUserSession);
+			stmt.setString(1, sessionUUID);
+			stmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }
