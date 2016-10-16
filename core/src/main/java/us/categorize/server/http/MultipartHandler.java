@@ -37,6 +37,7 @@ public abstract class MultipartHandler {
 		while(it.hasNext()){
 			FileItemStream item = it.next();
 			String name = item.getFieldName();
+			System.out.println("Field " + name);
 			if(item.isFormField()){
 				formFields.put(name, Streams.asString(item.openStream()));
 			}else{

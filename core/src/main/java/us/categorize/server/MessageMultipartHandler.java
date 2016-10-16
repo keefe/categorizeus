@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import us.categorize.model.Message;
+import us.categorize.model.MessageRelation;
 import us.categorize.model.Tag;
 import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
@@ -32,11 +33,16 @@ public abstract class MessageMultipartHandler extends MultipartHandler {
 		message.setTitle(formFields.get("title"));
 		message.setPostedBy(user);
 		String messageTags = formFields.get("tags");
-		
+		String repliesToId = null;
+		if(formFields.containsKey("repliesToId")){
+			repliesToId = formFields.get("repliesToId");
+		}
+		System.out.println("We are replying to " + repliesToId);
 
 		
 		messageRepository.addMessage(message);
 		try {
+			System.out.println("Tags given as " + messageTags);
 			if(messageTags!=null){
 				String tagArray[] = messageTags.split(" ");
 				if(tagArray.length>0){
@@ -45,7 +51,17 @@ public abstract class MessageMultipartHandler extends MultipartHandler {
 						messageRepository.tag(message, tags);
 				}
 			}
-			messageRepository.tag(message, new Tag[]{tagRepository.tagFor("top")}); //TODO ugh, more refactoring
+			if(repliesToId!=null){
+				MessageRelation relation = new MessageRelation();
+				relation.setSource(message);
+				relation.setRelation(tagRepository.tagFor("repliesTo"));
+				Message fauxReplySource = new Message();
+				fauxReplySource.setId(Long.parseLong(repliesToId));
+				relation.setSink(fauxReplySource);
+				messageRepository.relate(relation);
+			}else{
+				messageRepository.tag(message, new Tag[]{tagRepository.tagFor("top")}); //TODO ugh, more refactoring				
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

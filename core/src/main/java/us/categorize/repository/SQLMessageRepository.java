@@ -272,5 +272,24 @@ public class SQLMessageRepository implements MessageRepository {
 		return allGood;
 	}
 
+	@Override
+	public boolean relate(MessageRelation relation) {
+		String relationStatement = "insert into message_relations(message_source_id, tag_id, message_sink_id) values (?,?,?)";
+		try {
+			PreparedStatement stmt = connection.prepareStatement(relationStatement);
+			stmt.setLong(1, relation.getSource().getId());
+			stmt.setLong(2, relation.getRelation().getId());
+			stmt.setLong(3, relation.getSink().getId());
+			stmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block, this is particularly important because of unique constraint violations
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	
+	
 
 }

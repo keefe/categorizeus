@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.categorize.model.Message;
+import us.categorize.model.MessageRelation;
 import us.categorize.model.Tag;
 import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
@@ -89,6 +90,11 @@ public class MessageServlet extends HttpServlet {
 		String messageBody = bodyObj.get("body").asText();
 		String messageTitle = bodyObj.get("title").asText();
 		String messageTags = bodyObj.get("tags").asText();
+		String repliesToId = null;
+		if(bodyObj.has("repliesToId")){
+			repliesToId = bodyObj.get("repliesToId").asText();
+		}
+		System.out.println("Message is replying to " + repliesToId);
 		String tagArray[] = messageTags.split(" ");
 		try {
 			User user = (User) request.getSession().getAttribute("user");
@@ -101,7 +107,17 @@ public class MessageServlet extends HttpServlet {
 				Tag tags[] = tagRepository.tagsFor(tagArray);
 				messageRepository.tag(message, tags);
 			}
-			messageRepository.tag(message, new Tag[]{tagRepository.tagFor("top")}); //TODO ugh, more refactoring
+			if(repliesToId!=null){
+				MessageRelation relation = new MessageRelation();
+				relation.setSource(message);
+				relation.setRelation(tagRepository.tagFor("repliesTo"));
+				Message fauxReplySource = new Message();
+				fauxReplySource.setId(Long.parseLong(repliesToId));
+				relation.setSink(fauxReplySource);
+				messageRepository.relate(relation);
+			}else{
+				messageRepository.tag(message, new Tag[]{tagRepository.tagFor("top")}); //TODO ugh, more refactoring				
+			}
 	        response.setStatus(HttpServletResponse.SC_OK);
 	        response.getWriter().println(message.getId());//#TODO replace this with json structure
 	        response.getWriter().close();
