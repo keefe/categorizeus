@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.EnumSet;
+import java.util.Properties;
 
 import javax.servlet.DispatcherType;
 
@@ -40,17 +41,21 @@ public class App {
 	private static  int port;
 
 	public static void main(String args[]) throws Exception {
-		//#TODO let's get rid of this crazy and use a properties file and relative references
-		clearSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/clear.sql";
-		createSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/tables.sql";
-		indexSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/indices.sql";
-		seedSql = System.getProperty("user.home") + "/projects/categorizeus/core/src/main/resources/sql/seed.sql";
 
-		dbName = System.getenv("CATEGORIZEUS_DB");
-		dbUser = System.getenv("CATEGORIZEUS_DB_USER");
-		dbPass = System.getenv("CATEGORIZEUS_DB_PASS");
-		port = Integer.parseInt(System.getenv("CATEGORIZEUS_PORT"));
-		staticDir = System.getenv("CATEGORIZEUS_STATIC");
+
+		Properties properties = new Properties();
+		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
+		System.out.println("Connecting to " + properties.getProperty("DB_NAME") + " as " + properties.getProperty("DB_USER"));
+		
+		clearSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/clear.sql";//TODO refactor to load from the jar as above
+		createSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/tables.sql";
+		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
+		seedSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/seed.sql";		
+		dbName = properties.getProperty("DB_NAME");
+		dbUser = properties.getProperty("DB_USER");
+		dbPass = properties.getProperty("DB_PASS");
+		port = Integer.parseInt(properties.getProperty("PORT"));
+		staticDir = properties.getProperty("STATIC_DIR");
 		fileBase = staticDir + "/files";
 
 		Class.forName("org.postgresql.Driver");
