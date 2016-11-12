@@ -2,7 +2,9 @@
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
-
+**/categorizeus.properties
+*.properties
+src/main/resources/categorizeus.properties
 # Package Files #
 *.jar
 *.war
