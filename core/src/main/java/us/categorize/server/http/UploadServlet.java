@@ -17,13 +17,15 @@ public class UploadServlet extends HttpServlet{
 	private MessageRepository messageRepository;
 	private TagRepository tagRepository;
 	private MultipartHandler multipartHandler;
+	private long maxUploadSize;
 	
 	
-	public UploadServlet(MessageRepository messageRepository, TagRepository tagRepository, MultipartHandler multipartHandler) {
+	public UploadServlet(long maxUploadSize, MessageRepository messageRepository, TagRepository tagRepository, MultipartHandler multipartHandler) {
 		super();
 		this.messageRepository = messageRepository;
 		this.tagRepository = tagRepository;
 		this.multipartHandler = multipartHandler;
+		this.maxUploadSize = maxUploadSize;
 	}
 
 
@@ -32,6 +34,23 @@ public class UploadServlet extends HttpServlet{
             HttpServletResponse response ) throws ServletException,
     IOException
     {
+		boolean validSize = true;
+		try{
+			long statedSize = Long.parseLong(request.getHeader("Content-Length"));
+			if(statedSize>maxUploadSize){
+				validSize = false;
+			}
+		}catch(Exception e){
+			validSize = false;
+			e.printStackTrace();
+		}
+		if(!validSize){
+	        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        response.getWriter().println("Upload too Large or Content-Length missing or invalid");//#TODO replace this with json structure
+	        response.getWriter().close();
+	        return;
+		}
+
 		try {
 			if(!multipartHandler.handle(request)){//should we be returning an id here or just putting it at the top of user queue
 		        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

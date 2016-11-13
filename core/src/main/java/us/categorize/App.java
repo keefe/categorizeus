@@ -38,6 +38,7 @@ import us.categorize.server.http.UserServlet;
 
 public class App {
 	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
+	private static long maxUploadSize = -1;
 	private static  int port;
 
 	public static void main(String args[]) throws Exception {
@@ -47,6 +48,7 @@ public class App {
 		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
 		System.out.println("Connecting to " + properties.getProperty("DB_NAME") + " as " + properties.getProperty("DB_USER"));
 		
+		//TODO put these all into an automapped java bean with defaults
 		clearSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/clear.sql";//TODO refactor to load from the jar as above
 		createSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/tables.sql";
 		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
@@ -54,6 +56,8 @@ public class App {
 		dbName = properties.getProperty("DB_NAME");
 		dbUser = properties.getProperty("DB_USER");
 		dbPass = properties.getProperty("DB_PASS");
+		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
+		
 		port = Integer.parseInt(properties.getProperty("PORT"));
 		staticDir = properties.getProperty("STATIC_DIR");
 		fileBase = staticDir + "/files";
@@ -118,7 +122,7 @@ public class App {
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository, tagRepository, fileBase);
-		UploadServlet uploadServlet = new UploadServlet(messageRepository, tagRepository, multipartHandler);
+		UploadServlet uploadServlet = new UploadServlet(maxUploadSize, messageRepository, tagRepository, multipartHandler);
 		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
 		
 		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository);
