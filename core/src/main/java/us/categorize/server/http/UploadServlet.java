@@ -50,11 +50,24 @@ public class UploadServlet extends HttpServlet{
 	        response.getWriter().close();
 	        return;
 		}
+		
+		String contentType = request.getHeader("Content-Type");
+		
+		//TODO externalize this to a list of acceptable types
+		boolean validContent = contentType.startsWith("image") && (contentType.contains("png") || contentType.contains("jpeg") || contentType.contains("jpg") || contentType.contains("gif"));		
+		System.out.println(contentType);
+		/*if(!validContent){
+	        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        response.getWriter().println("Upload must contain a png, jpeg or gif image");//#TODO replace this with json structure
+	        response.getWriter().close();
+	        return;			
+		}*/
+		
 
 		try {
 			if(!multipartHandler.handle(request)){//should we be returning an id here or just putting it at the top of user queue
 		        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		        response.getWriter().println("No Multipart Data");//#TODO replace this with json structure
+		        response.getWriter().println("No or Bad Multipart Data");//#TODO replace this with json structure
 		        response.getWriter().close();
 			}else{
 		        response.setStatus(HttpServletResponse.SC_OK);

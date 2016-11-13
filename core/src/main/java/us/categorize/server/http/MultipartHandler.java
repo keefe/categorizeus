@@ -42,6 +42,11 @@ public abstract class MultipartHandler {
 				formFields.put(name, Streams.asString(item.openStream()));
 			}else{
 				//think about the impact of opening the file here
+				String contentType = item.getContentType().toLowerCase();
+				boolean validContent = contentType.startsWith("image") && (contentType.contains("png") || contentType.contains("jpeg") || contentType.contains("jpg") || contentType.contains("gif"));		
+				if(!validContent){
+					return false;
+				}
 				handleFileUpload(user, formFields, item.getFieldName(), item.getName(), item.getContentType(), item.openStream());
 			}
 		}
