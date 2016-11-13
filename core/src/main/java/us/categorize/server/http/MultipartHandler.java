@@ -20,7 +20,8 @@ import us.categorize.model.User;
 public abstract class MultipartHandler {
 	
 	public abstract void handleFileUpload(User user, Map<String, String> formFields, String name, String filename, String contentType, InputStream inputStream);
-	
+	public abstract InputStream inputStreamFor(String furi);
+
 	public boolean handle(HttpServletRequest request) throws FileUploadException, IOException{
 		if(!ServletFileUpload.isMultipartContent(request)){
 			return false;

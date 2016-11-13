@@ -39,6 +39,8 @@ import us.categorize.server.http.UserServlet;
 public class App {
 	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
 	private static long maxUploadSize = -1;
+	private static double maxThumbWidth, maxThumbHeight;
+	
 	private static  int port;
 
 	public static void main(String args[]) throws Exception {
@@ -57,6 +59,8 @@ public class App {
 		dbUser = properties.getProperty("DB_USER");
 		dbPass = properties.getProperty("DB_PASS");
 		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
+		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
+		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
 		
 		port = Integer.parseInt(properties.getProperty("PORT"));
 		staticDir = properties.getProperty("STATIC_DIR");
@@ -121,7 +125,7 @@ public class App {
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository, tagRepository, fileBase);
+		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository,maxThumbWidth, maxThumbHeight, tagRepository, fileBase);
 		UploadServlet uploadServlet = new UploadServlet(maxUploadSize, messageRepository, tagRepository, multipartHandler);
 		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
 		

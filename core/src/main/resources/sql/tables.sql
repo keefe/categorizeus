@@ -9,7 +9,12 @@ create table if not exists messages(
 	body text,
 	title text,
 	posted_by bigint,
-	link text
+	link text,
+  img_width int,
+  img_height int,
+  thumb_width int,
+  thumb_height int,
+  thumb_link text
 );
 
 create table if not exists users(

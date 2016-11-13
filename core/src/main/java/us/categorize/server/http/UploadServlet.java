@@ -18,6 +18,7 @@ public class UploadServlet extends HttpServlet{
 	private TagRepository tagRepository;
 	private MultipartHandler multipartHandler;
 	private long maxUploadSize;
+
 	
 	
 	public UploadServlet(long maxUploadSize, MessageRepository messageRepository, TagRepository tagRepository, MultipartHandler multipartHandler) {
@@ -26,6 +27,7 @@ public class UploadServlet extends HttpServlet{
 		this.tagRepository = tagRepository;
 		this.multipartHandler = multipartHandler;
 		this.maxUploadSize = maxUploadSize;
+
 	}
 
 
@@ -54,14 +56,7 @@ public class UploadServlet extends HttpServlet{
 		String contentType = request.getHeader("Content-Type");
 		
 		//TODO externalize this to a list of acceptable types
-		boolean validContent = contentType.startsWith("image") && (contentType.contains("png") || contentType.contains("jpeg") || contentType.contains("jpg") || contentType.contains("gif"));		
-		System.out.println(contentType);
-		/*if(!validContent){
-	        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-	        response.getWriter().println("Upload must contain a png, jpeg or gif image");//#TODO replace this with json structure
-	        response.getWriter().close();
-	        return;			
-		}*/
+
 		
 
 		try {

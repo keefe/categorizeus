@@ -1,16 +1,54 @@
 package us.categorize.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class Message {
 	private String title;
 	private String body;
 	private User postedBy;
 	private long id;
-	private String link;//TODO what belongs in this class, what belongs in a relationship?
+	private String link, thumbLink;//TODO what belongs in this class, what belongs in a relationship?
+	public String getThumbLink() {
+		return thumbLink;
+	}
+
+	public void setThumbLink(String thumbLink) {
+		this.thumbLink = thumbLink;
+	}
+
+	private int imgWidth, imgHeight, thumbWidth, thumbHeight;
+
 	
+	public int getImgWidth() {
+		return imgWidth;
+	}
+
+	public void setImgWidth(int imgWidth) {
+		this.imgWidth = imgWidth;
+	}
+
+	public int getImgHeight() {
+		return imgHeight;
+	}
+
+	public void setImgHeight(int imgHeight) {
+		this.imgHeight = imgHeight;
+	}
+
+	public int getThumbWidth() {
+		return thumbWidth;
+	}
+
+	public void setThumbWidth(int thumbWidth) {
+		this.thumbWidth = thumbWidth;
+	}
+
+	public int getThumbHeight() {
+		return thumbHeight;
+	}
+
+	public void setThumbHeight(int thumbHeight) {
+		this.thumbHeight = thumbHeight;
+	}
+
 	public String toString(){
 		return id+":"+title+":"+body+":"+postedBy;
 	}
