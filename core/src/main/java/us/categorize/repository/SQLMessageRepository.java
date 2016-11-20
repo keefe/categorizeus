@@ -118,8 +118,10 @@ public class SQLMessageRepository implements MessageRepository {
 
 	public List<Message> findMessages(Tag[] tags, Integer startId, Integer limit, boolean reverse) {//TODO think about callback form or streaming, something not in RAM
 		String idOp = "<";
+		String sortOp = "DESC";
 		if(reverse){
 			idOp = ">";
+			sortOp = "ASC";
 		}
 		String sql = "";
 		if(tags.length==0){
@@ -137,17 +139,22 @@ public class SQLMessageRepository implements MessageRepository {
 			sql+=" AND id"+idOp+startId;//TODO more sophisticated query for different ordering etc
 		}
 
-		sql+=" order by id DESC";
+		sql+=" order by id ";
+		sql+=sortOp;
 		if(limit!=null){
 			sql+=" LIMIT " + limit;
 		}
 		System.out.println(sql);
-		List<Message> messages = new LinkedList<Message>(); 
+		LinkedList<Message> messages = new LinkedList<Message>(); 
 		try {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()){
-				messages.add(mapMessageRow(rs));
+				if(reverse){
+					messages.addFirst(mapMessageRow(rs));
+				}else{
+					messages.add(mapMessageRow(rs));
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -188,6 +188,10 @@ var displayRegisterForm = function(container){ //#TODO hey we are seeing a templ
 	controls.find(".btnRegister").click(dynamicRegister(controls));
 }
 var displayMessageThread = function(err, messageThread){
+  if(messageThread.thread.length==0){
+    alert("Attempted new search, but no results were found");
+    return;
+  }
 	currentThread = messageThread;
 	threadRelations = {};
 	threadMessages = {};
@@ -234,10 +238,11 @@ var displayMessages = function(err, messages){
 	$("#content").append($(tmplNavigation({})));
 	$("#content").find(".nextLink").click(function(event){
 		if(currentThread!=null && currentThread.thread!=null && currentThread.thread.length>0){
+      var newSearch = $.extend({}, currentThread.searchCriteria)
 			console.log("Next Link Click, let's look after : " + currentThread.thread[currentThread.thread.length-1].id);
-			currentThread.searchCriteria.startingId = currentThread.thread[currentThread.thread.length-1].id;
-			currentThread.searchCriteria.reverse = false;
-			searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
+			newSearch.startingId = currentThread.thread[currentThread.thread.length-1].id;
+			newSearch.reverse = false;
+			searchThreadCriteria(newSearch, displayMessageThread);
 		}else{
 			alert("Next Link Click, not sure what to do");
 		}
@@ -251,11 +256,12 @@ var displayMessages = function(err, messages){
 			if(currentThread!=null && !currentThread.searchCriteria.reverse && currentThread.searchCriteria.startingId!=null){
 				startingId = currentThread.searchCriteria.startingId;						
 			}
-		}
+		}    
 		console.log("Previous Link Click " + startingId);
-		currentThread.searchCriteria.startingId = startingId;
-		currentThread.searchCriteria.reverse = true;
-		searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
+    var newSearch = $.extend({}, currentThread.searchCriteria)
+		newSearch.startingId = startingId;
+		newSearch.reverse = true;
+		searchThreadCriteria(newSearch, displayMessageThread);
 	});
 };
 var dynamicLogin = function(el){
