@@ -6,20 +6,8 @@
 	<script type="text/javascript" src="scripts/mainui.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/categorizeus.css"></script>
 	<link rel="stylesheet" type="text/css" href="css/mainui.css"></script>
-	<script id="tmplNavigation" type="text/x-handlebars-template">
-		<div class="searchNavigation">
-			<span class="previousNavigation">
-				<a href="javascript:void(0);" class="previousLink">
-					<span>previous</span>
-				</a>
-			</span>
-			<span class="nextNavigation">
-				<a href="javascript:void(0);" class="nextLink">
-					<span>next</span>
-				</a>
-			</span>
-		</div>
-	</script>
+  
+  <!-- This is the template for the items in the main grid view-->
 	<script id="tmplBasicDocument" type="text/x-handlebars-template">
 		<div class="basicDocument categorizeus{{id}}" id="{{id}}">
 			<h1>{{title}}</h1>
@@ -35,6 +23,21 @@
 			<div class="body">
 				{{body}}
 			</div>
+		</div>
+	</script>
+  
+	<script id="tmplNavigation" type="text/x-handlebars-template">
+		<div class="searchNavigation">
+			<span class="previousNavigation">
+				<a href="javascript:void(0);" class="previousLink">
+					<span>previous</span>
+				</a>
+			</span>
+			<span class="nextNavigation">
+				<a href="javascript:void(0);" class="nextLink">
+					<span>next</span>
+				</a>
+			</span>
 		</div>
 	</script>
 	<script id="tmplIndividualComment" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
@@ -122,41 +125,40 @@
   </head>
   <body>
     <div class="header">
-	<div id="btnCategorizeUs" class="navItem categorizeUsButton">categorize.us</div>
-	<div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
-	<input id="txtTagSearch" type="text" placeholder="tags to apply or search" width=100/>
-	<div id="btnSearch" class="navItem searchButton">Search</div>
-	<div id="btnTag" class="navItem tagButton">Tag</div>
-	<div id="btnPost" class="navItem postButton">Post</div>
-	<div id="btnAbout" class="navItem aboutButton">About</div>
+    	<div id="btnCategorizeUs" class="navItem categorizeUsButton">categorize.us</div>
+    	<div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
+    	<div id="btnSearch" class="navItem searchButton">Search</div>
+    	<div id="btnTag" class="navItem tagButton">Tag</div>
+    	<div id="btnPost" class="navItem postButton">Post</div>
+    	<div id="btnAbout" class="navItem aboutButton">About</div>
     </div>
     <div id='main'>
       <div class="article">
-	<div id="content">
-	</div>
-	<div id="editor">
+        <div id="content" class="gallery">
+	      </div>
+        <div id="editor">
 
-	</div>
+        </div>
       </div>
       <div class="nav unseen">
-	<div id="status">
-	</div>
+        <div  id="status">
+        </div>
       </div>
       <div class="aside unseen">
-	<div class="userInfo">
-		<input id="btnShowLogin" type="button" value="login"/>
-	</div>
-	icons courtesy https://thenounproject.com<br/>
-	Specific Icon Credits:<br/>
-	enso by Bluetip Design<br/>
-	search by Bernar Novalyi<br/>
-	tag by Bryn Taylor<br/>
-	camera by Arthur Shlain<br/>
-	thumbs by Justin Blake<br/>
-	envelope by David Nesbitt<br/>
-	about by Umesh Vgl<br/>
-	edit by abhishek rana <br/>
-     </div>
+	      <div class="userInfo">
+		      <input id="btnShowLogin" type="button" value="login"/>
+        </div>
+      	icons courtesy https://thenounproject.com<br/>
+      	Specific Icon Credits:<br/>
+      	enso by Bluetip Design<br/>
+      	search by Bernar Novalyi<br/>
+      	tag by Bryn Taylor<br/>
+      	camera by Arthur Shlain<br/>
+      	thumbs by Justin Blake<br/>
+      	envelope by David Nesbitt<br/>
+      	about by Umesh Vgl<br/>
+      	edit by abhishek rana <br/>
+      </div>
     </div>
   </body>
 </html>

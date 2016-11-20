@@ -11,40 +11,71 @@
         flex-flow: row;
     }
 
-    #content {
-	display: flex;
-	flex-wrap: wrap;
-
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: stretch;
     }
-    .searchNavigation{
-	width: 100%;
+
+
+    .basicDocument {
+	     min-width: 200px;
+	     min-height: 200px;
+       max-height: 350px;
+       max-width: 300px;
+       overflow: hidden;
+       flex-basis: 250px;
+       font-family: sans-serif;
      }
-     .previousNavigation{
-	float: left;
+    .basicDocument.selected {
+      border: 3px solid black;
+    }
+    .basicDocument h1 {
+      font-size: 16px;
+      margin: 4px;
+      border-bottom: 2px solid black;
+    }
+    .basicDocument .postedBy {
+      font-size: 11px;
+    }
+    .basicDocument .body {
+      font-size: 13px;
      }
-     .nextNavigation{
-	float: right;
-     }
-    .fullMessage{
-	    background-color:#ddd;
-	    position: fixed;
-	    padding: 2em;
-	    left: 50%;
-	    top: 50%;
-	    width:80%;
-	    height:80%;
-	    transform: translate(-50%, -50%);
-     }
-     .basicDocumentEdit{
-	    background-color:#ddd;
-	    position: fixed;
-	    padding: 2em;
-	    left: 50%;
-	    top: 50%;
-	    width:80%;
-	    height:80%;
-	    transform: translate(-50%, -50%);
-     }
+     
+     
+     /**
+     
+     Editor Forms
+     
+     */
+     .fullMessage{
+ 	    background-color:#ddd;
+ 	    position: fixed;
+ 	    padding: 2em;
+ 	    left: 50%;
+ 	    top: 50%;
+ 	    width:80%;
+ 	    height:80%;
+ 	    transform: translate(-50%, -50%);
+      }
+      .basicDocumentEdit{
+ 	    background-color:#ddd;
+ 	    position: fixed;
+ 	    padding: 2em;
+ 	    left: 50%;
+ 	    top: 50%;
+ 	    width:80%;
+ 	    height:80%;
+ 	    transform: translate(-50%, -50%);
+      }
+     
+     
+     /*
+     General section related to the 3 column layout and the top buttons
+     
+     */
+     
      .login{
 	    background-color:#ddd;
 	    position: fixed;
@@ -56,27 +87,34 @@
 	    transform: translate(-50%, -50%);
      }
  
-    .basicDocument {
-	margin: 6px;
-	min-width:200px;
-	min-height:200px;
-  border: 3px solid red;
+ 
+     .searchNavigation{
+ 	    width: 100%;
+      }
+      .previousNavigation{
+        float: left;
+      }
+      .nextNavigation{
+        float: right;
+      }
+     /* Too narrow to support three columns */
+     @media all and (max-width: 640px) {
+         #main, #page {
+             flex-direction: column;
+         }
+
+         .article, .nav, .aside {
+         /* Return them to document order */
+             order: 0;
+         }
+  
+         .nav, .aside, .header {
+             min-height: 50px;
+             max-height: 50px;
+         }
      }
-    .basicDocument.selected {
-	border: 3px solid black;
-
-    }
-    .basicDocument h1 {
-	font-size: 14px;
-
-    }
-    .basicDocument .postedBy {
-	font-size: 10px;
-    }
-    .basicDocument .body {
-	font-size: 11px;
-     }
-
+     
+     
     .article {
         margin: 2px;
         padding: 3px;
@@ -87,6 +125,9 @@
         flex: 6;
         order: 2;
     }
+    
+
+    
 
     .nav {
         margin: 2px;
@@ -176,22 +217,8 @@
 	cursor: pointer;
      }
 
-    /* Too narrow to support three columns */
-    @media all and (max-width: 640px) {
-        #main, #page {
-            flex-direction: column;
-        }
 
-        .article, .nav, .aside {
-        /* Return them to document order */
-            order: 0;
-        }
-  
-        .nav, .aside, .header {
-            min-height: 50px;
-            max-height: 50px;
-        }
-    }
+    /*The fuck is this?*/
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
 	blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn,
 	em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
@@ -211,6 +238,11 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
 	box-sizing: border-box;
 }
 
+
+
+/*
+Section related to the individual tabbed in comments section
+*/
 html {
 	height: 101%;
 }
