@@ -1,7 +1,7 @@
 # categorizeus
 
 
-Install postgres locally, in ubuntu just
+Install postgres locally
 
  sudo apt-get install postgresql postgresql-contrib pgadmin3
 sudo -u postgres psql postgres
