@@ -121,7 +121,7 @@
         border: 1px solid;
 	border-color: rgba(192, 217, 197, 0.25);
         border-radius: 5pt;
-	background-color: rgba(192, 217, 197, 0.25);
+	background-color: #F7FBFA;
         flex: 6;
         order: 2;
     }
@@ -161,60 +161,53 @@
         padding: 3x;
         min-height: 35px;
         border: 1px solid;
+        font-size: 15px;
+        font-family: sans-serif;
 	border-color: rgba(250, 189, 196, 0.25);
         border-radius: 6pt;
-        background-color: rgba(250, 189, 196, 0.5);
+        background-color: #D4EDD6;
         display: flex;
         flex-flow: row;
     }
     .navItem {
-	flex: 1;
-
+    	flex: 1;
+    	padding-left: 27px;
+    	display: inline-block;
+    	cursor: pointer;
+      line-height: 30px;
      }
      .categorizeUsButton {
-	background: url('/images/enso.png') no-repeat left center;
-	padding-left: 27px;
-	background-size: 25px 25px;
-	display: inline-block;
-	cursor: pointer;
+        background: url('/images/enso.png') no-repeat left center;    	
+        background-size: 25px 25px;
+
      }
 
      .notificationsButton {
-	background: url('/images/message.png') no-repeat left center;
-	padding-left: 27px;
-	background-size: 25px 25px;
-	display: inline-block;
-	cursor: pointer;
+        background: url('/images/message.png') no-repeat left center;
+        background-size: 25px 25px;
+        
      }
      .postButton {
-	background: url('/images/edit.png') no-repeat left center;
-	padding-left: 27px;
-	background-size: 25px 25px;
-	display: inline-block;
-	cursor: pointer;
+       background: url('/images/edit.png') no-repeat left center;
+       background-size: 25px 25px;
+       
      }
 
      .aboutButton {
-	background: url('/images/about.png') no-repeat left center;
-	padding-left: 27px;
-	background-size: 25px 25px;
-	display: inline-block;
-	cursor: pointer;
+       background: url('/images/about.png') no-repeat left center;
+       background-size: 25px 25px;
+       
      }
 
      .searchButton {
-	background: url('/images/search.png') no-repeat left center;
-	padding-left: 27px;
-	background-size: 25px 25px;
-	display: inline-block;
-	cursor: pointer;
+       background: url('/images/search.png') no-repeat left center;
+       background-size: 25px 25px;
+       
      }
      .tagButton {
-	background: url('/images/tag.png') no-repeat left center;
-	padding-left: 27px;
-	background-size: 25px 25px;
-	display: inline-block;
-	cursor: pointer;
+       background: url('/images/tag.png') no-repeat left center;
+       background-size: 25px 25px;
+       
      }
 
 
