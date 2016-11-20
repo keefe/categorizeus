@@ -46,7 +46,7 @@ var initialize = function(){
 		currentUser = user;
 		$("#btnShowLogin").prop("value", "logout");
 		console.log(user);
-		$("#status").html("<h1>Welcome back "+user.userName+"</h1>");
+		$(".userGreeting").html("Welcome back, "+user.userName+"!");
 	});
 	tagSearchThread(["top"], displayMessageThread);
 	$("#btnShowLogin").click(function(){
@@ -56,12 +56,12 @@ var initialize = function(){
 		}else{
 			logoutUser(function(err, user){
 				if(err!=null){
-					$("#status").html("<h1> "+err+"</h1>");
+					$(".userGreeting").html("<h1> "+err+"</h1>");
 					return;
 				}
 				currentUser = null;
 				$("#btnShowLogin").prop("value", "login");
-				$("#status").html("<h1>Logout is complete</h1>");
+				$(".userGreeting").html("");
 			});
 
 		}
@@ -264,11 +264,11 @@ var dynamicLogin = function(el){
 		var password = el.find(".txtPassword").val();
 		loginUser(username, password, function(err, user){
 			if(err!=null){
-				$("#status").html("<h1>"+err+"</h1>");
-			}else{
+				$(".userGreeting").html("<h1>"+err+"</h1>");
+			}else{//TODO merge with the logout, get current user stuff
 				currentUser = user;
 				$("#btnShowLogin").prop("value", "logout");
-				$("#status").html("<h1>Logged in successfully, welcome! " + currentUser.userName+"</h1>");
+    		$(".userGreeting").html("Welcome back, "+user.userName+"!");
 			}
 			el.empty();
 		});

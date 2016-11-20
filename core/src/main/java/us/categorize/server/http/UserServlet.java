@@ -90,8 +90,12 @@ public class UserServlet extends HttpServlet {
 				String categorizeusUUID = (String) request.getSession().getAttribute("categorizeus");
 				userRepository.createSessionUser(categorizeusUUID, user);
 				request.getSession().setAttribute("user", user);
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonMessage = mapper.writeValueAsString(user);
+		        response.setContentType("application/json");
 				response.setStatus(HttpServletResponse.SC_OK);
-				response.getWriter().close();
+		        response.getWriter().println(jsonMessage);
+		        response.getWriter().close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

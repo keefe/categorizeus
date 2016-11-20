@@ -125,12 +125,17 @@
   </head>
   <body>
     <div class="header">
-    	<div id="btnCategorizeUs" class="navItem categorizeUsButton">categorize.us</div>
-    	<div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
-    	<div id="btnSearch" class="navItem searchButton">Search</div>
-    	<div id="btnTag" class="navItem tagButton">Tag</div>
-    	<div id="btnPost" class="navItem postButton">Post</div>
-    	<div id="btnAbout" class="navItem aboutButton">About</div>
+      <div class="mainNavItems">
+      	<div id="btnCategorizeUs" class="navItem categorizeUsButton">categorize.us</div>
+      	<div id="btnSearch" class="navItem searchButton">Search</div>
+      	<div id="btnTag" class="navItem tagButton">Tag</div>
+      	<div id="btnPost" class="navItem postButton">Post</div>
+      </div>
+      <div class="personalNavItems">
+    	  <div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
+    	  <div id="btnAbout" class="navItem aboutButton">About</div>
+        <div class="userInfo"><div class="userGreeting"></div><input id="btnShowLogin" type="button" value="login"/></div>
+      </div>
     </div>
     <div id='main'>
       <div class="article">
@@ -145,9 +150,6 @@
         </div>
       </div>
       <div class="aside unseen">
-	      <div class="userInfo">
-		      <input id="btnShowLogin" type="button" value="login"/>
-        </div>
       	icons courtesy https://thenounproject.com<br/>
       	Specific Icon Credits:<br/>
       	enso by Bluetip Design<br/>

@@ -167,7 +167,21 @@
         border-radius: 6pt;
         background-color: #D4EDD6;
         display: flex;
-        flex-flow: row;
+        justify-content: space-between;
+    }
+    .mainFlex{
+      display: flex;
+      justify-content: flex-end;
+    }
+    .mainNavItems {
+
+    }
+    .personalNavItems {
+
+    }
+    .userInfo{
+      display: inline-block;
+      line-height: 30px;
     }
     .navItem {
     	flex: 1;
@@ -175,6 +189,11 @@
     	display: inline-block;
     	cursor: pointer;
       line-height: 30px;
+      margin-right: 10px;
+      margin-left: 5px;
+      margin-top: 4px;
+      margin-bottom: 5px;
+      
      }
      .categorizeUsButton {
         background: url('/images/enso.png') no-repeat left center;    	
@@ -208,6 +227,10 @@
        background: url('/images/tag.png') no-repeat left center;
        background-size: 25px 25px;
        
+     }
+     .userGreeting{
+       line-height: 30px;
+       display: inline-block;
      }
 
 
