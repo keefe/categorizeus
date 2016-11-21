@@ -29,6 +29,7 @@ var threadRelations = {};
 var threadMessages = {};
 var lastStartingId = null;
 var currentUser = null;
+var tagSelectMode = false;
 
 var initialize = function(){
 	tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
@@ -46,7 +47,7 @@ var initialize = function(){
 		currentUser = user;
 		$("#btnShowLogin").prop("value", "logout");
 		console.log(user);
-		$(".userGreeting").html("Welcome back, "+user.userName+"!");
+		$(".userGreeting").html("Hi, "+user.userName+"!");
 	});
 	tagSearchThread(["top"], displayMessageThread);
 	$("#btnShowLogin").click(function(){
@@ -75,6 +76,10 @@ var initialize = function(){
 	});
 
 	$("#btnSearch").click(function(){
+    if(tagSelectMode){
+      tagSelectedMessages();
+      return;
+    }
 		var tags = $("#txtTagSearch").val();
 		var allTags = tags.split(" ");
 		var tagArray = ["top"];
@@ -87,37 +92,50 @@ var initialize = function(){
 	});
 
 	$("#btnTag").click(function(){
+    
+    tagSelectMode = !tagSelectMode;
+    $("#btnTag").toggleClass('selected');
+    $(".basicDocument").toggleClass('selectable');
+    if(tagSelectMode){
+      $("#btnSearch").html("Apply Tag"); 
+    }else{
+      $("#btnSearch").html("Search");
+    }
+    return;
+    
+	});
+}
 
-		var tags = $("#txtTagSearch").val();
-		var allTags = tags.split(" ");
-		var tagArray = [];
-		for(var i=0; i<allTags.length;i++){
-			if(allTags[i].length>0){
-				tagArray.push(allTags[i]);
-			}		}
+var tagSelectedMessages = function(){
+	var tags = $("#txtTagSearch").val();
+	var allTags = tags.split(" ");
+	var tagArray = [];
+	for(var i=0; i<allTags.length;i++){
+		if(allTags[i].length>0){
+			tagArray.push(allTags[i]);
+		}		}
 
-		var whichTagged = [];
-		$('.basicDocument.selected').each(function () {
-			whichTagged.push(this.id);
-		});
-	
-		if(tagArray.length==0){
-			$("#status").html("<h1>Please provide tags when tagging</h1>");
-			return;
-		}
-		if(whichTagged.length==0){
-			$("#status").html("<h1>Please select messages when tagging</h1>");
-			return;
-		}
-		tagMessages(tagArray, whichTagged,function(err, message){
-			if(err!=null){
-				$("#status").html(err);
-			}else{
-				$("#status").html("Tagged Messages Successfully");	
-			}
-		});
+	var whichTagged = [];
+	$('.basicDocument.selected').each(function () {
+		whichTagged.push(this.id);
 	});
 
+	if(tagArray.length==0){
+		$("#status").html("<h1>Please provide tags when tagging</h1>");
+		return;
+	}
+	if(whichTagged.length==0){
+		$("#status").html("<h1>Please select messages when tagging</h1>");
+		return;
+	}
+	tagMessages(tagArray, whichTagged,function(err, message){
+    $('.basicDocument.selected').toggleClass('selected');
+		if(err!=null){
+			$("#status").html(err);
+		}else{
+			$("#status").html("Tagged Messages Successfully");	
+		}
+	});
 }
 
 
@@ -210,6 +228,17 @@ var displayMessageThread = function(err, messageThread){
 	}
 	displayMessages(err, currentThread.thread);
 }
+
+
+var handleGridDocumentClick = function(event, template, message){
+	if(tagSelectMode ){
+    //&& event.target.tagName != "IMG" && event.target.tagName != "INPUT"
+		console.log(message);
+		template.toggleClass('selected');
+    event.preventDefault();
+	}
+}
+
 var displayMessages = function(err, messages){
 	$("#content").empty();
 	for(var i=0; i<messages.length;i++){
@@ -220,11 +249,7 @@ var displayMessages = function(err, messages){
 		appliedTemplate.bind('click',
 		   (function(template, message){ 
 			return function(event){
-				if(event.target.tagName != "IMG" && event.target.tagName != "INPUT"){
-					console.log(message);
-					template.toggleClass('selected');
-				}
-
+        handleGridDocumentClick(event, template, message);
 			}
 		   })(appliedTemplate, messages[i])
 		);
@@ -274,7 +299,7 @@ var dynamicLogin = function(el){
 			}else{//TODO merge with the logout, get current user stuff
 				currentUser = user;
 				$("#btnShowLogin").prop("value", "logout");
-    		$(".userGreeting").html("Welcome back, "+user.userName+"!");
+    		$(".userGreeting").html("Hi, "+user.userName+"!");
 			}
 			el.empty();
 		});

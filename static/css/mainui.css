@@ -28,6 +28,10 @@
        flex-basis: 250px;
        font-family: sans-serif;
      }
+     .basicDocument.selectable:hover {
+       border: 1px solid black;
+     }
+     
     .basicDocument.selected {
       border: 3px solid black;
     }
@@ -87,7 +91,9 @@
 	    transform: translate(-50%, -50%);
      }
  
- 
+     .tagText{
+       width:250px;
+     }
      .searchNavigation{
  	    width: 100%;
       }
@@ -227,6 +233,9 @@
        background: url('/images/tag.png') no-repeat left center;
        background-size: 25px 25px;
        
+     }
+     .tagButton.selected {
+       border: 3px solid black;
      }
      .userGreeting{
        line-height: 30px;
