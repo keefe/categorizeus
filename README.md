@@ -67,3 +67,5 @@ A full example nginx.conf configuring upstream for the java server is included i
 To ignore the properties file, 
 git update-index --assume-unchanged src/main/resources/categorizeus.properties
 .gitignore wasn't working properly
+
+Test
