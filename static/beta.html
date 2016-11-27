@@ -12,7 +12,7 @@
 		<div class="basicDocument categorizeus{{id}}" id="{{id}}">
 			<h1>{{title}}</h1>
 			{{#if link}}
-				<a href="{{thumbLink}}" target="_blank">
+				<a href="{{link}}" target="_blank">
 					<img src="{{thumbLink}}" width="{{thumbWidth}}px" height="{{thumbHeight}}px"/>
 				</a>
 			{{/if}}
@@ -26,6 +26,7 @@
 		</div>
 	</script>
   
+  <!--the links to nav the grid, at the bottom of the screen -->
 	<script id="tmplNavigation" type="text/x-handlebars-template">
 		<div class="searchNavigation">
 			<span class="previousNavigation">
@@ -40,6 +41,7 @@
 			</span>
 		</div>
 	</script>
+  <!--A comment, not including the original post -->
 	<script id="tmplIndividualComment" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
 		<div class="comment categorizeus{{id}}">
 			<div class="avatar">
@@ -66,6 +68,8 @@
 			</ul>
 		</div>
 	</script>
+  
+  <!--A comment, including the original post -->
 	<script id="tmplFullMessage" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
 		<div class="fullMessage categorizeus{{id}} discussion" id="{{id}}">
 			<div class="commentsContainer">
@@ -97,6 +101,8 @@
 			</div>
 		</div>
 	</script>
+  
+  <!-- Form for editing or submitting documents -->
 	<script id="tmplBasicDocumentEdit" type="text/x-handlebars-template">
 		<div class="basicDocumentEdit">
 			<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
@@ -109,6 +115,8 @@
 			<input type="button" class="closeButton" value="close"/>
 		</div>
 	</script>
+  
+  <!-- Form for logging into the site-->
 	<script id="tmplLogin" type="text/x-handlebars-template">
 		<div class="login">
 			<p>Username <input class="txtUsername" type="text"/></p>
@@ -117,13 +125,9 @@
 			<input type="button" class="closeButton" value="close"/>
 		</div>
 	</script>
-		<script type="text/javascript">
-			$(document).ready(function(){
-				initialize();
-			});
-		</script>
   </head>
   <body>
+    <!-- The menu bar at the top of the screen -->
     <div class="header">
       <div class="mainNavItems">
       	<div id="btnCategorizeUs" class="navItem categorizeUsButton">categorize.us</div>
@@ -134,10 +138,15 @@
       <div class="personalNavItems">
       	<div id="btnPost" class="navItem postButton">Post</div>
         <div class="userInfo"><div class="userGreeting"></div><input id="btnShowLogin" type="button" value="login"/></div>
-    	  <div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
-    	  <div id="btnAbout" class="navItem aboutButton">About</div>
+    	  <!--
+          <div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
+    	    <div id="btnAbout" class="navItem aboutButton">About</div>
+        -->  
+        
       </div>
     </div>
+    
+    <!-- This is the flexbox section for the overall navigation on the site -->
     <div id='main'>
       <div class="article">
         <div id="content" class="gallery">
