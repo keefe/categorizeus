@@ -57,7 +57,7 @@
 				</header>
 				{{#if link}}
 					<a href="{{link}}" target="_blank">
-						<img src="{{link}}" width="200px" height="200px"/>
+				    <img src="{{thumbLink}}" width="{{thumbWidth}}px" height="{{thumbHeight}}px"/>
 					</a>
 				{{/if}}
 				<p>
@@ -69,7 +69,7 @@
 		</div>
 	</script>
   
-  <!--A comment, including the original post -->
+  <!--A comment, including the original post, any changes made here must also be made above -->
 	<script id="tmplFullMessage" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
 		<div class="fullMessage categorizeus{{id}} discussion" id="{{id}}">
 			<div class="commentsContainer">
@@ -88,7 +88,7 @@
 						</header>
 						{{#if link}}
 							<a href="{{link}}" target="_blank">
-								<img src="{{link}}" width="200px" height="200px"/>
+	              <img src="{{thumbLink}}" width="{{thumbWidth}}px" height="{{thumbHeight}}px"/>
 							</a>
 						{{/if}}
 						<p>

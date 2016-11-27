@@ -144,10 +144,10 @@ var tagSelectedMessages = function(){
 
 
 var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
-	var controls = $(container).html(tmplBasicDocumentEdit(sourceMsg));
+	var controls = $(container).append(tmplBasicDocumentEdit(sourceMsg));
 	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
 	controls.find(".closeButton").click(function(event){
-		controls.empty();
+		controls.find(".basicDocumentEdit").remove();
 	});
 }
 
@@ -158,6 +158,14 @@ var displayLoginForm = function(container){ //#TODO hey we are seeing a template
 		controls.empty();
 	});
 }
+
+var displayMessageEditorCB = function(message, messageView){
+  return function(event){
+		console.log("Replying to " + message.id);
+    displayEditForm("#editor", {repliesToId:message.id});
+  };
+}
+
 var displayMessageComments = function(message, messageView){
 	if(threadRelations[message.id]!=null){
 		for(var relatedMessage in threadRelations[message.id]){
@@ -167,11 +175,7 @@ var displayMessageComments = function(message, messageView){
 			var newComment = $("#content").find(".replies.categorizeus"+message.id);
 			newComment.append(appliedTemplate);
 			var newCommentView = $("#content").find(".comment.categorizeus"+replyId);
-			newCommentView.find(".replyButton").click((function(message, newCommentView){
-					return function(event){
-						console.log("Replying to " + message.id);
-					};
-			})(message, newCommentView));
+			newCommentView.find(".replyButton").click(displayMessageEditorCB(threadMessages[replyId], newCommentView));
 			displayMessageComments(threadMessages[replyId], newCommentView);//DANGER infinite loop possible
 
 		}
@@ -187,13 +191,11 @@ var displayFullMessage = function(message){
 				messageView.remove();
 			};
 	})(message, newMessageView));
-	newMessageView.find(".replyButton").click((function(message, messageView){
+	newMessageView.find(".replyButton").click(displayMessageEditorCB(message, newMessageView));
+	/*newMessageView.find(".replyButton").click((function(message, messageView){
 			return function(event){
 				console.log("Replying to " + message.id);
-				var replyForm = newMessageView.append(tmplBasicDocumentEdit({repliesToId:message.id}));
-				/*replyForm.find(".inputMsgBtn").click(function(event){
-					alert("Reply Click");
-				});*/
+				var replyForm = messageView.append(tmplBasicDocumentEdit({repliesToId:message.id}));
 				replyForm.find(".inputMsgBtn").click(dynamicEditSubmit(replyForm));
 				
 				replyForm.find(".closeButton").click(function(event){
@@ -201,7 +203,7 @@ var displayFullMessage = function(message){
 				});
 
 			};
-	})(message, newMessageView));
+	})(message, newMessageView));*/
 	displayMessageComments(message, newMessageView);
 }
 
