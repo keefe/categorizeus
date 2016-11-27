@@ -1,3 +1,8 @@
+/**
+This is the javascript http api for a categorize.us server, using jquery. 
+There should be no UI specific code in this file, it should all be in callbacks.
+**/
+
 var tagMessages = function(tagArray, messageArray, cb){
 	var payload = {
 		tags:tagArray,

@@ -17,6 +17,10 @@ $(document).ready(function(){
 	});
 });
 
+$(document).ready(function(){
+	initialize();
+});
+
 var tmplBasicDocument;
 var tmplBasicDocumentEdit;
 var tmplLogin;
@@ -236,6 +240,11 @@ var handleGridDocumentClick = function(event, template, message){
 		console.log(message);
 		template.toggleClass('selected');
     event.preventDefault();
+	}else{
+	  if(event.target.tagName == "IMG"){
+	    console.log("You clicked an image, way to go");
+      //event.preventDefault();
+	  }
 	}
 }
 
