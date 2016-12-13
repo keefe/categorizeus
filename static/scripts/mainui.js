@@ -365,6 +365,7 @@ var dynamicEditSubmit = function(el){
 						$("#status").append("<p>Created new document with id " + response + "</p>");
 					}
 					el.empty();
+          delete currentThread.searchCriteria.startingId;
 					searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
 				});
 				return;
@@ -376,6 +377,7 @@ var dynamicEditSubmit = function(el){
 					$("#status").append("<p>Created new document with id " + response + "</p>");
 				}
 				el.empty();
+        delete currentThread.searchCriteria.startingId;
 				searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
 			});
 
