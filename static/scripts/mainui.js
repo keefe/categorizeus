@@ -17,10 +17,6 @@ $(document).ready(function(){
 	});
 });
 
-$(document).ready(function(){
-	initialize();
-});
-
 var tmplBasicDocument;
 var tmplBasicDocumentEdit;
 var tmplLogin;
@@ -35,7 +31,7 @@ var lastStartingId = null;
 var currentUser = null;
 var tagSelectMode = false;
 
-var initialize = function(){
+var initialize = function(dontDoInitialSearch){
 	tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
 	tmplBasicDocumentEdit = Handlebars.compile($("#tmplBasicDocumentEdit").html());//notice the pattern, probably put these in an object and generalize
 	tmplLogin = Handlebars.compile($("#tmplLogin").html());
@@ -53,7 +49,9 @@ var initialize = function(){
 		console.log(user);
 		$(".userGreeting").html("Hi, "+user.userName+"!");
 	});
-	tagSearchThread(["top"], displayMessageThread);
+  if(!dontDoInitialSearch){
+  	tagSearchThread(["top"], displayMessageThread);    
+  }
 	$("#btnShowLogin").click(function(){
 		if(currentUser==null){
 			console.log("Clicking Login Button");

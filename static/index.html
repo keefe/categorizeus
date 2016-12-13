@@ -1,238 +1,180 @@
 <html>
-	<head>
-		<script type="text/javascript" src="scripts/jquery-3.0.0.js"></script>
-		<script type="text/javascript" src="scripts/handlebars-v4.0.5.js"></script>
-		<script type="text/javascript" src="scripts/categorizeus.js"></script>
-		<link rel="stylesheet" type="text/css" href="css/categorizeus.css"></script>
-		<script id="tmplBasicDocument" type="text/x-handlebars-template">
-			<div class="basicDocument" id="{{id}}">
-				<h1>{{title}}</h1>
-				<div class="postedBy">
-					posted by {{postedBy.userName}}
-					<input type="checkbox" name="{{id}}" class="chkTag"/>Tag this?
-				</div>
-				<div class="body">
+  <head>
+	<script type="text/javascript" src="scripts/jquery-3.0.0.js"></script>
+	<script type="text/javascript" src="scripts/handlebars-v4.0.5.js"></script>
+	<script type="text/javascript" src="scripts/categorizeus.js"></script>
+	<script type="text/javascript" src="scripts/mainui.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/categorizeus.css"></script>
+	<link rel="stylesheet" type="text/css" href="css/mainui.css"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+    	initialize();
+    });
+  </script>
+  <!-- This is the template for the items in the main grid view-->
+	<script id="tmplBasicDocument" type="text/x-handlebars-template">
+		<div class="basicDocument categorizeus{{id}}" id="{{id}}">
+			<h1>{{title}}</h1>
+			{{#if link}}
+				<a href="{{link}}" target="_blank">
+					<img src="{{thumbLink}}" width="{{thumbWidth}}px" height="{{thumbHeight}}px"/>
+				</a>
+			{{/if}}
+			<div class="postedBy">
+				posted by {{postedBy.userName}}
+				<input type="button" class="viewButton" value="view"/>
+			</div>
+			<div class="body">
+				{{body}}
+			</div>
+		</div>
+	</script>
+  
+  <!--the links to nav the grid, at the bottom of the screen -->
+	<script id="tmplNavigation" type="text/x-handlebars-template">
+		<div class="searchNavigation">
+			<span class="previousNavigation">
+				<a href="javascript:void(0);" class="previousLink">
+					<span>previous</span>
+				</a>
+			</span>
+			<span class="nextNavigation">
+				<a href="javascript:void(0);" class="nextLink">
+					<span>next</span>
+				</a>
+			</span>
+		</div>
+	</script>
+  <!--A comment, not including the original post -->
+	<script id="tmplIndividualComment" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
+		<div class="comment categorizeus{{id}}">
+			<div class="avatar">
+				<a href="javascript:void(0);"><img src="images/sillohuette.png"
+					width="55" height="55" alt="{{postedBy.userName}} avatar"></a>
+			</div>
+			<div class="comment-content">
+				<header>
+					<span class="title">{{title}}</span>
+					<a href="javascript:void(0);" class="userlink">{{postedBy.userName}}</a> - <span
+						class="pubdate">posted TODO time units ago</span>
+					<input type="button" class="replyButton" value="reply"/>
+				</header>
+				{{#if link}}
+					<a href="{{link}}" target="_blank">
+				    <img src="{{thumbLink}}" width="{{thumbWidth}}px" height="{{thumbHeight}}px"/>
+					</a>
+				{{/if}}
+				<p>
 					{{body}}
+				</p>
+			</div>
+			<ul class="replies categorizeus{{id}}">
+			</ul>
+		</div>
+	</script>
+  
+  <!--A comment, including the original post, any changes made here must also be made above -->
+	<script id="tmplFullMessage" type="text/x-handlebars-template"><!--figure out partials here to avoid dupes-->
+		<div class="fullMessage categorizeus{{id}} discussion" id="{{id}}">
+			<div class="commentsContainer">
+				<div class="comment primary">
+					<div class="avatar">
+						<a href="javascript:void(0);"><img src="images/sillohuette.png"
+							width="55" height="55" alt="{{postedBy.userName}} avatar"></a>
+					</div>
+					<div class="comment-content">
+						<header>
+							<span class="title">{{title}}</span>
+							<a href="javascript:void(0);" class="userlink">{{postedBy.userName}}</a> - <span
+								class="pubdate">posted TODO time units ago</span>
+							<input type="button" class="closeButton" value="close"/>
+							<input type="button" class="replyButton" value="reply"/>
+						</header>
+						{{#if link}}
+							<a href="{{link}}" target="_blank">
+	              <img src="{{thumbLink}}" width="{{thumbWidth}}px" height="{{thumbHeight}}px"/>
+							</a>
+						{{/if}}
+						<p>
+							{{body}}
+						</p>
+					</div>
+					<ul class="replies categorizeus{{id}}">
+					</ul>
 				</div>
 			</div>
-		</script>
-		<script id="tmplBasicDocumentEdit" type="text/x-handlebars-template">
-			<div class="basicDocumentEdit">
-				<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
-				<p>Title <input class="inputMsgTitle" type="text" value="{{title}}"/></p>
-				<p>Body <textarea class="inputMsgBody" rows="4" cols="87" type="text">{{body}}</textarea></p>
-				<p>Attachment <input class="inputFileAttachment" type="file" id="fileAttachment"/></p>
-				<input type="button" class="inputMsgBtn" value="Submit"/>
-			</div>
-		</script>
-		<script id="tmplLogin" type="text/x-handlebars-template">
-			<div class="login">
-				<p>Username <input class="txtUsername" type="text"/></p>
-				<p>Password <input class="txtPassword" type="password"/></p>
-				<input type="button" class="btnLogin" value="Login"/>
-			</div>
-		</script>
-		<script id="tmplRegister" type="text/x-handlebars-template">
-			<div class="register">
-				<p>Username <input class="txtUsername" type="text"/></p>
-				<p>Password <input class="txtPassword" type="password"/></p>
-				<input type="button" class="btnRegister" value="Register"/>
-			</div>
-		</script>
-		<script type="text/javascript">
-			var tmplBasicDocument;
-			var tmplBasicDocumentEdit;
-			var tmplLogin;
-			var tmplRegister;
-			var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
-				var controls = $(container).html(tmplBasicDocumentEdit(sourceMsg));
-				controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
-			}
-
-			var displayLoginForm = function(container){ //#TODO hey we are seeing a template pattern here, let's generalize it
-				var controls = $(container).html(tmplLogin({}));
-				controls.find(".btnLogin").click(dynamicLogin(controls));
-			}
-
-			var displayRegisterForm = function(container){ //#TODO hey we are seeing a template pattern here, let's generalize it
-				var controls = $(container).html(tmplRegister({}));
-				controls.find(".btnRegister").click(dynamicRegister(controls));
-			}
-			var displayMessages = function(err, messages){
-				$("#content").empty();
-				for(var i=0; i<messages.length;i++){
-					console.log(messages[i]);
-					$("#content").append(tmplBasicDocument(messages[i]))
-				}
-			};
-			var dynamicLogin = function(el){
-				return function(){
-					var username = el.find(".txtUsername").val();
-					var password = el.find(".txtPassword").val();
-					loginUser(username, password, function(err, user){
-						if(err!=null){
-							$("#status").html("<h1>"+err+"</h1>");
-						}else{
-							$("#status").html("<h1>Logged in successfully, welcome!</h1>");
-						}
-					});
-				};
-			}
-
-			var dynamicRegister = function(el){
-				return function(){
-					var username = el.find(".txtUsername").val();
-					var password = el.find(".txtPassword").val();
-					registerUser(username, password,function(err, user){
-						if(err!=null){
-							$("#status").html("<h1>"+err+"</h1>");
-						}else{
-							$("#status").html("<h1>Registered successfully, welcome!</h1>");
-						}
-					});
-				};
-			}
-
-			var dynamicEditSubmit = function(el){
-	
-				return function(){
-					console.log("Dynamically bound control OK");
-					var title = el.find(".inputMsgTitle").val();
-					var body = el.find(".inputMsgBody").val();
-					var id = el.find(".inputMsgId").val();
-					var file = el.find(".inputFileAttachment");
-					var isNew = (!id) || id.length==0;
-					console.log(id + " is new? " + isNew + " " + title + " & " + body);
-					if(isNew){
-						var newMessage = {
-							body:body,
-							title:title
-						};
-						if(file.val()!==''){//file[0].files.length?
-							console.log("Found an attached file");
-							console.log(file[0].files);
-							uploadMessage(newMessage, file[0].files, function(err, response){
-								if(err!=null){
-									$("#status").append("<p>Error: " + err + "</p>");
-								}else{
-									$("#status").append("<p>Created new document with id " + response + "</p>");
-								}
-							});
-							return;
-						}
-						createMessage(newMessage, function(err, response){
-							if(err!=null){
-								$("#status").append("<p>Error: " + err + "</p>");
-							}else{
-								$("#status").append("<p>Created new document with id " + response + "</p>");
-							}
-						});
-			
-					}else{
-						$("#status").append("<p>Currently, editing existing docs not supported. Clear and try again.</p>");
-					}
-
-				};
-			}
-			$(document).ready(function(){
-				console.log("We're up");
-				tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
-				tmplBasicDocumentEdit = Handlebars.compile($("#tmplBasicDocumentEdit").html());//notice the pattern
-				tmplLogin = Handlebars.compile($("#tmplLogin").html());
-				tmplRegister = Handlebars.compile($("#tmplRegister").html());
-
-				$("#btnLoadDoc").click(function(){
-					var id = $("#txtDocId").val();
-					loadMessage(id, function(err, doc){
-						$("#content").html(tmplBasicDocument(doc));
-						displayEditForm("#editor", doc);
-					});
-				});
-
-
-				$("#btnClearDoc").click(function(){
-					displayEditForm("#editor", {});
-				});
-
-				$("#btnLogin").click(function(){
-					displayLoginForm("#editor");
-				});
-
-				$("#btnRegister").click(function(){
-					displayRegisterForm("#editor");
-				});
-
-				$("#btnTagLookup").click(function(){
-					var tags = $("#txtTags").val();
-					var allTags = tags.split(" ");
-					var tagArray = [];
-					for(var i=0; i<allTags.length;i++){
-						if(allTags[i].length>0){
-							tagArray.push(allTags[i]);
-						}
-					}
-					tagSearch(tagArray, displayMessages);	
-				});
-
-				$("#btnTagMessages").click(function(){
-
-					var tags = $("#txtTags").val();
-					var allTags = tags.split(" ");
-					var tagArray = [];
-					for(var i=0; i<allTags.length;i++){
-						if(allTags[i].length>0){
-							tagArray.push(allTags[i]);
-						}		}
-
-					var whichTagged = [];
-					$('input:checkbox.chkTag').each(function () {
-						if(this.checked){
-							whichTagged.push(this.name);
-						}
-					});
-					console.log(whichTagged);
-					if(tagArray.length==0){
-						$("#status").html("<h1>Please provide tags when tagging</h1>");
-						return;
-					}
-					if(whichTagged.length==0){
-						$("#status").html("<h1>Please select messages when tagging</h1>");
-						return;
-					}
-					tagMessages(tagArray, whichTagged, function(err, message){
-						if(err!=null){
-							$("#status").html(err);
-						}else{
-							$("#status").html("Tagged Messages Successfully");	
-						}
-					});
-				});
-
-
-			});
-		</script>
-	</head>
-	<body>
-		<div id="status"></div>
-		<div id="controls">
-			<p>
-			<input id="btnLogin" type="button" value="login"/>
-			<input id="btnRegister" type="button" value="register"/>
-			</p>
-			<p>
-			Document Id <input id = "txtDocId" type="text"/><input id="btnLoadDoc" type="button" value="load"/>
-			<input id="btnClearDoc" type="button" value="create"/>
-			</p>
-			<p>
-			Tags <input id="txtTags" type="text" width="101"/>
-			<input id="btnTagLookup" type="button" value="tag search"/>
-			<input id="btnTagMessages" type="button" value="tag selected"/>
-			</p>
 		</div>
-		<div id="editor">
+	</script>
+  
+  <!-- Form for editing or submitting documents -->
+	<script id="tmplBasicDocumentEdit" type="text/x-handlebars-template">
+		<div class="basicDocumentEdit">
+			<input class="inputMsgId" type="hidden" name="messageId" value="{{id}}"/>
+			<input class="repliesToId" type="hidden" name="repliesId" value="{{repliesToId}}"/>
+			<p>Title <input class="inputMsgTitle" type="text" value="{{title}}"/></p>
+			<p>Body <textarea class="inputMsgBody" rows="4" cols="87" type="text">{{body}}</textarea></p>
+			<p>Attachment <input class="inputFileAttachment" type="file"/></p>
+			<p>Tags <input class="inputMsgTags" type="text" value=""/></p>
+			<input type="button" class="inputMsgBtn" value="Submit"/>
+			<input type="button" class="closeButton" value="close"/>
 		</div>
-		<div id="content">
-			<h1>This is a very rudimentary viewer and editor for messages in the system.</h1>
+	</script>
+  
+  <!-- Form for logging into the site-->
+	<script id="tmplLogin" type="text/x-handlebars-template">
+		<div class="login">
+			<p>Username <input class="txtUsername" type="text"/></p>
+			<p>Password <input class="txtPassword" type="password"/></p>
+			<input type="button" class="btnLogin" value="Login"/>
+			<input type="button" class="closeButton" value="close"/>
 		</div>
-	</body>
+	</script>
+  </head>
+  <body>
+    <!-- The menu bar at the top of the screen -->
+    <div class="header">
+      <div class="mainNavItems">
+      	<div id="btnCategorizeUs" class="navItem categorizeUsButton">categorize.us</div>
+        <input id="txtTagSearch" class="tagText" type="text" placeholder="Tags to Search or Click Tag to Change Mode" width=200/>
+      	<div id="btnSearch" class="navItem searchButton">Search</div>
+      	<div id="btnTag" class="navItem tagButton">Tag Mode</div>
+      </div>
+      <div class="personalNavItems">
+      	<div id="btnPost" class="navItem postButton">Post</div>
+        <div class="userInfo"><div class="userGreeting"></div><input id="btnShowLogin" type="button" value="login"/></div>
+    	  <!--
+          <div id="btnNotifications" class="navItem notificationsButton">Notifications</div>
+    	    <div id="btnAbout" class="navItem aboutButton">About</div>
+        -->  
+        
+      </div>
+    </div>
+    
+    <!-- This is the flexbox section for the overall navigation on the site -->
+    <div id='main'>
+      <div class="article">
+        <div id="content" class="gallery">
+	      </div>
+        <div id="editor">
+
+        </div>
+      </div>
+      <div class="nav unseen">
+        <div  id="status">
+        </div>
+      </div>
+      <div class="aside unseen">
+      	icons courtesy https://thenounproject.com<br/>
+      	Specific Icon Credits:<br/>
+      	enso by Bluetip Design<br/>
+      	search by Bernar Novalyi<br/>
+      	tag by Bryn Taylor<br/>
+      	camera by Arthur Shlain<br/>
+      	thumbs by Justin Blake<br/>
+      	envelope by David Nesbitt<br/>
+      	about by Umesh Vgl<br/>
+      	edit by abhishek rana <br/>
+      </div>
+    </div>
+  </body>
 </html>
