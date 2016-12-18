@@ -17,7 +17,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.query.ThreadCriteria;
 import us.categorize.model.MessageThread;
@@ -28,14 +27,11 @@ import us.categorize.repository.SQLTagRepository;
 import us.categorize.repository.SQLUserRepository;
 import us.categorize.repository.TagRepository;
 import us.categorize.repository.UserRepository;
-import us.categorize.server.FilesystemMultipartHandler;
 import us.categorize.server.http.AuthFilter;
 import us.categorize.server.http.MessageServlet;
-import us.categorize.server.http.MultipartHandler;
 import us.categorize.server.http.SessionCookieFilter;
 import us.categorize.server.http.TagServlet;
 import us.categorize.server.http.ThreadServlet;
-import us.categorize.server.http.UploadServlet;
 import us.categorize.server.http.UserServlet;
 
 public class App {
@@ -128,11 +124,7 @@ public class App {
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		
-		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository,maxThumbWidth, maxThumbHeight, tagRepository, fileBase);
-		UploadServlet uploadServlet = new UploadServlet(maxUploadSize, messageRepository, tagRepository, multipartHandler);
-		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
-		
-		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, new FileSystemAttachmentHandler(fileBase), maxThumbWidth, maxThumbHeight);
+		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, new FileSystemAttachmentHandler(fileBase), maxThumbWidth, maxThumbHeight, maxUploadSize);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");

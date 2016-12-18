@@ -40,9 +40,9 @@ public class MessageServlet extends HttpServlet {
 	private UserRepository userRepository;
 	private TagRepository tagRepository;
 	private AttachmentHandler attachmentHandler;
-	private double maxThumbWidth, maxThumbHeight;
+	private double maxThumbWidth, maxThumbHeight, maxUploadSize;
 	
-	public MessageServlet(MessageRepository repository, UserRepository userRepository,TagRepository tagRepository, AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight){
+	public MessageServlet(MessageRepository repository, UserRepository userRepository,TagRepository tagRepository, AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight, double maxUploadSize){
 		super();
 		this.messageRepository = repository;
 		this.userRepository = userRepository;
@@ -50,6 +50,7 @@ public class MessageServlet extends HttpServlet {
 		this.attachmentHandler = attachmentHandler;
 		this.maxThumbWidth = maxThumbWidth;
 		this.maxThumbHeight = maxThumbHeight;
+		this.maxUploadSize = maxUploadSize;
 	}
 	
 	@Override
@@ -98,6 +99,23 @@ public class MessageServlet extends HttpServlet {
             HttpServletResponse response ) throws ServletException,
     IOException
     {
+		boolean validSize = true;
+		try{
+			long statedSize = Long.parseLong(request.getHeader("Content-Length"));
+			if(statedSize>maxUploadSize){
+				validSize = false;
+			}
+		}catch(Exception e){
+			validSize = false;
+			e.printStackTrace();
+		}
+		if(!validSize){
+	        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        response.getWriter().println("Upload too Large or Content-Length missing or invalid");//#TODO replace this with json structure
+	        response.getWriter().close();
+	        return;
+		}
+		
 		MessageStreamReader messageStreamReader = new MessageStreamReader();
 		try {
 			MessageAssertion assertion = messageStreamReader.readMessageAssertion(request.getInputStream());
