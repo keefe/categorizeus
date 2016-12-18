@@ -2,11 +2,11 @@ package us.categorize.repository;
 
 import java.util.List;
 
+import us.categorize.communication.query.ThreadCriteria;
 import us.categorize.model.Message;
 import us.categorize.model.MessageRelation;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
-import us.categorize.model.ThreadCriteria;
 
 //#TODO pagination, using continuation token style
 //#TODO add support for saving, deleting messages, even if not exposed at the web layer

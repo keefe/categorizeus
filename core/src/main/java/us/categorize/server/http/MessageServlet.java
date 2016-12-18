@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.categorize.communication.creation.MessageAssertion;
+import us.categorize.communication.streams.MessageStreamReader;
 import us.categorize.model.Message;
 import us.categorize.model.MessageRelation;
 import us.categorize.model.Tag;
@@ -85,49 +87,38 @@ public class MessageServlet extends HttpServlet {
             HttpServletResponse response ) throws ServletException,
     IOException
     {
-		JsonNode bodyObj = ServletUtil.readyBody(request);
-		System.out.println("Session Check " + request.getSession().getAttribute("testToken"));
-		String messageBody = bodyObj.get("body").asText();
-		String messageTitle = bodyObj.get("title").asText();
-		String messageTags = bodyObj.get("tags").asText();
-		String repliesToId = null;
-		if(bodyObj.has("repliesToId")){
-			repliesToId = bodyObj.get("repliesToId").asText();
-		}
-		System.out.println("Message is replying to " + repliesToId);
-		String tagArray[] = messageTags.split(" ");
+		MessageStreamReader messageStreamReader = new MessageStreamReader();
 		try {
+			MessageAssertion assertion = messageStreamReader.readMessageAssertion(request.getInputStream());
 			User user = (User) request.getSession().getAttribute("user");
-			Message message = new Message();
-			message.setBody(messageBody);
-			message.setTitle(messageTitle);
-			message.setPostedBy(user);
-			messageRepository.addMessage(message);
-			if(tagArray.length>0){
-				Tag tags[] = tagRepository.tagsFor(tagArray);
-				messageRepository.tag(message, tags);
-			}
-			if(repliesToId!=null){
+			assertion.getMessage().setPostedBy(user);
+
+			messageRepository.addMessage(assertion.getMessage());
+			
+			if(assertion.getRelationships().containsKey("repliesToId")){
 				MessageRelation relation = new MessageRelation();
-				relation.setSource(message);
+				relation.setSource(assertion.getMessage());
 				relation.setRelation(tagRepository.tagFor("repliesTo"));
 				Message fauxReplySource = new Message();
-				fauxReplySource.setId(Long.parseLong(repliesToId));
+				fauxReplySource.setId(Long.parseLong(assertion.getRelationships().get("repliesToId")));
 				relation.setSink(fauxReplySource);
 				messageRepository.relate(relation);
 			}else{
-				messageRepository.tag(message, new Tag[]{tagRepository.tagFor("top")}); //TODO ugh, more refactoring				
+				assertion.getTags().add("top");
 			}
+			String[] tags = assertion.getTags().toArray(new String[]{});
+			Tag tagObjs[] = tagRepository.tagsFor(tags);
+			messageRepository.tag(assertion.getMessage(), tagObjs);
 	        response.setStatus(HttpServletResponse.SC_OK);
-	        response.getWriter().println(message.getId());//#TODO replace this with json structure
+	        response.getWriter().println(assertion.getMessage().getId());//#TODO replace this with json structure
 	        response.getWriter().close();
 	        return;
-		} catch (Exception e) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 		
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getWriter().println("Could not add new message for some reason");
         response.getWriter().close();
     }

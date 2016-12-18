@@ -54,7 +54,7 @@ public class UploadServlet extends HttpServlet{
 		}
 		
 		String contentType = request.getHeader("Content-Type");
-		
+		System.out.println("Content Type Comes through as " + contentType);
 		//TODO externalize this to a list of acceptable types
 
 		

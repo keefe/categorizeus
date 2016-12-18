@@ -17,9 +17,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import us.categorize.communication.query.ThreadCriteria;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
-import us.categorize.model.ThreadCriteria;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.SQLMessageRepository;
 import us.categorize.repository.SQLTagRepository;
