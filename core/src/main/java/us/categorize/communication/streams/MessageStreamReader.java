@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.categorize.communication.creation.MessageAssertion;
+import us.categorize.communication.creation.MessageAssertionAttachment;
 import us.categorize.model.Message;
 
 public class MessageStreamReader {
@@ -29,6 +30,16 @@ public class MessageStreamReader {
 		//TODO change this payload to have a generic relationships object
 		if(bodyObj.has("repliesToId")){
 			assertion.getRelationships().put("repliesToId",  bodyObj.get("repliesToId").asText());
+		}
+		
+		if(bodyObj.has("attachment")){
+			MessageAssertionAttachment attachment = new MessageAssertionAttachment();
+			JsonNode attachmentNode = bodyObj.get("attachment");
+			attachment.setDataURL(attachmentNode.get("dataURL").asText());
+			attachment.setName(attachmentNode.get("name").asText());
+			attachment.setType(attachmentNode.get("type").asText());
+			attachment.setSize(attachmentNode.get("size").asText());
+			assertion.setAttachment(attachment);
 		}
 		return assertion;
 	}

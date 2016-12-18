@@ -356,7 +356,7 @@ var dynamicEditSubmit = function(el){
 			if(file.val()!==''){//file[0].files.length?
 				console.log("Found an attached file");
 				console.log(file[0].files);
-				uploadMessage(newMessage, file[0].files, function(err, response){
+				createEncodedMessage(newMessage, file[0].files, function(err, response){
 					if(err!=null){
 						$("#status").append("<p>Error: " + err + "</p>");
 					}else{

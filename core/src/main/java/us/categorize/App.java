@@ -17,6 +17,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import us.categorize.communication.creation.attachment.AttachmentHandler;
+import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.query.ThreadCriteria;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
@@ -125,11 +127,12 @@ public class App {
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
+		
 		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository,maxThumbWidth, maxThumbHeight, tagRepository, fileBase);
 		UploadServlet uploadServlet = new UploadServlet(maxUploadSize, messageRepository, tagRepository, multipartHandler);
 		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
 		
-		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository);
+		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, new FileSystemAttachmentHandler(fileBase), maxThumbWidth, maxThumbHeight);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");

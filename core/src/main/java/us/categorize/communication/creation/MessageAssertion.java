@@ -13,6 +13,8 @@ public class MessageAssertion {
 	//for now this is implying 1:1 relationship, in the future this may change but for simplicity leave it
 	private Map<String, String> relationships = new HashMap<String, String>();
 	private List<String> tags = new LinkedList<String>();
+	private MessageAssertionAttachment attachment = null;//I know it's redundant, to show intent
+	
 	public Message getMessage() {
 		return message;
 	}
@@ -31,6 +33,12 @@ public class MessageAssertion {
 	}
 	public void setRelationships(Map<String, String> relationships) {
 		this.relationships = relationships;
+	}
+	public MessageAssertionAttachment getAttachment() {
+		return attachment;
+	}
+	public void setAttachment(MessageAssertionAttachment attachment) {
+		this.attachment = attachment;
 	}
 	
 	
