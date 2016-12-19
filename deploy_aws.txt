@@ -1,0 +1,27 @@
+For this serverless application, we will host the static files in S3, build an API Gateway connection to Lambda for the API itself. 
+Typically, it would be best to use route 53 DNS to keep everything in one silo, but my domain is setup with Dyn so I will use that. 
+AWS has a certificate manager, but I believe it means the hosting has to be setup through cloudfront. 
+looks like API Gateway and Certificate manager do not match up yet, shit. CORS?
+Another issue (resolved) with this setup is that JSON is validated, so images must be included in JSON as base64 encdoded in order for this to work.
+The first step to running on AWS is running the application locally first.
+After that, there is a configured application available for testing. We'll create the necessary resources, then test it locally, then create the AWS setup. 
+
+1. Setup AWS credentials for programmatic and CLI access in the ~/.aws/credentials file. Make sure this user has S3 access.
+2. Create an S3 bucket and note the name (for storing assets) and create another for serving static files. 
+3. Specify the buckets named and the AWS region in the properties file, e.g.
+	S3_ASSETS_BUCKET=categorize.us
+	S3_STATIC_BUCKET=static.categorize.us
+	AWS_REGION=us-west-2
+4. Make sure the bucket is setup to serve static files and also specify the location where static files will serve from in the properties, e.g.
+        ATTACHMENT_URL_PREFIX=https://s3-us-west-2.amazonaws.com/categorize.us/
+
+
+Go to the console, then IAM and create a user for programmatic access and fill out the fields. 
+[default]
+aws_access_key_id=
+aws_secret_access_key=
+This is basically following the lambda tutorial to start out with http://docs.aws.amazon.com/lambda/latest/dg/getting-started.html
+Add the policies that we're going to need:
+AmazonAPIGatewayInvokeFullAccess
+AmazonAPIGatewayPushToCloudWatchLogs
+

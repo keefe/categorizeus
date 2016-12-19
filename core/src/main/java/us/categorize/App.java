@@ -35,7 +35,7 @@ import us.categorize.server.http.UserServlet;
 
 public class App {
 	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
-	private static String s3bucket, s3region;
+	private static String s3bucket, s3region, attachmentURLPrefix;
 	
 	private static long maxUploadSize = -1;
 	private static double maxThumbWidth, maxThumbHeight;
@@ -59,6 +59,7 @@ public class App {
 		dbPass = properties.getProperty("DB_PASS");
 		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
 		s3region = properties.getProperty("AWS_REGION");
+		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
 
 		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
 		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
@@ -122,7 +123,7 @@ public class App {
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		AttachmentHandler localAttachmentHandler = new FileSystemAttachmentHandler(fileBase);
-		AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(s3bucket, s3region);
+		AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(s3bucket, s3region, attachmentURLPrefix);
 		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);

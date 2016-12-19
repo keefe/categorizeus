@@ -7,6 +7,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -16,10 +17,12 @@ public class S3AttachmentHandler implements AttachmentHandler {
 
 	private String bucket;
 	private String region;
+	private String attachmentURLPrefix;
 	
-	public S3AttachmentHandler(String bucket, String region){
+	public S3AttachmentHandler(String bucket, String region, String attachmentURLPrefix){
 		this.bucket = bucket;
 		this.region = region;
+		this.attachmentURLPrefix = attachmentURLPrefix;
 	}
 	
 	public String storeAttachment(String label, MessageAssertionAttachment attachmentAssertion, InputStream stream) {
@@ -39,8 +42,9 @@ public class S3AttachmentHandler implements AttachmentHandler {
 		s3Metadata.setContentLength(Integer.parseInt(attachmentAssertion.getSize()));
 		s3Metadata.setContentType(attachmentAssertion.getType());
 		PutObjectRequest por = new PutObjectRequest(bucket, fname, stream, s3Metadata);
+		por.setCannedAcl(CannedAccessControlList.PublicRead);
 		PutObjectResult result = s3client.putObject(por);
-		return fname;
+		return attachmentURLPrefix+fname;
 	}
 
 }
