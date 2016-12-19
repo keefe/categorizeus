@@ -78,7 +78,7 @@ public class TagServlet extends HttpServlet {
 		
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().println("uhm, we done fucked up");
+        response.getWriter().println("error");
         response.getWriter().close();		
 		
 		//some kind of error handling or a 500 or something here
@@ -114,7 +114,7 @@ public class TagServlet extends HttpServlet {
 			}
 		}
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().println("uhm, we done fucked up");
+        response.getWriter().println("error");
         response.getWriter().close();
 		//some kind of error handling or a 500 or something here
 		

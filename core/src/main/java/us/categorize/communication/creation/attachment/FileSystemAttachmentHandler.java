@@ -22,7 +22,7 @@ public class FileSystemAttachmentHandler implements AttachmentHandler {
 	}
 	
 	@Override
-	public String storeAttachment(String label, MessageAssertionAttachment attachmentAssertion, InputStream stream) {
+	public String storeAttachment(String label, MessageAssertionAttachment attachmentAssertion, InputStream stream) throws Exception{
 		// TODO Auto-generated method stub
 		String contentType = attachmentAssertion.getType().toLowerCase();
 		String fileExtension = "dat";
@@ -50,7 +50,6 @@ public class FileSystemAttachmentHandler implements AttachmentHandler {
 			}
 			return furi;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block, yep deal with this later
 			e.printStackTrace();
 		} finally {
 			try {
@@ -63,7 +62,7 @@ public class FileSystemAttachmentHandler implements AttachmentHandler {
 			}
 		}
 		
-		return null;
+		throw new Exception("Unexpected Termination on saving " + label);
 	}
 
 }

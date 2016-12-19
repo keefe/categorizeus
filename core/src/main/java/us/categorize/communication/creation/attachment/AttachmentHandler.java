@@ -6,5 +6,5 @@ import us.categorize.communication.creation.MessageAssertionAttachment;
 
 public interface AttachmentHandler {
 	//returns URI for the attachment
-	public String storeAttachment(String label, MessageAssertionAttachment attachmentAssertion, InputStream stream);
+	public String storeAttachment(String label, MessageAssertionAttachment attachmentAssertion, InputStream stream) throws Exception;
 }

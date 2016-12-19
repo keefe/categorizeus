@@ -17,10 +17,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
-import us.categorize.communication.query.ThreadCriteria;
-import us.categorize.model.MessageThread;
-import us.categorize.model.Tag;
+import us.categorize.communication.creation.attachment.S3AttachmentHandler;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.SQLMessageRepository;
 import us.categorize.repository.SQLTagRepository;
@@ -36,6 +35,8 @@ import us.categorize.server.http.UserServlet;
 
 public class App {
 	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
+	private static String s3bucket, s3region;
+	
 	private static long maxUploadSize = -1;
 	private static double maxThumbWidth, maxThumbHeight;
 	
@@ -56,6 +57,9 @@ public class App {
 		dbName = properties.getProperty("DB_NAME");
 		dbUser = properties.getProperty("DB_USER");
 		dbPass = properties.getProperty("DB_PASS");
+		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
+		s3region = properties.getProperty("AWS_REGION");
+
 		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
 		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
 		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
@@ -102,12 +106,6 @@ public class App {
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
 
-		Tag repliesTo = tagRepository.tagFor("repliesTo");
-		ThreadCriteria criteria = new ThreadCriteria();
-		criteria.setSearchTags(new Tag[]{tagRepository.tagFor("tag1")});
-		criteria.setTransitiveTags(new Tag[]{repliesTo});
-		MessageThread thread = messageRepository.loadThread(criteria);
-		System.out.println(thread);
 		System.out.println("Starting Server on Port " + port);
 		Server server = new Server(port);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
@@ -123,8 +121,9 @@ public class App {
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		
-		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, new FileSystemAttachmentHandler(fileBase), maxThumbWidth, maxThumbHeight, maxUploadSize);
+		AttachmentHandler localAttachmentHandler = new FileSystemAttachmentHandler(fileBase);
+		AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(s3bucket, s3region);
+		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");

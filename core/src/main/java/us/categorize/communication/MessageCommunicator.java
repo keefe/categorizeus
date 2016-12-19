@@ -110,10 +110,12 @@ public class MessageCommunicator {
 						
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ImageIO.write(thumbnail, "png", baos);
-			InputStream is = new ByteArrayInputStream(baos.toByteArray());
+			byte byteA[] = baos.toByteArray();
+			InputStream is = new ByteArrayInputStream(byteA);
+			attachment.setSize(byteA.length+"");
 			String thumbURI =attachmentHandler.storeAttachment(smallURI, attachment, is);
 			message.setThumbLink(thumbURI);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Error Creating Image Stream");
 			e.printStackTrace();
