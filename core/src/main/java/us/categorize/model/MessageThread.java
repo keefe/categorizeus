@@ -3,6 +3,8 @@ package us.categorize.model;
 import java.util.LinkedList;
 import java.util.List;
 
+import us.categorize.communication.query.ThreadCriteria;
+
 public class MessageThread {
 	private List<Message> thread = new LinkedList<>();
 	private List<Message> relatedMessages = new LinkedList<>();

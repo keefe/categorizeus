@@ -17,27 +17,26 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import us.categorize.model.MessageThread;
-import us.categorize.model.Tag;
-import us.categorize.model.ThreadCriteria;
+import us.categorize.communication.creation.attachment.AttachmentHandler;
+import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
+import us.categorize.communication.creation.attachment.S3AttachmentHandler;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.SQLMessageRepository;
 import us.categorize.repository.SQLTagRepository;
 import us.categorize.repository.SQLUserRepository;
 import us.categorize.repository.TagRepository;
 import us.categorize.repository.UserRepository;
-import us.categorize.server.FilesystemMultipartHandler;
 import us.categorize.server.http.AuthFilter;
 import us.categorize.server.http.MessageServlet;
-import us.categorize.server.http.MultipartHandler;
 import us.categorize.server.http.SessionCookieFilter;
 import us.categorize.server.http.TagServlet;
 import us.categorize.server.http.ThreadServlet;
-import us.categorize.server.http.UploadServlet;
 import us.categorize.server.http.UserServlet;
 
 public class App {
-	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
+	private static  String clearSql, createSql, dbHost, dbPort, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
+	private static String s3bucket, s3region, attachmentURLPrefix, connectString;
+	
 	private static long maxUploadSize = -1;
 	private static double maxThumbWidth, maxThumbHeight;
 	
@@ -56,8 +55,14 @@ public class App {
 		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
 		seedSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/seed.sql";		
 		dbName = properties.getProperty("DB_NAME");
+		dbHost = properties.getProperty("DB_HOST");
+		dbPort = properties.getProperty("DB_PORT");
 		dbUser = properties.getProperty("DB_USER");
 		dbPass = properties.getProperty("DB_PASS");
+		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
+		s3region = properties.getProperty("AWS_REGION");
+		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
+		connectString = "jdbc:postgresql://" + dbHost+":"+dbPort+"/"+dbName;
 		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
 		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
 		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
@@ -67,7 +72,7 @@ public class App {
 		fileBase = staticDir + "/files";
 
 		Class.forName("org.postgresql.Driver");
-
+		System.out.println("Postgres Driver Loaded");
 		if (args.length > 0 && "initialize".equals(args[0])){
 			initializeDB(args);
 		}
@@ -76,7 +81,10 @@ public class App {
 	}
 
 	public static void initializeDB(String args[]) throws ClassNotFoundException, SQLException, IOException {
-		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
+		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
+		System.out.println("Attempting connect to " + connectString);
+		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
+		System.out.println("Connected to database for initialization");
 		Statement st = conn.createStatement();
 		executeFile(clearSql, st);
 		executeFile(createSql, st);
@@ -99,17 +107,11 @@ public class App {
 	}
 	
 	public static void serverUp(String args[]) throws Exception{
-		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
+		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
 		UserRepository userRepository = new SQLUserRepository(conn);
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
 
-		Tag repliesTo = tagRepository.tagFor("repliesTo");
-		ThreadCriteria criteria = new ThreadCriteria();
-		criteria.setSearchTags(new Tag[]{tagRepository.tagFor("tag1")});
-		criteria.setTransitiveTags(new Tag[]{repliesTo});
-		MessageThread thread = messageRepository.loadThread(criteria);
-		System.out.println(thread);
 		System.out.println("Starting Server on Port " + port);
 		Server server = new Server(port);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
@@ -125,11 +127,9 @@ public class App {
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		MultipartHandler multipartHandler = new FilesystemMultipartHandler(messageRepository,maxThumbWidth, maxThumbHeight, tagRepository, fileBase);
-		UploadServlet uploadServlet = new UploadServlet(maxUploadSize, messageRepository, tagRepository, multipartHandler);
-		context.addServlet(new ServletHolder(uploadServlet), "/msg/upload/*");
-		
-		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository);
+		AttachmentHandler localAttachmentHandler = new FileSystemAttachmentHandler(fileBase);
+		AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(s3bucket, s3region, attachmentURLPrefix);
+		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");

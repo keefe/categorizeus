@@ -53,16 +53,7 @@
      Editor Forms
      
      */
-     .fullMessage{
- 	    background-color:#ddd;
- 	    position: fixed;
- 	    padding: 2em;
- 	    left: 50%;
- 	    top: 50%;
- 	    width:80%;
- 	    height:80%;
- 	    transform: translate(-50%, -50%);
-      }
+
       .basicDocumentEdit{
  	    background-color:#ddd;
  	    position: fixed;
@@ -243,24 +234,25 @@
      }
 
 
-    /*The fuck is this?*/
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
+    /*The fuck is this?
+    
+    If this is removed, we end up with bunch of spacing issues, let's experiment later with moving these into the comments fields, just doing .fullMessage > * doesn't do the trick.
+    */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p,
 	blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn,
 	em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
 	b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
 	table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas,
-	details, embed, figure, figcaption, footer, header, hgroup, menu, nav,
-	output, ruby, section, summary, time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-	outline: none;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
+	details, figure, figcaption, footer, header, hgroup, menu, nav,
+	output, section, summary, time, mark, audio, video {
+  	margin: 0;
+  	padding: 0;
+  	border: 0;
+  	font-size: 100%;
+  	font: inherit;
+  	vertical-align: baseline;
+  	outline: none;
+  	box-sizing: border-box; 
 }
 
 
@@ -268,6 +260,22 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
 /*
 Section related to the individual tabbed in comments section
 */
+
+.fullMessage{
+ background-color:#ddd;
+ position: absolute;
+ padding: 2em;
+ top:40px;
+ width: 100%;
+ min-height: 100%;
+ overflow: visible;
+ border-radius: 5px;
+ border: 3px solid #e3e0ef;
+ 
+}
+
+
+
 html {
 	height: 101%;
 }
@@ -280,23 +288,11 @@ html {
 	padding-bottom: 65px;
 }
 
-::selection {
-	background: #d7d0f3;
-}
-
-::-moz-selection {
-	background: #d7d0f3;
-}
-
-::-webkit-selection {
-	background: #d7d0f3;
-}
 
 
 /* page layout structure */
 .discussion {
 	display: block;
-	width: 80%;
 	margin: 0 auto;
 	padding-top: 35px;
 }
@@ -306,11 +302,7 @@ html {
 	width: 100%;
 	background: #fff;
 	padding: 14px 20px;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
 	border-radius: 4px;
-	-webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
-	-moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 
@@ -411,16 +403,8 @@ html {
 }
 
 .comment .avatar img {
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
 	border-radius: 3px;
-	-webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.44);
-	-moz-box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.44);
 	box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.44);
-	-webkit-transition: all 0.4s linear;
-	-moz-transition: all 0.4s linear;
-	-ms-transition: all 0.4s linear;
-	-o-transition: all 0.4s linear;
 	transition: all 0.4s linear;
 }
 

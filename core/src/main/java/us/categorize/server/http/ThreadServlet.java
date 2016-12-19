@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.categorize.communication.query.ThreadCriteria;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
-import us.categorize.model.ThreadCriteria;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.TagRepository;
 import us.categorize.util.ServletUtil;

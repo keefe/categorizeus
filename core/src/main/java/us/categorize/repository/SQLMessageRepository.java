@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import us.categorize.communication.query.ThreadCriteria;
 import us.categorize.model.Message;
 import us.categorize.model.MessageRelation;
 import us.categorize.model.MessageThread;
 import us.categorize.model.Tag;
-import us.categorize.model.ThreadCriteria;
 
 public class SQLMessageRepository implements MessageRepository {
 

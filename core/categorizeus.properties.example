@@ -1,0 +1,15 @@
+STATIC_DIR=/Users/keefe/temp/categorizeus/static
+PORT=8080
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=Username goes Here
+DB_PASS=Password Goes Here
+DB_NAME=categories
+SQL_BASE=/Users/keefe/temp/categorizeus/
+MAX_UPLOAD_SIZE=3145728
+MAX_THUMB_WIDTH=250
+MAX_THUMB_HEIGHT=250
+S3_ASSETS_BUCKET=categorize.us
+S3_STATIC_BUCKET=static.categorize.us
+AWS_REGION=us-west-2
+ATTACHMENT_URL_PREFIX=https://s3-us-west-2.amazonaws.com/categorize.us/

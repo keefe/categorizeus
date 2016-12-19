@@ -1,6 +1,8 @@
-package us.categorize.model;
+package us.categorize.communication.query;
 
 import java.util.Arrays;
+
+import us.categorize.model.Tag;
 
 public class ThreadCriteria {
 	private Tag[] searchTags = new Tag[]{}; //TODO is it a good idea to introduce a tag categorizeus:id for each top level post?

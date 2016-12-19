@@ -17,10 +17,6 @@ $(document).ready(function(){
 	});
 });
 
-$(document).ready(function(){
-	initialize();
-});
-
 var tmplBasicDocument;
 var tmplBasicDocumentEdit;
 var tmplLogin;
@@ -35,7 +31,7 @@ var lastStartingId = null;
 var currentUser = null;
 var tagSelectMode = false;
 
-var initialize = function(){
+var initialize = function(dontDoInitialSearch){
 	tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
 	tmplBasicDocumentEdit = Handlebars.compile($("#tmplBasicDocumentEdit").html());//notice the pattern, probably put these in an object and generalize
 	tmplLogin = Handlebars.compile($("#tmplLogin").html());
@@ -53,7 +49,9 @@ var initialize = function(){
 		console.log(user);
 		$(".userGreeting").html("Hi, "+user.userName+"!");
 	});
-	tagSearchThread(["top"], displayMessageThread);
+  if(!dontDoInitialSearch){
+  	tagSearchThread(["top"], displayMessageThread);    
+  }
 	$("#btnShowLogin").click(function(){
 		if(currentUser==null){
 			console.log("Clicking Login Button");
@@ -144,10 +142,10 @@ var tagSelectedMessages = function(){
 
 
 var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
-	var controls = $(container).html(tmplBasicDocumentEdit(sourceMsg));
+	var controls = $(container).append(tmplBasicDocumentEdit(sourceMsg));
 	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
 	controls.find(".closeButton").click(function(event){
-		controls.empty();
+		controls.find(".basicDocumentEdit").remove();
 	});
 }
 
@@ -158,6 +156,14 @@ var displayLoginForm = function(container){ //#TODO hey we are seeing a template
 		controls.empty();
 	});
 }
+
+var displayMessageEditorCB = function(message, messageView){
+  return function(event){
+		console.log("Replying to " + message.id);
+    displayEditForm("#editor", {repliesToId:message.id});
+  };
+}
+
 var displayMessageComments = function(message, messageView){
 	if(threadRelations[message.id]!=null){
 		for(var relatedMessage in threadRelations[message.id]){
@@ -167,11 +173,7 @@ var displayMessageComments = function(message, messageView){
 			var newComment = $("#content").find(".replies.categorizeus"+message.id);
 			newComment.append(appliedTemplate);
 			var newCommentView = $("#content").find(".comment.categorizeus"+replyId);
-			newCommentView.find(".replyButton").click((function(message, newCommentView){
-					return function(event){
-						console.log("Replying to " + message.id);
-					};
-			})(message, newCommentView));
+			newCommentView.find(".replyButton").click(displayMessageEditorCB(threadMessages[replyId], newCommentView));
 			displayMessageComments(threadMessages[replyId], newCommentView);//DANGER infinite loop possible
 
 		}
@@ -187,13 +189,11 @@ var displayFullMessage = function(message){
 				messageView.remove();
 			};
 	})(message, newMessageView));
-	newMessageView.find(".replyButton").click((function(message, messageView){
+	newMessageView.find(".replyButton").click(displayMessageEditorCB(message, newMessageView));
+	/*newMessageView.find(".replyButton").click((function(message, messageView){
 			return function(event){
 				console.log("Replying to " + message.id);
-				var replyForm = newMessageView.append(tmplBasicDocumentEdit({repliesToId:message.id}));
-				/*replyForm.find(".inputMsgBtn").click(function(event){
-					alert("Reply Click");
-				});*/
+				var replyForm = messageView.append(tmplBasicDocumentEdit({repliesToId:message.id}));
 				replyForm.find(".inputMsgBtn").click(dynamicEditSubmit(replyForm));
 				
 				replyForm.find(".closeButton").click(function(event){
@@ -201,7 +201,7 @@ var displayFullMessage = function(message){
 				});
 
 			};
-	})(message, newMessageView));
+	})(message, newMessageView));*/
 	displayMessageComments(message, newMessageView);
 }
 
@@ -344,6 +344,7 @@ var dynamicEditSubmit = function(el){
 		if(repliesToId!=null && repliesToId.length>0){
 			console.log("Posting a reply to " + repliesToId);
 		}
+    el.find(".basicDocumentEdit").prepend("<h1>Processing your new message, please wait......</h1>");
 		if(isNew){
 			var newMessage = {
 				body:body,
@@ -356,13 +357,14 @@ var dynamicEditSubmit = function(el){
 			if(file.val()!==''){//file[0].files.length?
 				console.log("Found an attached file");
 				console.log(file[0].files);
-				uploadMessage(newMessage, file[0].files, function(err, response){
+				createEncodedMessage(newMessage, file[0].files, function(err, response){
 					if(err!=null){
 						$("#status").append("<p>Error: " + err + "</p>");
 					}else{
-						$("#status").append("<p>Created new document with id " + response + "</p>");
+						$("#status").append("<p>Created new document with id " + response.id + "</p>");
 					}
 					el.empty();
+          delete currentThread.searchCriteria.startingId;
 					searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
 				});
 				return;
@@ -374,6 +376,7 @@ var dynamicEditSubmit = function(el){
 					$("#status").append("<p>Created new document with id " + response + "</p>");
 				}
 				el.empty();
+        delete currentThread.searchCriteria.startingId;
 				searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
 			});
 

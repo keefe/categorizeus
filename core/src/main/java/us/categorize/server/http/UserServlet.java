@@ -109,6 +109,24 @@ public class UserServlet extends HttpServlet {
             HttpServletResponse response ) throws ServletException,
     IOException
     {//TODO this is not really a PUT in the REST sense
+		User currentUser = (User) request.getSession().getAttribute("user");
+		
+		/***
+		 * 				WARNING
+		 * 
+		 * 
+		 * 				TODO remove hard coded garbage!
+		 * 
+		 * 				Due to time constraints, only the seed users are allowed to create new users. Security like a sieve right here.
+		 * 
+		 * 
+		 * **/
+		if(currentUser==null || currentUser.getUserId()>=7){
+	        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+	        response.getWriter().println("Stay tuned for a user model with authorization that makes sense");
+	        response.getWriter().close();
+	        return;
+		}
 		JsonNode bodyObj = ServletUtil.readyBody(request);
 		String username = bodyObj.get("username").asText();
 		String password = DigestUtils.sha256Hex(bodyObj.get("password").asText());

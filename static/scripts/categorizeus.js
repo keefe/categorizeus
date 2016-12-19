@@ -110,36 +110,26 @@ var createMessage = function(message, cb){
 	});
 };
 
-var uploadMessage = function(message, files, cb){
-	var formData = new FormData();
-	formData.append('body', message.body);
-	formData.append('title', message.title);
-	formData.append('tags', message.tags);
-	if(message.repliesToId!=null){
-		formData.append('repliesToId', message.repliesToId);
-	}
-	formData.append('attachment', files[0]);//TODO this must be last, think about how to handle this better
-	$.ajax({
-		url:'/msg/upload/',
-		method:'POST',
-		contentType:false,
-		processData:false,
-		data: formData
-	}).done(function(response, statusCode){
-		console.log("In Response " + statusCode);
-		console.log(response);
-		if(statusCode!='success'){
-			if(cb){
-				cb("Please Login to Post", response);
-			}
-		}else if(cb){
-			cb(null, response);
-		}
-	}).fail(function(){
-		cb("Please Login to Post");
-	});
-};
-
+var createEncodedMessage = function(message, files, cb){
+  var reader = new FileReader();
+  reader.addEventListener("load", function(){
+    message.attachment = {
+      name:files[0].name,
+      type:files[0].type,
+      dataURL:reader.result,
+      size:files[0].size
+    }
+    createMessage(message, cb);
+  });
+  if(files[0]!=null){
+    console.log(files[0]);
+    if(files[0].type.startsWith("image") && files[0].size<1024*1024*2){//TODO hard coded, ick
+      reader.readAsDataURL(files[0]);      
+    }else{
+      alert("Invalid Attachment detected, please try again!");
+    }
+  }
+}
 
 var loginUser = function(username, password, cb){
 	var user = {

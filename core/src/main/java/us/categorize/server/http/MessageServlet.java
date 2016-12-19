@@ -3,8 +3,14 @@
  */
 package us.categorize.server.http;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.categorize.communication.MessageCommunicator;
+import us.categorize.communication.creation.MessageAssertion;
+import us.categorize.communication.creation.MessageAssertionAttachment;
+import us.categorize.communication.creation.attachment.AttachmentHandler;
+import us.categorize.communication.streams.MessageStreamReader;
 import us.categorize.model.Message;
 import us.categorize.model.MessageRelation;
 import us.categorize.model.Tag;
@@ -20,7 +31,6 @@ import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.TagRepository;
 import us.categorize.repository.UserRepository;
-import us.categorize.util.ServletUtil;
 
 /**
  * @author keefe
@@ -29,14 +39,15 @@ import us.categorize.util.ServletUtil;
 public class MessageServlet extends HttpServlet {
 	
 	private MessageRepository messageRepository; 
-	private UserRepository userRepository;
-	private TagRepository tagRepository;
-	
-	public MessageServlet(MessageRepository repository, UserRepository userRepository,TagRepository tagRepository){
+	private MessageCommunicator communicator;
+	private double maxUploadSize;
+
+	public MessageServlet(MessageRepository repository, UserRepository userRepository,TagRepository tagRepository, AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight, double maxUploadSize){
 		super();
 		this.messageRepository = repository;
-		this.userRepository = userRepository;
-		this.tagRepository = tagRepository;
+		communicator = new MessageCommunicator(messageRepository, tagRepository, attachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
+		this.maxUploadSize = maxUploadSize;
+
 	}
 	
 	@Override
@@ -44,9 +55,6 @@ public class MessageServlet extends HttpServlet {
                           HttpServletResponse response ) throws ServletException,
                                                         IOException
     {
-		System.out.println("Request made to " + request.getPathInfo());
-		System.out.println("Session Check " + request.getSession().getAttribute("testToken"));
-
 		String path = request.getPathInfo();
 		if(path!=null && path.length()>0){
 			try {
@@ -85,50 +93,41 @@ public class MessageServlet extends HttpServlet {
             HttpServletResponse response ) throws ServletException,
     IOException
     {
-		JsonNode bodyObj = ServletUtil.readyBody(request);
-		System.out.println("Session Check " + request.getSession().getAttribute("testToken"));
-		String messageBody = bodyObj.get("body").asText();
-		String messageTitle = bodyObj.get("title").asText();
-		String messageTags = bodyObj.get("tags").asText();
-		String repliesToId = null;
-		if(bodyObj.has("repliesToId")){
-			repliesToId = bodyObj.get("repliesToId").asText();
-		}
-		System.out.println("Message is replying to " + repliesToId);
-		String tagArray[] = messageTags.split(" ");
-		try {
-			User user = (User) request.getSession().getAttribute("user");
-			Message message = new Message();
-			message.setBody(messageBody);
-			message.setTitle(messageTitle);
-			message.setPostedBy(user);
-			messageRepository.addMessage(message);
-			if(tagArray.length>0){
-				Tag tags[] = tagRepository.tagsFor(tagArray);
-				messageRepository.tag(message, tags);
+		boolean validSize = true;
+		try{
+			long statedSize = Long.parseLong(request.getHeader("Content-Length"));
+			if(statedSize>maxUploadSize){
+				validSize = false;
 			}
-			if(repliesToId!=null){
-				MessageRelation relation = new MessageRelation();
-				relation.setSource(message);
-				relation.setRelation(tagRepository.tagFor("repliesTo"));
-				Message fauxReplySource = new Message();
-				fauxReplySource.setId(Long.parseLong(repliesToId));
-				relation.setSink(fauxReplySource);
-				messageRepository.relate(relation);
-			}else{
-				messageRepository.tag(message, new Tag[]{tagRepository.tagFor("top")}); //TODO ugh, more refactoring				
-			}
-	        response.setStatus(HttpServletResponse.SC_OK);
-	        response.getWriter().println(message.getId());//#TODO replace this with json structure
-	        response.getWriter().close();
-	        return;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		}catch(Exception e){
+			validSize = false;
 			e.printStackTrace();
 		}
+		if(!validSize){
+	        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        response.getWriter().println("Upload too Large or Content-Length missing or invalid");//#TODO replace this with json structure
+	        response.getWriter().close();
+	        return;
+		}
 		
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		try {
+			User user = (User) request.getSession().getAttribute("user");
+			communicator.setSpeaker(user);//TODO threading issue here I think
+			MessageAssertion messageAssertion = communicator.handleMessageStream(request.getInputStream());
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        response.setContentType("application/json");
+	        String prototypeJson = "{\"id\":\"IDVALUE\"}";
+	        response.getWriter().println(prototypeJson.replace("IDVALUE", messageAssertion.getMessage().getId()+""));
+	        response.getWriter().close();
+	        return;
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getWriter().println("Could not add new message for some reason");
         response.getWriter().close();
     }
+	
 }
