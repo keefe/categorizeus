@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.categorize.communication.MessageCommunicator;
@@ -114,7 +115,9 @@ public class MessageServlet extends HttpServlet {
 			communicator.setSpeaker(user);//TODO threading issue here I think
 			MessageAssertion messageAssertion = communicator.handleMessageStream(request.getInputStream());
 	        response.setStatus(HttpServletResponse.SC_OK);
-	        response.getWriter().println(messageAssertion.getMessage().getId());//#TODO replace this with json structure
+	        response.setContentType("application/json");
+	        String prototypeJson = "{\"id\":\"IDVALUE\"}";
+	        response.getWriter().println(prototypeJson.replace("IDVALUE", messageAssertion.getMessage().getId()+""));
 	        response.getWriter().close();
 	        return;
 		} catch (Exception e1) {

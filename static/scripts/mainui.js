@@ -344,6 +344,7 @@ var dynamicEditSubmit = function(el){
 		if(repliesToId!=null && repliesToId.length>0){
 			console.log("Posting a reply to " + repliesToId);
 		}
+    el.find(".basicDocumentEdit").prepend("<h1>Processing your new message, please wait......</h1>");
 		if(isNew){
 			var newMessage = {
 				body:body,
@@ -360,7 +361,7 @@ var dynamicEditSubmit = function(el){
 					if(err!=null){
 						$("#status").append("<p>Error: " + err + "</p>");
 					}else{
-						$("#status").append("<p>Created new document with id " + response + "</p>");
+						$("#status").append("<p>Created new document with id " + response.id + "</p>");
 					}
 					el.empty();
           delete currentThread.searchCriteria.startingId;

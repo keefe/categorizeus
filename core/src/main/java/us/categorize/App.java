@@ -34,8 +34,8 @@ import us.categorize.server.http.ThreadServlet;
 import us.categorize.server.http.UserServlet;
 
 public class App {
-	private static  String clearSql, createSql, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
-	private static String s3bucket, s3region, attachmentURLPrefix;
+	private static  String clearSql, createSql, dbHost, dbPort, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
+	private static String s3bucket, s3region, attachmentURLPrefix, connectString;
 	
 	private static long maxUploadSize = -1;
 	private static double maxThumbWidth, maxThumbHeight;
@@ -55,12 +55,14 @@ public class App {
 		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
 		seedSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/seed.sql";		
 		dbName = properties.getProperty("DB_NAME");
+		dbHost = properties.getProperty("DB_HOST");
+		dbPort = properties.getProperty("DB_PORT");
 		dbUser = properties.getProperty("DB_USER");
 		dbPass = properties.getProperty("DB_PASS");
 		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
 		s3region = properties.getProperty("AWS_REGION");
 		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
-
+		connectString = "jdbc:postgresql://" + dbHost+":"+dbPort+"/"+dbName;
 		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
 		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
 		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
@@ -70,7 +72,7 @@ public class App {
 		fileBase = staticDir + "/files";
 
 		Class.forName("org.postgresql.Driver");
-
+		System.out.println("Postgres Driver Loaded");
 		if (args.length > 0 && "initialize".equals(args[0])){
 			initializeDB(args);
 		}
@@ -79,7 +81,10 @@ public class App {
 	}
 
 	public static void initializeDB(String args[]) throws ClassNotFoundException, SQLException, IOException {
-		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
+		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
+		System.out.println("Attempting connect to " + connectString);
+		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
+		System.out.println("Connected to database for initialization");
 		Statement st = conn.createStatement();
 		executeFile(clearSql, st);
 		executeFile(createSql, st);
@@ -102,7 +107,7 @@ public class App {
 	}
 	
 	public static void serverUp(String args[]) throws Exception{
-		Connection conn = DriverManager.getConnection("jdbc:postgresql:" + dbName, dbUser, dbPass);
+		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
 		UserRepository userRepository = new SQLUserRepository(conn);
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);

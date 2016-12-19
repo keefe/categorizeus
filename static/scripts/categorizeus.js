@@ -131,37 +131,6 @@ var createEncodedMessage = function(message, files, cb){
   }
 }
 
-var uploadMessage = function(message, files, cb){//DEPRECATED
-	var formData = new FormData();
-	formData.append('body', message.body);
-	formData.append('title', message.title);
-	formData.append('tags', message.tags);
-	if(message.repliesToId!=null){
-		formData.append('repliesToId', message.repliesToId);
-	}
-	formData.append('attachment', files[0]);//TODO this must be last, think about how to handle this better
-	$.ajax({
-		url:'/msg/upload/',
-		method:'POST',
-		contentType:false,
-		processData:false,
-		data: formData
-	}).done(function(response, statusCode){
-		console.log("In Response " + statusCode);
-		console.log(response);
-		if(statusCode!='success'){
-			if(cb){
-				cb("Please Login to Post", response);
-			}
-		}else if(cb){
-			cb(null, response);
-		}
-	}).fail(function(){
-		cb("Please Login to Post");
-	});
-};
-
-
 var loginUser = function(username, password, cb){
 	var user = {
 		username:username,

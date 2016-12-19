@@ -27,7 +27,8 @@ public class S3AttachmentHandler implements AttachmentHandler {
 	
 	public String storeAttachment(String label, MessageAssertionAttachment attachmentAssertion, InputStream stream) {
 		AmazonS3 s3client = new AmazonS3Client(new ProfileCredentialsProvider());
-		Region currentRegion = Region.getRegion(Regions.fromName(region));
+		Region currentRegion = Region.getRegion(Regions.fromName(region));//TODO this is working but uh what do I need to do here?
+		
 		String contentType = attachmentAssertion.getType().toLowerCase();
 		String fileExtension = "dat";
 		if(contentType.contains("png")){
