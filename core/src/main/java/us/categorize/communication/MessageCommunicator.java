@@ -4,10 +4,12 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.categorize.communication.creation.MessageAssertion;
 import us.categorize.communication.creation.MessageAssertionAttachment;
@@ -40,7 +42,7 @@ public class MessageCommunicator {
 		this.maxUploadSize = maxUploadSize;
 	}
 	
-	public MessageAssertion handleMessageStream(InputStream stream) throws Exception{
+	public MessageAssertion createMessageFromStream(InputStream stream) throws Exception{
 		
 		MessageAssertion assertion = messageStreamReader.readMessageAssertion(stream);
 		assertion.getMessage().setPostedBy(speaker);
@@ -76,6 +78,12 @@ public class MessageCommunicator {
 			messageRepository.updateMessage(assertion.getMessage());
 		}
 		return assertion;
+	}
+	
+	public void readMessage(long id, OutputStream output) throws Exception{
+		Message message = messageRepository.getMessage(id);
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(output, message);
 	}
 	
 	private int[][] generateThumbnail(MessageAssertionAttachment attachment, InputStream sourceImageStream, String contentType, String furi, Message message) {

@@ -22,6 +22,7 @@ Also, make sure that the security group associated with the RDS instance allows 
 7. Run the initialization code to seed the database
  mvn exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args="initialize"
 8. Connect to the database and verify that the seed data is present. 
+
 9. Next, we're going to configure API Gateway to be an AWS Lambda Proxy, which includes messing with IAM roles, certs CORS and all sorts of devops nonsense.
 Pretty much assume this documentation isn't meant to be final or necessarily complete - this kind of serverless setup is pretty new, so there are all kinds of custom accomodations throughout the system.
 

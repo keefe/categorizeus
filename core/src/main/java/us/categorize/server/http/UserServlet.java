@@ -12,16 +12,19 @@ import org.apache.commons.codec.digest.DigestUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.categorize.communication.UserCommunicator;
 import us.categorize.model.User;
 import us.categorize.repository.UserRepository;
 import us.categorize.util.ServletUtil;
 
 public class UserServlet extends HttpServlet {
 
-	private UserRepository userRepository;
-	public UserServlet(UserRepository userRepository){
-		this.userRepository = userRepository;
+	private UserCommunicator communicator;
+	
+	public UserServlet(UserCommunicator communicator){
+		this.communicator = communicator;
 	}
+	
 	public void doGet( HttpServletRequest request,
             HttpServletResponse response ) throws ServletException,
     IOException
@@ -33,14 +36,20 @@ public class UserServlet extends HttpServlet {
 	        response.getWriter().close();
 	        return;
 		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonMessage = mapper.writeValueAsString(user);
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(jsonMessage);
+		try {
+			response.setContentType("application/json");
+			communicator.writeUser(user, response.getOutputStream());
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        return;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getWriter().println("error");
         response.getWriter().close();
     }
+	
 	public void doDelete( HttpServletRequest request,
             HttpServletResponse response ) throws ServletException,
     IOException
@@ -53,7 +62,6 @@ public class UserServlet extends HttpServlet {
 	        return;
 		}
 		String categorizeusCookieString = (String) request.getSession().getAttribute("categorizeus");
-		userRepository.destroySessionUser(categorizeusCookieString);
 		Cookie categorizeusCookie = null;
 		for(Cookie cookie : request.getCookies()){
 			if(cookie.getName().equals("categorizeus")){
@@ -67,34 +75,32 @@ public class UserServlet extends HttpServlet {
 		}
 		request.getSession().removeAttribute("categorizeus");
 		request.getSession().removeAttribute("user");
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonMessage = mapper.writeValueAsString(user);
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(jsonMessage);
-        response.getWriter().close();	
+		try {
+	        response.setContentType("application/json");
+			communicator.logoutUser(user, categorizeusCookieString, response.getOutputStream());
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        return;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getWriter().println("error");
+        response.getWriter().close();
     }
 	
 	public void doPost( HttpServletRequest request,
             HttpServletResponse response ) throws ServletException,
     IOException
     {
-		JsonNode bodyObj = ServletUtil.readyBody(request);
-		String username = bodyObj.get("username").asText();
-		String password = DigestUtils.sha256Hex(bodyObj.get("password").asText());
 		try {
-			User user = userRepository.validateUser(username, password);
+			String categorizeusUUID = (String) request.getSession().getAttribute("categorizeus");
+	        response.setContentType("application/json");
+			User user = communicator.loginUser(request.getInputStream(), response.getOutputStream(), categorizeusUUID);
 			if(user!=null){
-				String categorizeusUUID = (String) request.getSession().getAttribute("categorizeus");
-				userRepository.createSessionUser(categorizeusUUID, user);
 				request.getSession().setAttribute("user", user);
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonMessage = mapper.writeValueAsString(user);
-		        response.setContentType("application/json");
 				response.setStatus(HttpServletResponse.SC_OK);
-		        response.getWriter().println(jsonMessage);
-		        response.getWriter().close();
 			}
+			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -110,40 +116,17 @@ public class UserServlet extends HttpServlet {
     IOException
     {//TODO this is not really a PUT in the REST sense
 		User currentUser = (User) request.getSession().getAttribute("user");
-		
-		/***
-		 * 				WARNING
-		 * 
-		 * 
-		 * 				TODO remove hard coded garbage!
-		 * 
-		 * 				Due to time constraints, only the seed users are allowed to create new users. Security like a sieve right here.
-		 * 
-		 * 
-		 * **/
-		if(currentUser==null || currentUser.getUserId()>=7){
-	        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-	        response.getWriter().println("Stay tuned for a user model with authorization that makes sense");
-	        response.getWriter().close();
-	        return;
-		}
-		JsonNode bodyObj = ServletUtil.readyBody(request);
-		String username = bodyObj.get("username").asText();
-		String password = DigestUtils.sha256Hex(bodyObj.get("password").asText());
 		try {
-			User user = userRepository.register(username, password);
-			if(user!=null){
-				request.setAttribute("user", user);
-				response.setStatus(HttpServletResponse.SC_OK);
-				response.getWriter().close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+	        response.setContentType("application/json");
+			communicator.registerUser(currentUser, request.getInputStream(), response.getOutputStream());
+			response.setStatus(HttpServletResponse.SC_OK);
+			return;
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}		
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.getWriter().println("Invalid User");
 		response.getWriter().close();
-		
     }
 }
