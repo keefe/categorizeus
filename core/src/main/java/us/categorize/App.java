@@ -50,6 +50,7 @@ public class App {
 
 		Properties properties = new Properties();
 		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
+		Config config = new Config(properties);
 		System.out.println("Connecting to " + properties.getProperty("DB_NAME") + " as " + properties.getProperty("DB_USER"));
 		
 		//TODO put these all into an automapped java bean with defaults
