@@ -17,9 +17,9 @@ public class MessageStreamReader {
 	}
 	
 	public MessageAssertion readMessageAssertion(InputStream stream) throws Exception{
-		MessageAssertion assertion = new MessageAssertion();
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode bodyObj = mapper.readTree(stream);
+		MessageAssertion assertion = new MessageAssertion();
 		assertion.setMessage(readMessage(bodyObj));
 		String tagString = bodyObj.get("tags").asText();
 		if(tagString!=null && tagString.length()>0){

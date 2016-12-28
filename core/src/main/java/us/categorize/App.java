@@ -17,6 +17,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import us.categorize.communication.TagCommunicator;
+import us.categorize.communication.ThreadCommunicator;
+import us.categorize.communication.UserCommunicator;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.creation.attachment.S3AttachmentHandler;
@@ -47,6 +50,7 @@ public class App {
 
 		Properties properties = new Properties();
 		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
+		Config config = new Config(properties);
 		System.out.println("Connecting to " + properties.getProperty("DB_NAME") + " as " + properties.getProperty("DB_USER"));
 		
 		//TODO put these all into an automapped java bean with defaults
@@ -131,12 +135,14 @@ public class App {
 		AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(s3bucket, s3region, attachmentURLPrefix);
 		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
-		ThreadServlet threadServlet = new ThreadServlet(tagRepository, messageRepository);
+		ThreadCommunicator threadCommunicator = new ThreadCommunicator(tagRepository, messageRepository);
+		ThreadServlet threadServlet = new ThreadServlet(threadCommunicator);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
-		TagServlet tagServlet = new TagServlet(messageRepository, tagRepository);
+		TagCommunicator tagCommunicator = new TagCommunicator(tagRepository, messageRepository);
+		TagServlet tagServlet = new TagServlet(tagCommunicator);
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
-		
-		UserServlet userServlet = new UserServlet(userRepository);
+		UserCommunicator userCommunicator = new UserCommunicator(userRepository);
+		UserServlet userServlet = new UserServlet(userCommunicator);
 		context.addServlet(new ServletHolder(userServlet), "/user/*");
 		
 		context.addServlet(DefaultServlet.class, "/");
