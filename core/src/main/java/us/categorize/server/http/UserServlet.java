@@ -7,15 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import us.categorize.communication.UserCommunicator;
 import us.categorize.model.User;
-import us.categorize.repository.UserRepository;
-import us.categorize.util.ServletUtil;
 
 public class UserServlet extends HttpServlet {
 

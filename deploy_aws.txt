@@ -26,7 +26,6 @@ Also, make sure that the security group associated with the RDS instance allows 
 9. Next, we're going to configure API Gateway to be an AWS Lambda Proxy, which includes messing with IAM roles, certs CORS and all sorts of devops nonsense.
 Pretty much assume this documentation isn't meant to be final or necessarily complete - this kind of serverless setup is pretty new, so there are all kinds of custom accomodations throughout the system.
 
-
 Go to the console, then IAM and create a user for programmatic access and fill out the fields. 
 [default]
 aws_access_key_id=
@@ -35,4 +34,14 @@ This is basically following the lambda tutorial to start out with http://docs.aw
 Add the policies that we're going to need:
 AmazonAPIGatewayInvokeFullAccess
 AmazonAPIGatewayPushToCloudWatchLogs
+
+10. Go to API Gateway, create a new API with the following methods. We will fill them out with lambda functions shortly. Enable cors on all.
+
+/msg GET, POST
+/thread POST
+/tag POST,PUT
+/user GET,PUT,POST,DELETE
+
+11. We are using the Lambda Proxy method of integration, which provides a higher level object that contains the body and metadata, as json.
+http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-java
 
