@@ -26,11 +26,12 @@ import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.creation.attachment.S3AttachmentHandler;
 import us.categorize.server.http.AuthFilter;
-import us.categorize.server.http.MessageServlet;
+import us.categorize.server.http.FramingServlet;
 import us.categorize.server.http.SessionCookieFilter;
-import us.categorize.server.http.TagServlet;
-import us.categorize.server.http.ThreadServlet;
-import us.categorize.server.http.UserServlet;
+import us.categorize.server.http.legacy.MessageServlet;
+import us.categorize.server.http.legacy.TagServlet;
+import us.categorize.server.http.legacy.ThreadServlet;
+import us.categorize.server.http.legacy.UserServlet;
 
 public class App {
 	
@@ -45,7 +46,8 @@ public class App {
 			initializeDB(config);
 		}
 		System.out.println("Initialization Complete");
-		serverUp(config);
+		//serverUp(config);
+		serverUpGeneric(config);
 	}
 
 	public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
@@ -74,12 +76,7 @@ public class App {
 		}
 	}
 	public static void serverUpGeneric(Config config) throws Exception{
-
-	}
-	
-	public static void serverUp(Config config) throws Exception{
 		Categorizer categorizer = new Categorizer(config);
-		
 		System.out.println("Starting Server on Port " + config.getPort());
 		Server server = new Server(config.getPort());
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
@@ -92,20 +89,20 @@ public class App {
 		ServletHandler handler = new ServletHandler();
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		MessageServlet messageServlet = null;
-		messageServlet = new MessageServlet(categorizer.getMessageCommunicator(), config.getMaxUploadSize());
+		
+		FramingServlet messageServlet = new FramingServlet("msg", categorizer);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
-		ThreadServlet threadServlet = new ThreadServlet(categorizer.getThreadCommunicator());
+		FramingServlet threadServlet = new FramingServlet("thread", categorizer);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
-		TagServlet tagServlet = new TagServlet(categorizer.getTagCommunicator());
+		FramingServlet tagServlet = new FramingServlet("tag", categorizer);
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
-		UserServlet userServlet = new UserServlet(categorizer.getUserCommunicator());
+		FramingServlet userServlet = new FramingServlet("user", categorizer);
 		context.addServlet(new ServletHolder(userServlet), "/user/*");
+
 		
 		context.addServlet(DefaultServlet.class, "/");
 		server.setHandler(context);
 		server.start();
 		server.join();
-	}
-	
+	}	
 }

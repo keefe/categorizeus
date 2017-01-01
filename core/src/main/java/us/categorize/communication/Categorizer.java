@@ -3,11 +3,14 @@ package us.categorize.communication;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import us.categorize.Config;
+import us.categorize.communication.creation.MessageAssertion;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.creation.attachment.S3AttachmentHandler;
+import us.categorize.model.User;
 import us.categorize.repository.MessageRepository;
 import us.categorize.repository.SQLMessageRepository;
 import us.categorize.repository.SQLTagRepository;
@@ -42,16 +45,139 @@ public class Categorizer {
 	
 	public void handle(Frame request) throws Exception{
 		if("msg".equals(request.getResource())){//TODO this is a gnarly hardcoded block, but deal with that after deployable
-			
+			handleMessage(request);
 		}else if("thread".equals(request.getResource())){
-			
+			handleThread(request);
 		}else if("tag".equals(request.getResource())){
-			
+			handleTag(request);
 		}else if("user".equals(request.getResource())){
-			
+			handleUser(request);
 		}
 	}
+	
+	public void handleMessage(Frame request) throws Exception{
+		if("GET".equals(request.getMethod())){
+			String path = request.getPath();
+			Long id = Long.parseLong(path.replace("/", ""));
+			request.prepareResponse("OK", new HashMap<>());
+			messageCommunicator.readMessage(id, request.getOutputStream());
+			request.finalizeResponse();
+		}else if("POST".equals(request.getMethod())){
+			long statedSize = Long.parseLong(request.getHeader("Content-Length"));
+			if(statedSize>config.getMaxUploadSize()){
+				request.prepareResponse("BadRequest", new HashMap<>());
+				//TODO where is the error message stuff going to go? make a respond arbitrarily method?
+				request.getOutputStream().write("[BadRequest] Size too large!".getBytes());
+				request.finalizeResponse();
+			}else{
+				if(request.getCurrentUser()==null){
+					loadCurrentUser(request);
+				}
+				User user = request.getCurrentUser();
+				messageCommunicator.setSpeaker(user);
+				MessageAssertion messageAssertion = messageCommunicator.createMessageFromStream(request.bodyInputStream());
+				request.prepareResponse("OK", new HashMap<>());
+		        String prototypeJson = "{\"id\":\"IDVALUE\"}";
+		        prototypeJson = prototypeJson.replace("IDVALUE", messageAssertion.getMessage().getId()+"");
+		        request.getOutputStream().write(prototypeJson.getBytes());
+		        request.finalizeResponse();
+			}
+		}else{
+			throw new Exception("[BadRequest] Unsupported request found");
+		}
+	}
+	private User loadCurrentUser(Frame request) throws Exception{
+		User currentUser = userCommunicator.loadSessionUser(request.findSessionUUID());
+		request.setCurrentUser(currentUser);
+		return currentUser;
+	}
 
+	public void handleThread(Frame request) throws Exception{
+		if("POST".equals(request.getMethod())){
+			request.prepareResponse("OK",new HashMap<>());
+			threadCommunicator.queryStreams(request.bodyInputStream(), request.getOutputStream());
+			request.finalizeResponse();
+		}else{
+			throw new Exception("[BadRequest] Unsupported request found");			
+		}		
+	}
+	public void handleTag(Frame request) throws Exception{
+		if("PUT".equals(request.getMethod()) || "POST".equals(request.getMethod())){
+			tagCommunicator.categorizeMessages(request.bodyInputStream());
+			request.prepareResponse("OK", new HashMap<>());
+			request.getOutputStream().write("{\"response\":\"OK\"}".getBytes());
+			request.finalizeResponse();
+		}else{
+			throw new Exception("[BadRequest] Unsupported request found");			
+		}
+	}
+	public void handleUser(Frame request) throws Exception{
+		if("GET".equals(request.getMethod())){
+			if(request.getCurrentUser()==null){
+				loadCurrentUser(request);
+			}
+			if(request.getCurrentUser()==null){
+				request.prepareResponse("NotFound", new HashMap<>());
+				request.getOutputStream().write("Not Found".getBytes());
+				request.finalizeResponse();
+				return;
+			}
+			
+			request.prepareResponse("OK", new HashMap<>());
+			userCommunicator.writeUser(request.getCurrentUser(), request.getOutputStream());
+			request.finalizeResponse();
+
+		}else if("POST".equals(request.getMethod())){
+			if(request.getCurrentUser()==null){
+				loadCurrentUser(request);
+			}
+			String sessionUUID = request.findSessionUUID();
+			request.prepareResponse("OK", new HashMap<>());//TODO this is feeling all kinds of wrong
+			User user = userCommunicator.loginUser(request.bodyInputStream(), request.getOutputStream(), sessionUUID);
+			
+			if(user==null){
+				request.prepareResponse("UNAUTHORIZED", new HashMap<>());
+				request.getOutputStream().write("Must Login!".getBytes());
+				request.finalizeResponse();
+				return;
+			}else{
+				request.setCurrentUser(user);
+				request.getOutputStream().write("OK".getBytes());
+				request.finalizeResponse();
+			}
+			
+		}else if("PUT".equals(request.getMethod())){
+			if(request.getCurrentUser()==null){
+				loadCurrentUser(request);
+			}
+			if(request.getCurrentUser()==null){
+				request.prepareResponse("UNAUTHORIZED", new HashMap<>());
+				request.getOutputStream().write("Must Login as Admin!".getBytes());
+				request.finalizeResponse();
+				return;
+			}
+			
+			request.prepareResponse("OK", new HashMap<>());
+			userCommunicator.registerUser(request.getCurrentUser(), request.bodyInputStream(), request.getOutputStream());
+			request.finalizeResponse();
+			
+		}else if("DELETE".equals(request.getMethod())){
+			if(request.getCurrentUser()==null){
+				loadCurrentUser(request);
+			}
+			if(request.getCurrentUser()==null){
+				request.prepareResponse("NotFound", new HashMap<>());
+				request.getOutputStream().write("Not Found".getBytes());
+				request.finalizeResponse();
+				return;
+			}
+			request.prepareResponse("OK", new HashMap<>());
+			userCommunicator.logoutUser(request.getCurrentUser(), request.findSessionUUID(), request.getOutputStream());
+			request.finalizeResponse();
+		}else{
+			throw new Exception("[BadRequest] Unsupported request found");			
+		}
+	}
 	public MessageCommunicator getMessageCommunicator() {
 		return messageCommunicator;
 	}

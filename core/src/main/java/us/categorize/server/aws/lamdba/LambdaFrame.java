@@ -189,4 +189,10 @@ public class LambdaFrame implements Frame {
 		logger.log(line);
 	}
 
+	@Override
+	public String findSessionUUID() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
