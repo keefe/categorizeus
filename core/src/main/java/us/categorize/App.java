@@ -17,18 +17,14 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import us.categorize.communication.Categorizer;
+import us.categorize.communication.MessageCommunicator;
 import us.categorize.communication.TagCommunicator;
 import us.categorize.communication.ThreadCommunicator;
 import us.categorize.communication.UserCommunicator;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.creation.attachment.S3AttachmentHandler;
-import us.categorize.repository.MessageRepository;
-import us.categorize.repository.SQLMessageRepository;
-import us.categorize.repository.SQLTagRepository;
-import us.categorize.repository.SQLUserRepository;
-import us.categorize.repository.TagRepository;
-import us.categorize.repository.UserRepository;
 import us.categorize.server.http.AuthFilter;
 import us.categorize.server.http.MessageServlet;
 import us.categorize.server.http.SessionCookieFilter;
@@ -39,8 +35,6 @@ import us.categorize.server.http.UserServlet;
 public class App {
 	
 	public static void main(String args[]) throws Exception {
-
-
 		Properties properties = new Properties();
 		
 		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
@@ -79,45 +73,33 @@ public class App {
 			}
 		}
 	}
+	public static void serverUpGeneric(Config config) throws Exception{
+
+	}
 	
 	public static void serverUp(Config config) throws Exception{
-		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
-		UserRepository userRepository = new SQLUserRepository(conn);
-		TagRepository tagRepository = new SQLTagRepository(conn);
-		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
-
+		Categorizer categorizer = new Categorizer(config);
+		
 		System.out.println("Starting Server on Port " + config.getPort());
 		Server server = new Server(config.getPort());
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
 		context.setContextPath("/");
 		System.out.println("Preparing to serve static files from " + config.getStaticDir());
 		context.setResourceBase(config.getStaticDir());
-		
-		SessionCookieFilter sessionCookieFilter = new SessionCookieFilter(userRepository);
+		SessionCookieFilter sessionCookieFilter = new SessionCookieFilter(categorizer.getUserCommunicator().getUserRepository());
 		FilterHolder sessionCookieFilterHolder = new FilterHolder(sessionCookieFilter);
 		context.addFilter(sessionCookieFilterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
-		
 		ServletHandler handler = new ServletHandler();
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		MessageServlet messageServlet = null;
-		if("S3".equals(config.getUploadStorage())){
-			AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(config.getS3bucket(), config.getS3region(), config.getAttachmentURLPrefix());
-			messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());			
-		}else{
-			AttachmentHandler localAttachmentHandler = new FileSystemAttachmentHandler(config.getFileBase());
-			 messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, localAttachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
-		}
+		messageServlet = new MessageServlet(categorizer.getMessageCommunicator(), config.getMaxUploadSize());
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
-		ThreadCommunicator threadCommunicator = new ThreadCommunicator(tagRepository, messageRepository);
-		ThreadServlet threadServlet = new ThreadServlet(threadCommunicator);
+		ThreadServlet threadServlet = new ThreadServlet(categorizer.getThreadCommunicator());
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
-		TagCommunicator tagCommunicator = new TagCommunicator(tagRepository, messageRepository);
-		TagServlet tagServlet = new TagServlet(tagCommunicator);
+		TagServlet tagServlet = new TagServlet(categorizer.getTagCommunicator());
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
-		UserCommunicator userCommunicator = new UserCommunicator(userRepository);
-		UserServlet userServlet = new UserServlet(userCommunicator);
+		UserServlet userServlet = new UserServlet(categorizer.getUserCommunicator());
 		context.addServlet(new ServletHolder(userServlet), "/user/*");
 		
 		context.addServlet(DefaultServlet.class, "/");

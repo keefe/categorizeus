@@ -69,6 +69,14 @@ public class UserCommunicator {
 		return user;
 		
 	}
+
+	public UserRepository getUserRepository() {
+		return userRepository;
+	}
+
+	public void setUserRepository(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 	
 
 }

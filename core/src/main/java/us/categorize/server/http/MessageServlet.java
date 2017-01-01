@@ -24,16 +24,13 @@ import us.categorize.repository.UserRepository;
  */
 public class MessageServlet extends HttpServlet {
 	
-	private MessageRepository messageRepository; 
 	private MessageCommunicator communicator;
 	private double maxUploadSize;
 
-	public MessageServlet(MessageRepository repository, UserRepository userRepository,TagRepository tagRepository, AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight, double maxUploadSize){
+	public MessageServlet(MessageCommunicator communicator, double maxUploadSize){
 		super();
-		this.messageRepository = repository;
-		communicator = new MessageCommunicator(messageRepository, tagRepository, attachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
+		this.communicator = communicator;
 		this.maxUploadSize = maxUploadSize;
-
 	}
 	
 	@Override
