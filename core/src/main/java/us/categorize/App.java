@@ -37,63 +37,33 @@ import us.categorize.server.http.ThreadServlet;
 import us.categorize.server.http.UserServlet;
 
 public class App {
-	private static  String clearSql, createSql, dbHost, dbPort, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
-	private static String s3bucket, s3region, attachmentURLPrefix, connectString;
 	
-	private static long maxUploadSize = -1;
-	private static double maxThumbWidth, maxThumbHeight;
-	
-	private static  int port;
-
 	public static void main(String args[]) throws Exception {
 
 
 		Properties properties = new Properties();
+		
 		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
 		Config config = new Config(properties);
-		System.out.println("Connecting to " + properties.getProperty("DB_NAME") + " as " + properties.getProperty("DB_USER"));
-		
-		//TODO put these all into an automapped java bean with defaults
-		clearSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/clear.sql";//TODO refactor to load from the jar as above
-		createSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/tables.sql";
-		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
-		seedSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/seed.sql";		
-		dbName = properties.getProperty("DB_NAME");
-		dbHost = properties.getProperty("DB_HOST");
-		dbPort = properties.getProperty("DB_PORT");
-		dbUser = properties.getProperty("DB_USER");
-		dbPass = properties.getProperty("DB_PASS");
-		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
-		s3region = properties.getProperty("AWS_REGION");
-		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
-		connectString = "jdbc:postgresql://" + dbHost+":"+dbPort+"/"+dbName;
-		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
-		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
-		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
-		
-		port = Integer.parseInt(properties.getProperty("PORT"));
-		staticDir = properties.getProperty("STATIC_DIR");
-		fileBase = staticDir + "/files";
-
 		Class.forName("org.postgresql.Driver");
 		System.out.println("Postgres Driver Loaded");
 		if (args.length > 0 && "initialize".equals(args[0])){
-			initializeDB(args);
+			initializeDB(config);
 		}
 		System.out.println("Initialization Complete");
-		serverUp(args);
+		serverUp(config);
 	}
 
-	public static void initializeDB(String args[]) throws ClassNotFoundException, SQLException, IOException {
+	public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
 		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
-		System.out.println("Attempting connect to " + connectString);
-		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
+		System.out.println("Attempting connect to " + config.getConnectString());
+		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		System.out.println("Connected to database for initialization");
 		Statement st = conn.createStatement();
-		executeFile(clearSql, st);
-		executeFile(createSql, st);
-		executeFile(indexSql, st);
-		executeFile(seedSql, st);
+		executeFile(config.getClearSql(), st);
+		executeFile(config.getCreateSql(), st);
+		executeFile(config.getIndexSql(), st);
+		executeFile(config.getSeedSql(), st);
 		st.close();
 		conn.close();
 	}
@@ -110,18 +80,18 @@ public class App {
 		}
 	}
 	
-	public static void serverUp(String args[]) throws Exception{
-		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
+	public static void serverUp(Config config) throws Exception{
+		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		UserRepository userRepository = new SQLUserRepository(conn);
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
 
-		System.out.println("Starting Server on Port " + port);
-		Server server = new Server(port);
+		System.out.println("Starting Server on Port " + config.getPort());
+		Server server = new Server(config.getPort());
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
 		context.setContextPath("/");
-		System.out.println("Preparing to serve static files from " + staticDir);
-		context.setResourceBase(staticDir);
+		System.out.println("Preparing to serve static files from " + config.getStaticDir());
+		context.setResourceBase(config.getStaticDir());
 		
 		SessionCookieFilter sessionCookieFilter = new SessionCookieFilter(userRepository);
 		FilterHolder sessionCookieFilterHolder = new FilterHolder(sessionCookieFilter);
@@ -131,9 +101,14 @@ public class App {
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
 		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		AttachmentHandler localAttachmentHandler = new FileSystemAttachmentHandler(fileBase);
-		AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(s3bucket, s3region, attachmentURLPrefix);
-		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
+		MessageServlet messageServlet = null;
+		if("S3".equals(config.getUploadStorage())){
+			AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(config.getS3bucket(), config.getS3region(), config.getAttachmentURLPrefix());
+			messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());			
+		}else{
+			AttachmentHandler localAttachmentHandler = new FileSystemAttachmentHandler(config.getFileBase());
+			 messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, localAttachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
+		}
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
 		ThreadCommunicator threadCommunicator = new ThreadCommunicator(tagRepository, messageRepository);
 		ThreadServlet threadServlet = new ThreadServlet(threadCommunicator);

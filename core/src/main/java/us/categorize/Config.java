@@ -10,6 +10,8 @@ public class Config {
 	private  int port;
 	
 	private String s3bucket, s3region, attachmentURLPrefix, connectString;
+	private String driverName = "org.postgresql.Driver";
+	private String uploadStorage = "S3";
 
 	public String getAttachmentURLPrefix() {
 		return attachmentURLPrefix;
@@ -175,6 +177,9 @@ public class Config {
 		dbPass = properties.getProperty("DB_PASS");
 		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
 		s3region = properties.getProperty("AWS_REGION");
+		if(properties.containsKey("UPLOAD_STORAGE")){
+			uploadStorage = properties.getProperty("UPLOAD_STORAGE");
+		}
 		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
 		connectString = "jdbc:postgresql://" + dbHost+":"+dbPort+"/"+dbName;
 		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
@@ -183,5 +188,21 @@ public class Config {
 		port = Integer.parseInt(properties.getProperty("PORT"));
 		staticDir = properties.getProperty("STATIC_DIR");
 		fileBase = staticDir + "/files";
+	}
+
+	public String getDriverName() {
+		return driverName;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+
+	public String getUploadStorage() {
+		return uploadStorage;
+	}
+
+	public void setUploadStorage(String uploadStorage) {
+		this.uploadStorage = uploadStorage;
 	}
 }
