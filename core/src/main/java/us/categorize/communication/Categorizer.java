@@ -86,7 +86,7 @@ public class Categorizer {
 			throw new Exception("[BadRequest] Unsupported request found");
 		}
 	}
-	private User loadCurrentUser(Frame request) throws Exception{
+	public User loadCurrentUser(Frame request) throws Exception{
 		User currentUser = userCommunicator.loadSessionUser(request.findSessionUUID());
 		request.setCurrentUser(currentUser);
 		return currentUser;

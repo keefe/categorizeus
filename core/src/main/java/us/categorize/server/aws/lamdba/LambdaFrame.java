@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -113,6 +115,7 @@ public class LambdaFrame implements Frame {
 		body = inputJSON.get("body");
 		headers = inputJSON.get("headers");
 		responseBodyStream = new ByteArrayOutputStream();
+		logger.log(mapper.writeValueAsString(requestPlus));
 	}
 	
 	@Override
@@ -163,7 +166,15 @@ public class LambdaFrame implements Frame {
 
 	@Override
 	public void prepareResponse(String status, Map<String, String> headers) throws Exception {
-		this.responseStatus = status;
+		if("OK".equals(status)){
+			responseStatus = ""+(HttpServletResponse.SC_OK);
+		}else if("Forbidden".equals(status)){
+			responseStatus = ""+(HttpServletResponse.SC_FORBIDDEN);
+		}else if("Not Found".equals(status)){
+			responseStatus = ""+(HttpServletResponse.SC_NOT_FOUND);
+		}else{
+			responseStatus = ""+(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 		this.responseHeaders = headers;
 	}
 
@@ -192,7 +203,7 @@ public class LambdaFrame implements Frame {
 	@Override
 	public String findSessionUUID() {
 		// TODO Auto-generated method stub
-		return null;
+		return headers.get("categorizeus").asText();
 	}
 
 }
