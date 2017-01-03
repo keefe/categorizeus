@@ -123,7 +123,9 @@ public class LambdaFrame implements Frame {
 			inputJSON = requestPlus;
 		}
 		if(inputJSON.has("body")){
-			body = inputJSON.get("body");			
+			String bodyText = inputJSON.get("body").asText();
+			//System.out.println("Body Received From Lambda As " + bodyText);
+			body = mapper.readTree(bodyText);	
 		}
 		if(inputJSON.has("headers")){
 			headers = inputJSON.get("headers");	

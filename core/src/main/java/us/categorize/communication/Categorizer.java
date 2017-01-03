@@ -46,7 +46,7 @@ public class Categorizer {
 	}
 	
 	public void handle(Frame request) throws Exception{
-		System.out.println("Handling " + request.getResource() + " and " + request.getPath());
+		System.out.println("Handling " + request.getResource() + " and " + request.getPath() + " as " + request.getMethod());
 		if("msg".equals(request.getResource())){//TODO this is a gnarly hardcoded block, but deal with that after deployable
 			handleMessage(request);
 		}else if("thread".equals(request.getResource())){

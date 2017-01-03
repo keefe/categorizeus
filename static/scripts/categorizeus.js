@@ -2,6 +2,8 @@
 This is the javascript http api for a categorize.us server, using jquery. 
 There should be no UI specific code in this file, it should all be in callbacks.
 **/
+//var deployPrefix = "https://ectiaevu68.execute-api.us-west-2.amazonaws.com/testing";
+var deployPrefix = "";
 
 var tagMessages = function(tagArray, messageArray, cb){
 	var payload = {
@@ -9,7 +11,7 @@ var tagMessages = function(tagArray, messageArray, cb){
 		messages:messageArray
 	};
 	$.ajax({
-		url:'/tag/',
+		url:deployPrefix+'/tag/',
 		accepts:'application/json',
 		method:'PUT',
 		contentType:"application/json",
@@ -30,7 +32,7 @@ var tagSearch = function(tagArray, cb){
 		tags:tagArray
 	};
 	$.ajax({
-		url:'/tag/',
+		url:deployPrefix+'/tag/',
 		accepts:'application/json',
 		method:'POST',
 		contentType:"application/json",
@@ -56,7 +58,7 @@ var tagSearchThread = function(tagArray, cb){
 
 var searchThreadCriteria = function(threadCriteria, cb){
 	$.ajax({
-		url:'/thread/',
+		url:deployPrefix+'/thread/',
 		accepts:'application/json',
 		method:'POST',
 		contentType:"application/json",
@@ -74,7 +76,7 @@ var searchThreadCriteria = function(threadCriteria, cb){
 
 var loadMessage = function(id, cb){
 	$.ajax({
-		url:'/msg/'+id,
+		url:deployPrefix+'/msg/'+id,
 		accepts:'application/json'
 	}).done(function(message, statusCode){
 		console.log("In Response " + statusCode);
@@ -91,7 +93,7 @@ var loadMessage = function(id, cb){
 
 var createMessage = function(message, cb){
 	$.ajax({
-		url:'/msg/',
+		url:deployPrefix+'/msg/',
 		method:'POST',
 		contentType:"application/json",
 		data:JSON.stringify(message)
@@ -137,7 +139,7 @@ var loginUser = function(username, password, cb){
 		password:password
 	};
 	$.ajax({
-		url:'/user/',
+		url:deployPrefix+'/user/',
 		method:'POST',
 		contentType:"application/json",
 		data:JSON.stringify(user)
@@ -158,7 +160,7 @@ var loginUser = function(username, password, cb){
 
 var fetchCurrentUser = function(cb){
 	$.ajax({
-		url:'/user/',
+		url:deployPrefix+'/user/',
 		accepts:'application/json'
 	}).done(function(currentUser, statusCode){
 		console.log("In Response " + statusCode);
@@ -178,7 +180,7 @@ var fetchCurrentUser = function(cb){
 
 var logoutUser = function(cb){
 	$.ajax({
-		url:'/user/',
+		url:deployPrefix+'/user/',
 		method:'DELETE',
 		accepts:'application/json'
 	}).done(function(currentUser, statusCode){
@@ -204,7 +206,7 @@ var registerUser = function(username, password, cb){
 		password:password
 	};
 	$.ajax({
-		url:'/user/',
+		url:deployPrefix+'/user/',
 		method:'PUT',
 		contentType:"application/json",
 		data:JSON.stringify(user)
