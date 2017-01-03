@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,6 +39,7 @@ public class LambdaFrame implements Frame {
 	private String path = null;
 	private String resource;
 	private Map<String, String> responseHeaders;
+	private String sessionUUID;
 
 	/*
 	 * 
@@ -124,7 +126,19 @@ public class LambdaFrame implements Frame {
 			body = inputJSON.get("body");			
 		}
 		if(inputJSON.has("headers")){
-			headers = inputJSON.get("headers");			
+			headers = inputJSON.get("headers");	
+			if(headers.has("Cookie")){
+				String cookieString = headers.get("Cookie").asText();
+				String crumbs[] = cookieString.split("=");
+				System.out.println("Cookie Found! it was " + cookieString);
+				if("categorizeus".equals(crumbs[0])){
+					sessionUUID = crumbs[1];
+					System.out.println("Found UUID " + sessionUUID);
+				}
+
+			}else
+				sessionUUID = UUID.randomUUID().toString();
+				
 		}
 		String fullPath = inputJSON.get("path").asText();
 		if(fullPath.startsWith("/msg/")){
@@ -229,10 +243,7 @@ public class LambdaFrame implements Frame {
 
 	@Override
 	public String findSessionUUID() {
-		// TODO Auto-generated method stub
-		if(headers.has("categorizeus"))
-			return headers.get("categorizeus").asText();
-		return null;
+		return sessionUUID;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 
 import us.categorize.Config;
 import us.categorize.communication.creation.MessageAssertion;
@@ -62,8 +63,12 @@ public class Categorizer {
 		if("GET".equals(request.getMethod())){
 			String path = request.getPath();
 			Long id = Long.parseLong(path.replace("/", ""));
+			String sessionUUID = request.findSessionUUID();
+			Map<String, String> headers = new HashMap<>();
+			String cookieString = "categorizeus="+sessionUUID;
+			headers.put("Set-Cookie", cookieString);
 			System.out.println("Looking for message " + id);
-			request.prepareResponse("OK", new HashMap<>());
+			request.prepareResponse("OK", headers);
 			messageCommunicator.readMessage(id, request.getOutputStream());
 			request.finalizeResponse();
 		}else if("POST".equals(request.getMethod())){
@@ -136,7 +141,10 @@ public class Categorizer {
 				loadCurrentUser(request);
 			}
 			String sessionUUID = request.findSessionUUID();
-			request.prepareResponse("OK", new HashMap<>());//TODO this is feeling all kinds of wrong
+			Map<String, String> headers = new HashMap<>();
+			String cookieString = "categorizeus="+sessionUUID;
+			headers.put("Set-Cookie", cookieString);
+			request.prepareResponse("OK", headers);//TODO this is feeling all kinds of wrong
 			User user = userCommunicator.loginUser(request.bodyInputStream(), request.getOutputStream(), sessionUUID);
 			
 			if(user==null){
