@@ -43,5 +43,17 @@ AmazonAPIGatewayPushToCloudWatchLogs
 /user GET,PUT,POST,DELETE
 
 11. We are using the Lambda Proxy method of integration, which provides a higher level object that contains the body and metadata, as json.
-http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-java
+http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-java 
+
+12. Go to AWS Lambda, create a new function. Skip the blueprint. On configure triggers, choose next. Allow it to create a execution role and note the name. Specify the microservice execution role for the function as a starting point, we will revisit momentarily.
+13. In configure function, choose java 8 as a runtime, put any name (e.g. Categorizer) and a description.
+Go to categorizeus/core and run mvn package and upload the jar file. 
+14. Under Lambda Function Handler and Role
+This is the handler: us.categorize.server.aws.lambda.ProxyStreamHandler::handleRequest
+15. Leave the other setings alone and create the function. 
+16. Go back to API gateway and configure this function to handle all the methods listed above. Make sure to enable CORS on each resource.
+17. Go to IAM roles and attach the policy AmazonS3FullAccess.
+18. Go back to API Gateway and actually redo the entire approach
+a single root resource will act as a proxy and figure out the resource from the path
+easier and works 
 

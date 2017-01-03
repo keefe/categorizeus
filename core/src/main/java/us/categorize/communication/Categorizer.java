@@ -27,6 +27,7 @@ public class Categorizer {
 	
 	public Categorizer(Config config) throws SQLException{
 		this.config = config;
+		System.out.println("Connecting " + config.getConnectString()+","+config.getDbUser()+","+config.getDbPass());
 		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		UserRepository userRepository = new SQLUserRepository(conn);
 		TagRepository tagRepository = new SQLTagRepository(conn);
@@ -44,6 +45,7 @@ public class Categorizer {
 	}
 	
 	public void handle(Frame request) throws Exception{
+		System.out.println("Handling " + request.getResource() + " and " + request.getPath());
 		if("msg".equals(request.getResource())){//TODO this is a gnarly hardcoded block, but deal with that after deployable
 			handleMessage(request);
 		}else if("thread".equals(request.getResource())){
@@ -56,9 +58,11 @@ public class Categorizer {
 	}
 	
 	public void handleMessage(Frame request) throws Exception{
+		System.out.println("Handling Message");
 		if("GET".equals(request.getMethod())){
 			String path = request.getPath();
 			Long id = Long.parseLong(path.replace("/", ""));
+			System.out.println("Looking for message " + id);
 			request.prepareResponse("OK", new HashMap<>());
 			messageCommunicator.readMessage(id, request.getOutputStream());
 			request.finalizeResponse();

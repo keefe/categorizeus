@@ -1,4 +1,4 @@
-package us.categorize.server.aws.lamdba;
+package us.categorize.server.aws.lambda;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.amazonaws.auth.policy.Resource;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,6 +35,8 @@ public class LambdaFrame implements Frame {
 	private User user;
 	private ByteArrayOutputStream responseBodyStream;
 	private String responseStatus;
+	private String path = null;
+	private String resource;
 	private Map<String, String> responseHeaders;
 
 	/*
@@ -111,11 +114,33 @@ public class LambdaFrame implements Frame {
 		this.logger = context.getLogger();
 		mapper = new ObjectMapper();
 		requestPlus = mapper.readTree(input);
-		inputJSON = requestPlus.get("input");
-		body = inputJSON.get("body");
-		headers = inputJSON.get("headers");
-		responseBodyStream = new ByteArrayOutputStream();
 		logger.log(mapper.writeValueAsString(requestPlus));
+		if(requestPlus.has("input")){
+			inputJSON = requestPlus.get("input");			
+		}else{
+			inputJSON = requestPlus;
+		}
+		if(inputJSON.has("body")){
+			body = inputJSON.get("body");			
+		}
+		if(inputJSON.has("headers")){
+			headers = inputJSON.get("headers");			
+		}
+		String fullPath = inputJSON.get("path").asText();
+		if(fullPath.startsWith("/msg/")){
+			resource = "msg";
+			path = fullPath.replace("/msg/", "");
+		}else if (fullPath.startsWith("/thread/")){
+			resource = "thread";
+			path = fullPath.replace("/thread/", "");			
+		}else if (fullPath.startsWith("/tag/")){
+			resource = "tag";
+			path = fullPath.replace("/tag/", "");
+		}else if (fullPath.startsWith("/user/")){
+			resource = "user";
+			path = fullPath.replace("/user/", "");
+		}
+		responseBodyStream = new ByteArrayOutputStream();
 	}
 	
 	@Override
@@ -134,9 +159,10 @@ public class LambdaFrame implements Frame {
 		return null;
 	}
 
+
 	@Override
 	public String getPath() {
-		return inputJSON.get("path").asText();
+		return path;
 	}
 
 	@Override
@@ -156,7 +182,7 @@ public class LambdaFrame implements Frame {
 
 	@Override
 	public String getResource() {
-		return inputJSON.get("httpMethod").asText();
+		return resource;
 	}
 
 	@Override
@@ -184,14 +210,15 @@ public class LambdaFrame implements Frame {
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode bodyNode = mapper.readTree(bodyBytes);
 		ObjectNode baseNode = JsonNodeFactory.instance.objectNode();
-		baseNode.set("body", bodyNode);
+		String bodyString = mapper.writeValueAsString(bodyNode);
+		baseNode.put("body", bodyString);
 		ObjectNode headerNode = JsonNodeFactory.instance.objectNode();
 		headerNode.put("Content-Type", "application/json");
 		for(String responseHead : responseHeaders.keySet()){
 			headerNode.put(responseHead, responseHeaders.get(responseHead));
 		}
 		baseNode.set("headers", headerNode);
-		baseNode.put("statusCode", responseStatus);
+		baseNode.put("statusCode", Long.parseLong(responseStatus));
 		mapper.writeValue(output, baseNode);
 	}
 
@@ -203,7 +230,9 @@ public class LambdaFrame implements Frame {
 	@Override
 	public String findSessionUUID() {
 		// TODO Auto-generated method stub
-		return headers.get("categorizeus").asText();
+		if(headers.has("categorizeus"))
+			return headers.get("categorizeus").asText();
+		return null;
 	}
 
 }
