@@ -3,6 +3,7 @@ package us.categorize.communication.streams;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,10 @@ public class ThreadStreamReader {
 	public ThreadCriteria readThreadCriteria(InputStream input) throws JsonProcessingException, IOException{
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode bodyObj = mapper.readTree(input);
+		mapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true); 
+
+		String reString = mapper.writeValueAsString(bodyObj);
+		System.out.println("We're checking out " + reString);
 		ThreadCriteria criteria = new ThreadCriteria();
 		criteria.setSearchTags(tagsFromJson(bodyObj.get("searchTags")));
 		criteria.setTransitiveTags(tagsFromJson(bodyObj.get("transitiveTags")));

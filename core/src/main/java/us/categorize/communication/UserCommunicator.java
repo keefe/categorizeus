@@ -3,8 +3,6 @@ package us.categorize.communication;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -68,6 +66,18 @@ public class UserCommunicator {
 		}
 		return user;
 		
+	}
+	
+	public User loadSessionUser(String sessionUUID){
+		return userRepository.findSessionUser(sessionUUID);
+	}
+
+	public UserRepository getUserRepository() {
+		return userRepository;
+	}
+
+	public void setUserRepository(UserRepository userRepository) {
+		this.userRepository = userRepository;
 	}
 	
 

@@ -21,4 +21,5 @@ public interface Frame {//metadata around this action, will be context in aws la
 	public void prepareResponse(String status, Map<String, String> headers) throws Exception;//TODO same comment as above, wrote the comms classes without fully groking this
 	public void finalizeResponse() throws Exception;//TODO this is why, because we have to build this meta JSON object for lambda vs directly responding in http
 	public void log(String line);
+	public String findSessionUUID();
 }

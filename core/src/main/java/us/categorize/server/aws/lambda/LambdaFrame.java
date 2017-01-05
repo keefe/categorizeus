@@ -1,4 +1,4 @@
-package us.categorize.server.aws.lamdba;
+package us.categorize.server.aws.lambda;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.servlet.http.HttpServletResponse;
+
+import com.amazonaws.auth.policy.Resource;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,7 +36,10 @@ public class LambdaFrame implements Frame {
 	private User user;
 	private ByteArrayOutputStream responseBodyStream;
 	private String responseStatus;
+	private String path = null;
+	private String resource;
 	private Map<String, String> responseHeaders;
+	private String sessionUUID;
 
 	/*
 	 * 
@@ -109,9 +116,46 @@ public class LambdaFrame implements Frame {
 		this.logger = context.getLogger();
 		mapper = new ObjectMapper();
 		requestPlus = mapper.readTree(input);
-		inputJSON = requestPlus.get("input");
-		body = inputJSON.get("body");
-		headers = inputJSON.get("headers");
+		logger.log(mapper.writeValueAsString(requestPlus));
+		if(requestPlus.has("input")){
+			inputJSON = requestPlus.get("input");			
+		}else{
+			inputJSON = requestPlus;
+		}
+		if(inputJSON.has("body")){
+			String bodyText = inputJSON.get("body").asText();
+			//System.out.println("Body Received From Lambda As " + bodyText);
+			body = mapper.readTree(bodyText);	
+		}
+		if(inputJSON.has("headers")){
+			headers = inputJSON.get("headers");	
+			if(headers.has("Cookie")){
+				String cookieString = headers.get("Cookie").asText();
+				String crumbs[] = cookieString.split("=");
+				System.out.println("Cookie Found! it was " + cookieString);
+				if("categorizeus".equals(crumbs[0])){
+					sessionUUID = crumbs[1];
+					System.out.println("Found UUID " + sessionUUID);
+				}
+
+			}else
+				sessionUUID = UUID.randomUUID().toString();
+				
+		}
+		String fullPath = inputJSON.get("path").asText();
+		if(fullPath.startsWith("/msg/")){
+			resource = "msg";
+			path = fullPath.replace("/msg/", "");
+		}else if (fullPath.startsWith("/thread/")){
+			resource = "thread";
+			path = fullPath.replace("/thread/", "");			
+		}else if (fullPath.startsWith("/tag/")){
+			resource = "tag";
+			path = fullPath.replace("/tag/", "");
+		}else if (fullPath.startsWith("/user/")){
+			resource = "user";
+			path = fullPath.replace("/user/", "");
+		}
 		responseBodyStream = new ByteArrayOutputStream();
 	}
 	
@@ -131,9 +175,10 @@ public class LambdaFrame implements Frame {
 		return null;
 	}
 
+
 	@Override
 	public String getPath() {
-		return inputJSON.get("path").asText();
+		return path;
 	}
 
 	@Override
@@ -153,7 +198,7 @@ public class LambdaFrame implements Frame {
 
 	@Override
 	public String getResource() {
-		return inputJSON.get("httpMethod").asText();
+		return resource;
 	}
 
 	@Override
@@ -163,7 +208,15 @@ public class LambdaFrame implements Frame {
 
 	@Override
 	public void prepareResponse(String status, Map<String, String> headers) throws Exception {
-		this.responseStatus = status;
+		if("OK".equals(status)){
+			responseStatus = ""+(HttpServletResponse.SC_OK);
+		}else if("Forbidden".equals(status)){
+			responseStatus = ""+(HttpServletResponse.SC_FORBIDDEN);
+		}else if("Not Found".equals(status)){
+			responseStatus = ""+(HttpServletResponse.SC_NOT_FOUND);
+		}else{
+			responseStatus = ""+(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 		this.responseHeaders = headers;
 	}
 
@@ -173,20 +226,26 @@ public class LambdaFrame implements Frame {
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode bodyNode = mapper.readTree(bodyBytes);
 		ObjectNode baseNode = JsonNodeFactory.instance.objectNode();
-		baseNode.set("body", bodyNode);
+		String bodyString = mapper.writeValueAsString(bodyNode);
+		baseNode.put("body", bodyString);
 		ObjectNode headerNode = JsonNodeFactory.instance.objectNode();
 		headerNode.put("Content-Type", "application/json");
 		for(String responseHead : responseHeaders.keySet()){
 			headerNode.put(responseHead, responseHeaders.get(responseHead));
 		}
 		baseNode.set("headers", headerNode);
-		baseNode.put("statusCode", responseStatus);
+		baseNode.put("statusCode", Long.parseLong(responseStatus));
 		mapper.writeValue(output, baseNode);
 	}
 
 	@Override
 	public void log(String line) {
 		logger.log(line);
+	}
+
+	@Override
+	public String findSessionUUID() {
+		return sessionUUID;
 	}
 
 }

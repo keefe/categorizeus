@@ -17,83 +17,49 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import us.categorize.communication.Categorizer;
+import us.categorize.communication.MessageCommunicator;
 import us.categorize.communication.TagCommunicator;
 import us.categorize.communication.ThreadCommunicator;
 import us.categorize.communication.UserCommunicator;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.creation.attachment.S3AttachmentHandler;
-import us.categorize.repository.MessageRepository;
-import us.categorize.repository.SQLMessageRepository;
-import us.categorize.repository.SQLTagRepository;
-import us.categorize.repository.SQLUserRepository;
-import us.categorize.repository.TagRepository;
-import us.categorize.repository.UserRepository;
 import us.categorize.server.http.AuthFilter;
-import us.categorize.server.http.MessageServlet;
+import us.categorize.server.http.FramingServlet;
 import us.categorize.server.http.SessionCookieFilter;
-import us.categorize.server.http.TagServlet;
-import us.categorize.server.http.ThreadServlet;
-import us.categorize.server.http.UserServlet;
+import us.categorize.server.http.legacy.MessageServlet;
+import us.categorize.server.http.legacy.TagServlet;
+import us.categorize.server.http.legacy.ThreadServlet;
+import us.categorize.server.http.legacy.UserServlet;
 
 public class App {
-	private static  String clearSql, createSql, dbHost, dbPort, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
-	private static String s3bucket, s3region, attachmentURLPrefix, connectString;
 	
-	private static long maxUploadSize = -1;
-	private static double maxThumbWidth, maxThumbHeight;
-	
-	private static  int port;
-
 	public static void main(String args[]) throws Exception {
-
-
 		Properties properties = new Properties();
+		
 		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
 		Config config = new Config(properties);
-		System.out.println("Connecting to " + properties.getProperty("DB_NAME") + " as " + properties.getProperty("DB_USER"));
-		
-		//TODO put these all into an automapped java bean with defaults
-		clearSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/clear.sql";//TODO refactor to load from the jar as above
-		createSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/tables.sql";
-		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
-		seedSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/seed.sql";		
-		dbName = properties.getProperty("DB_NAME");
-		dbHost = properties.getProperty("DB_HOST");
-		dbPort = properties.getProperty("DB_PORT");
-		dbUser = properties.getProperty("DB_USER");
-		dbPass = properties.getProperty("DB_PASS");
-		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
-		s3region = properties.getProperty("AWS_REGION");
-		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
-		connectString = "jdbc:postgresql://" + dbHost+":"+dbPort+"/"+dbName;
-		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
-		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
-		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
-		
-		port = Integer.parseInt(properties.getProperty("PORT"));
-		staticDir = properties.getProperty("STATIC_DIR");
-		fileBase = staticDir + "/files";
-
 		Class.forName("org.postgresql.Driver");
 		System.out.println("Postgres Driver Loaded");
 		if (args.length > 0 && "initialize".equals(args[0])){
-			initializeDB(args);
+			initializeDB(config);
 		}
 		System.out.println("Initialization Complete");
-		serverUp(args);
+		//serverUp(config);
+		serverUpGeneric(config);
 	}
 
-	public static void initializeDB(String args[]) throws ClassNotFoundException, SQLException, IOException {
+	public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
 		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
-		System.out.println("Attempting connect to " + connectString);
-		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
+		System.out.println("Attempting connect to " + config.getConnectString());
+		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		System.out.println("Connected to database for initialization");
 		Statement st = conn.createStatement();
-		executeFile(clearSql, st);
-		executeFile(createSql, st);
-		executeFile(indexSql, st);
-		executeFile(seedSql, st);
+		executeFile(config.getClearSql(), st);
+		executeFile(config.getCreateSql(), st);
+		executeFile(config.getIndexSql(), st);
+		executeFile(config.getSeedSql(), st);
 		st.close();
 		conn.close();
 	}
@@ -109,46 +75,34 @@ public class App {
 			}
 		}
 	}
-	
-	public static void serverUp(String args[]) throws Exception{
-		Connection conn = DriverManager.getConnection(connectString, dbUser, dbPass);
-		UserRepository userRepository = new SQLUserRepository(conn);
-		TagRepository tagRepository = new SQLTagRepository(conn);
-		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
-
-		System.out.println("Starting Server on Port " + port);
-		Server server = new Server(port);
+	public static void serverUpGeneric(Config config) throws Exception{
+		Categorizer categorizer = new Categorizer(config);
+		System.out.println("Starting Server on Port " + config.getPort());
+		Server server = new Server(config.getPort());
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
 		context.setContextPath("/");
-		System.out.println("Preparing to serve static files from " + staticDir);
-		context.setResourceBase(staticDir);
-		
-		SessionCookieFilter sessionCookieFilter = new SessionCookieFilter(userRepository);
+		System.out.println("Preparing to serve static files from " + config.getStaticDir());
+		context.setResourceBase(config.getStaticDir());
+		SessionCookieFilter sessionCookieFilter = new SessionCookieFilter(categorizer.getUserCommunicator().getUserRepository());
 		FilterHolder sessionCookieFilterHolder = new FilterHolder(sessionCookieFilter);
 		context.addFilter(sessionCookieFilterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
-		
 		ServletHandler handler = new ServletHandler();
 		FilterHolder filterHolder = handler.addFilterWithMapping(AuthFilter.class, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		
 		context.addFilter(filterHolder, "/msg/*", EnumSet.of(DispatcherType.REQUEST));
-		AttachmentHandler localAttachmentHandler = new FileSystemAttachmentHandler(fileBase);
-		AttachmentHandler s3AttachmentHandler = new S3AttachmentHandler(s3bucket, s3region, attachmentURLPrefix);
-		MessageServlet messageServlet = new MessageServlet(messageRepository, userRepository, tagRepository, s3AttachmentHandler, maxThumbWidth, maxThumbHeight, maxUploadSize);
+		
+		FramingServlet messageServlet = new FramingServlet("msg", categorizer);
 		context.addServlet(new ServletHolder(messageServlet), "/msg/*");
-		ThreadCommunicator threadCommunicator = new ThreadCommunicator(tagRepository, messageRepository);
-		ThreadServlet threadServlet = new ThreadServlet(threadCommunicator);
+		FramingServlet threadServlet = new FramingServlet("thread", categorizer);
 		context.addServlet(new ServletHolder(threadServlet), "/thread/*");
-		TagCommunicator tagCommunicator = new TagCommunicator(tagRepository, messageRepository);
-		TagServlet tagServlet = new TagServlet(tagCommunicator);
+		FramingServlet tagServlet = new FramingServlet("tag", categorizer);
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
-		UserCommunicator userCommunicator = new UserCommunicator(userRepository);
-		UserServlet userServlet = new UserServlet(userCommunicator);
+		FramingServlet userServlet = new FramingServlet("user", categorizer);
 		context.addServlet(new ServletHolder(userServlet), "/user/*");
+
 		
 		context.addServlet(DefaultServlet.class, "/");
 		server.setHandler(context);
 		server.start();
 		server.join();
-	}
-	
+	}	
 }
