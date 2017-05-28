@@ -17,7 +17,13 @@ ssh into ubuntu box
 
 install git, should be already done
 follow the git instructions - run ssh-keygen, add the key to github, do ssh git@github.com should see that you are logged in
-make a small commit to verify connection
+make a small commit to verify connection, this would be for example
+git clone <your repo>
+cd categorizeus
+nano setup.txt
+type some stuff
+git commit -a -m "hello from the other side"
+git push origin master
 
 if you're like me you forgot to do this:
     git config --global --edit
