@@ -118,8 +118,11 @@ After doing this, you may fix the identity used for this commit with:
 	PORT=8080
 	DB_USER=categorizeus
 	DB_PASS=redacted
+	DB_HOST=something?
+	DB_PORT=5432
 	DB_NAME=categories
 	SQL_BASE=/home/ubuntu/categorizeus/core/src/main/resources
 	MAX_UPLOAD_SIZE=3145728
 	MAX_THUMB_WIDTH=250
 	MAX_THUMB_HEIGHT=250
+7) notice my instructions were lost with my old machine, be extremely frustrated
