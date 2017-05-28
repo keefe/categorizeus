@@ -1,0 +1,22 @@
+developing using google chromebook
+
+	I'm using a samsung series 3
+	reboot into developer mode by pressing esc,refresh,power at the splash hit ctrl+D
+	this will turn the computer into developer mode
+
+setup github.com for github.com/categorizeus/categorizeus
+sign up for AWS free tier
+launch a free tier micro instance of ubuntu, save key to local box - probably should back it up somewhere for good measure
+press ctrl+alt+t go into the cors window, type shell to get into a bash shell
+notice there is only vi, hit head against table several times
+reluctantly use vi or use cat to save hostname into a file
+do chmod 400 blah.pem and ssh -i blah.pem whatever.host
+ssh into ubuntu box
+
+--- at this point we're into a development box ---
+
+install git, should be already done
+follow the git instructions - run ssh-keygen, add the key to github, do ssh git@github.com should see that you are logged in
+make a small commit to verify connection
+install maven3
+
