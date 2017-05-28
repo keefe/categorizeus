@@ -18,5 +18,14 @@ ssh into ubuntu box
 install git, should be already done
 follow the git instructions - run ssh-keygen, add the key to github, do ssh git@github.com should see that you are logged in
 make a small commit to verify connection
+
+if you're like me you forgot to do this:
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+
 install maven3
 
