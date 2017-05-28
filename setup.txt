@@ -75,3 +75,16 @@ After doing this, you may fix the identity used for this commit with:
 		[INFO] Finished at: 2017-05-28T22:54:41+00:00
 		[INFO] Final Memory: 19M/50M
 		[INFO] ------------------------------------------------------------------------
+4) Setup Database
+
+	4a) sudo apt-get install postgresql postgresql-contrib pgadmin3
+	4b) sudo -u postgres psql postgres
+	4c) setup a password
+	postgres=# create user categorizeus with password 'redacted';
+		CREATE ROLE
+	postgres=# create database categories;
+		CREATE DATABASE
+	postgres=# GRANT ALL PRIVILEGES ON DATABASE categories to categorizeus;
+		GRANT
+	postgres-# \q
+		ubuntu@redacted:~/categorizeus$
