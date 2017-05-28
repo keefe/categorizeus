@@ -88,3 +88,38 @@ After doing this, you may fix the identity used for this commit with:
 		GRANT
 	postgres-# \q
 		ubuntu@redacted:~/categorizeus$
+5) Setup database connection
+	5a) we're going to put our database details in a properties file, so let's make sure that file is not tracked and committed
+	git update-index --assume-unchanged src/main/resources/categorizeus.properties
+	Edit src/main/resources/categorizeus.properties and enter the password from the last step run git status and verify is not in
+	ubuntu@redacted:~/categorizeus/core$ nano src/main/resources/categorizeus.properties 
+	ubuntu@redacted:~/categorizeus/core$ ls
+	categorizeus.properties.example  make_eclipse.sh  message.json  pom.xml  src  target
+	ubuntu@redacted:~/categorizeus/core$ git status
+	On branch master
+	Your branch is ahead of 'origin/master' by 1 commit.
+	  (use "git push" to publish your local commits)
+	Changes not staged for commit:
+	  (use "git add <file>..." to update what will be committed)
+	  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	        modified:   ../README.md
+	        modified:   ../setup.txt
+
+	no changes added to commit (use "git add" and/or "git commit -a")
+
+6) setup location of seed files in categorizeus.properties
+	ubuntu@redacted:~/categorizeus/core$ cd src/main/resources/
+	ubuntu@redacted:~/categorizeus/core/src/main/resources$ pwd /home/ubuntu/categorizeus/core/src/main/resource
+	similarly, enter the absolute path of the static resources directory
+	It should look something like this
+	ubuntu@redacted:~/categorizeus/core/src/main/resources$ cat categorizeus.properties 
+	STATIC_DIR=/home/ubuntu/categorizeus/static
+	PORT=8080
+	DB_USER=categorizeus
+	DB_PASS=redacted
+	DB_NAME=categories
+	SQL_BASE=/home/ubuntu/categorizeus/core/src/main/resources
+	MAX_UPLOAD_SIZE=3145728
+	MAX_THUMB_WIDTH=250
+	MAX_THUMB_HEIGHT=250

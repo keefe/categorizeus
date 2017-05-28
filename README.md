@@ -6,8 +6,6 @@ For the latest (and hopefully last, for a long time) reboot of this system, I to
 
 Unfortunately, including a client for talking to decentralized peers slipped the week, but refactoring for a serverless deploy made it in.
 
-### Active Development Continues under categorizeus/categorizeus here at [github](https://github.com/categorizeus/categorizeus) 
-
 Run the main application as such:
 
  mvn exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args=""
