@@ -55,5 +55,23 @@ After doing this, you may fix the identity used for this commit with:
 		Java HotSpot(TM) 64-Bit Server VM (build 25.131-b11, mixed mode)
 		ubuntu@redacted:~/categorizeus$ 
 		if this command looks like something like this ^^^ then you've got your language installed
-install maven3
-
+2) install maven3
+	2a) sudo apt-get install maven
+	2b) ubuntu@redacted:~/categorizeus$ mvn -v
+		Apache Maven 3.3.9
+		Maven home: /usr/share/maven
+		Java version: 1.8.0_131, vendor: Oracle Corporation
+		Java home: /usr/lib/jvm/java-8-oracle/jre
+		Default locale: en_US, platform encoding: UTF-8
+		OS name: "linux", version: "4.4.0-1013-aws", arch: "amd64", family: "unix"
+3) Test Compile
+	3a) cd core	
+	3b) mvn clean compile, should look something like this
+		[INFO] Compiling 42 source files to /home/ubuntu/categorizeus/core/target/classes
+		[INFO] ------------------------------------------------------------------------
+		[INFO] BUILD SUCCESS
+		[INFO] ------------------------------------------------------------------------
+		[INFO] Total time: 12.974 s
+		[INFO] Finished at: 2017-05-28T22:54:41+00:00
+		[INFO] Final Memory: 19M/50M
+		[INFO] ------------------------------------------------------------------------
