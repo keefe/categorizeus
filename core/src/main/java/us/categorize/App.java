@@ -32,13 +32,20 @@ import us.categorize.server.http.legacy.MessageServlet;
 import us.categorize.server.http.legacy.TagServlet;
 import us.categorize.server.http.legacy.ThreadServlet;
 import us.categorize.server.http.legacy.UserServlet;
+import java.io.*;
 
 public class App {
 	
 	public static void main(String args[]) throws Exception {
 		Properties properties = new Properties();
 		
-		properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
+		//properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
+		InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
+		properties.load(input);
+		StringWriter writer = new StringWriter();
+		properties.list(new PrintWriter(writer));
+		System.out.println("Properties File Read As " + properties.getProperty("DB_NAME"));
+	  	System.out.println(writer.getBuffer().toString());
 		Config config = new Config(properties);
 		Class.forName("org.postgresql.Driver");
 		System.out.println("Postgres Driver Loaded");
