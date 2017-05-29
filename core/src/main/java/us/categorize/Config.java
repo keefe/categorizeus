@@ -181,8 +181,8 @@ public class Config {
 			uploadStorage = properties.getProperty("UPLOAD_STORAGE");
 		}
 		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
-		connectString = "jdbc:postgresql:" + dbHost+":"+dbPort+"/"+dbName;
-		System.out.println("Connect String Detected As " + connectString);
+		connectString = "jdbc:postgresql:" +"/"+"/"+ dbHost+":"+dbPort+"/"+dbName;
+		System.out.println("nc Connect String Detected As " + connectString);
 		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
 		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
 		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
