@@ -1,0 +1,3 @@
+How to develop this thing under chromebook?
+
+1) sourcelair - working so far at least, edit only
