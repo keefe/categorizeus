@@ -154,4 +154,5 @@ TCP 443 ::/0
 
 11) Go find the public DNS of your EC2 instance and visit http://whatever:8080 you should see some basic forum stuff
 When you do stuff, you should see some SQL logs
-this version has some issues so lemme fix that figure out where the missing code is
+this version has some issues so lemme fix that figure out where the missing code is...
+OK cloud 9 IDE show me a commit abc12318
