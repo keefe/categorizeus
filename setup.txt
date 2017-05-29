@@ -126,3 +126,32 @@ After doing this, you may fix the identity used for this commit with:
 	MAX_THUMB_WIDTH=250
 	MAX_THUMB_HEIGHT=250
 7) notice my instructions were lost with my old machine, be extremely frustrated
+8) Run database initialization from the core directory
+mvn -X exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args="initialize"
+output should look something like that
+
+nc Connect String Detected As jdbc:postgresql://127.0.0.1:5432/categories
+Postgres Driver Loaded
+Attempting connect to jdbc:postgresql://127.0.0.1:5432/categories
+Connected to database for initialization
+
+9) If there is a connection error, then extra super fun awesome debugging time...
+   Verify that the connection string looks right, if the connection doesn't work
+   then check that the command line connection works and listen_address is * in 
+   the pga_hba.conf and make sure connect via IP address works
+
+10) Login to the AWS console and edit the inbound TCP/IP connection rules to allow server connection
+We should allow standard HTTP connections (80), standard HTTPS (443) and the server (443)
+it should look something like this
+TCP 80 0.0.0.0/0
+TCP 80 ::/0
+TCP 8080 0.0.0.0/0
+TCP 8080 ::/0
+TCP 22 0.0.0.0/0
+TCP 443 0.0.0.0/0
+TCP 443 ::/0
+
+
+11) Go find the public DNS of your EC2 instance and visit http://whatever:8080 you should see some basic forum stuff
+When you do stuff, you should see some SQL logs
+this version has some issues so lemme fix that figure out where the missing code is
