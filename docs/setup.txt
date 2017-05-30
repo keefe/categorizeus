@@ -172,3 +172,20 @@ we'll verify this stuff and make sure that the javascript CORS is working proper
 16) Go to whateverDNS and create a document, you should see something like [fig1]
     At this point if a document is created (amusingly, it should be #23) and after refresh it persists, then the basic DB conn works
 17) At this point, I'm going to divert from the standard script - I want to have more commits on my punch card, so switching to direct repo
+	#TODO ***very confused about this, should commits to a fork appear in punchcard after 24 hours if pull request is up?***
+18) Make sure that you run the following command to ignore changes to the database config so that your password doesn't end up in github.
+	git update-index --assume-unchanged core/src/main/resources/categorizeus.properties
+try not to be an idiot like me and stomp on this file over and over again
+it should look something like 
+STATIC_DIR=/home/ubuntu/categorizeus/static
+PORT=8080
+DB_USER=REDACTED
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_PASS=REDACTED
+DB_NAME=categories
+SQL_BASE=/home/ubuntu/categorizeus/
+MAX_UPLOAD_SIZE=3145728
+MAX_THUMB_SIZE=3145728
+MAX_THUMB_WIDTH=250
+MAX_THUMB_HEIGHT=250
