@@ -18,8 +18,17 @@ Improved rudimentary UI stuff
     next and previous buttons
     review search vs tag mode stuff
     
+Thumbnail creation for large uploads
+
+
+
 Review and Cleanup, descriptions for use as a compsci teaching tool
 basic client implementation, rough capacity writing and metrics
+    how would triggering action based on code work
+    
+think through the basic data model, maybe an OWL model, dunno
+
+
 tune this and review it several times, setup blog host, then move on to lyrics generator thing
 
 General Code review, blog post
