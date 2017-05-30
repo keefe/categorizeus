@@ -1,3 +1,31 @@
+Externalize handlebars templates!
+
+Review basic post and refresh flow, we need to make this thing basically useful, so two people can have a convo on screencast. 
+    ^^above is the goal state, will show some rudimentary understanding of UX, etc. 
+    the biggest issue, the #1 problem is after posting a reply you don't see it on the same screen
+    
+Initialization Fix inside of App.java
+    InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
+    I hate this initialization shit with a burning fucking passion
+
+Hey guess what more initialization ?!
+    Need to make this seemlessly work from a jar and get it deployed on S3/lambda again
+    and then make the SAME codebase work with inside the jar and on the local file system
+    maybe like have a series of places to search for the categorizeus.properties file?
+
+Improved rudimentary UI stuff
+    create post page
+    next and previous buttons
+    review search vs tag mode stuff
+    
+Review and Cleanup, descriptions for use as a compsci teaching tool
+basic client implementation, rough capacity writing and metrics
+tune this and review it several times, setup blog host, then move on to lyrics generator thing
+
+General Code review, blog post
+
+
+
 bloody hell this secure shell bullshit thing about keyboard shortcutes, ctrl+w closes window fucking great
 	maybe is easier to remap nano than chrome or somet shit
 

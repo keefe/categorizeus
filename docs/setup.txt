@@ -189,3 +189,8 @@ MAX_UPLOAD_SIZE=3145728
 MAX_THUMB_SIZE=3145728
 MAX_THUMB_WIDTH=250
 MAX_THUMB_HEIGHT=250
+UPLOAD_STORAGE=local
+
+At this point you should be able to go to whatever.yourdomain.com and get redirected to port 8080 and see the server
+In order to run the server kind of, in the background, you can do nohup ./run.sh & 2>&1
+and it should stay up after the machine goes down, else when the term goes down, the server goes down. 
