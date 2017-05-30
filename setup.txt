@@ -156,3 +156,15 @@ TCP 443 ::/0
 When you do stuff, you should see some SQL logs
 this version has some issues so lemme fix that figure out where the missing code is...
 OK cloud 9 IDE show me a commit abc12318
+
+12) Setup your development environment and checkout your fork 
+(please don't checkout my repo, I don't roll like that) 
+actually it's kind of messed up working on forks, because commits don't hit your punch card
+I'm currently using cloud9 because of my messed up personal situation, it works ok
+
+13) (optional) login to your DNS host and setup a dev box
+If you have a fresh domain, it's ideal to use Route 53 because it makes the setup all pretty
+If you're using a different host, e.g. Dyn, then we'll just setup simple redirects
+we'll verify this stuff and make sure that the javascript CORS is working properly after while
+
+
