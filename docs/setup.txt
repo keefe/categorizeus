@@ -170,3 +170,4 @@ we'll verify this stuff and make sure that the javascript CORS is working proper
 
 15) go into categorizeus/core and execute run.sh, you should see something like [fig0]
 16) Go to whateverDNS and create a document, you should see something like [fig1]
+    At this point if a document is created (amusingly, it should be #23) and after refresh it persists, then the basic DB conn works
