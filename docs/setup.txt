@@ -155,7 +155,6 @@ TCP 443 ::/0
 11) Go find the public DNS of your EC2 instance and visit http://whatever:8080 you should see some basic forum stuff
 When you do stuff, you should see some SQL logs
 this version has some issues so lemme fix that figure out where the missing code is...
-OK cloud 9 IDE show me a commit abc12318
 
 12) Setup your development environment and checkout your fork 
 (please don't checkout my repo, I don't roll like that) 
@@ -167,4 +166,7 @@ If you have a fresh domain, it's ideal to use Route 53 because it makes the setu
 If you're using a different host, e.g. Dyn, then we'll just setup simple redirects
 we'll verify this stuff and make sure that the javascript CORS is working properly after while
 
+14) Make some simple change and do a round trip to verify setup is OK
 
+15) go into categorizeus/core and execute run.sh, you should see something like [fig0]
+16) Go to whateverDNS and create a document, you should see something like [fig1]
