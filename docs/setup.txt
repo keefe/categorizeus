@@ -1,0 +1,173 @@
+developing using google chromebook
+
+	I'm using a samsung series 3
+	reboot into developer mode by pressing esc,refresh,power at the splash hit ctrl+D
+	this will turn the computer into developer mode
+
+setup github.com for github.com/categorizeus/categorizeus
+sign up for AWS free tier
+launch a free tier micro instance of ubuntu, save key to local box - probably should back it up somewhere for good measure
+press ctrl+alt+t go into the cors window, type shell to get into a bash shell
+notice there is only vi, hit head against table several times
+reluctantly use vi or use cat to save hostname into a file
+do chmod 400 blah.pem and ssh -i blah.pem whatever.host
+ssh into ubuntu box
+
+--- at this point we're into a development box ---
+
+install git, should be already done
+follow the git instructions - run ssh-keygen, add the key to github, do ssh git@github.com should see that you are logged in
+make a small commit to verify connection, this would be for example
+git clone <your repo>
+cd categorizeus
+nano setup.txt
+type some stuff
+git commit -a -m "hello from the other side"
+git push origin master
+
+if you're like me you forgot to do this:
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+
+--- get coffee and meditate to gather strength for the tedium ---
+
+1) Install java, preferably sun java, 8 or higher
+	1a) Check which version of ubuntu you're running, lsb_release -a
+	should look something like this
+	No LSB modules are available.
+	Distributor ID: Ubuntu
+	Description:    Ubuntu 16.04.2 LTS
+	Release:        16.04
+	Codename:       xenial
+	1b) check that there are not some idiotic hoops to jump through to install java on your version
+	1c) I've had good luck with the webupd8team for java installs, so I ran this
+		sudo add-apt-repository ppa:webupd8team/java
+		sudo apt-get update
+		sudo apt install oracle-java8-installer
+		accept the oracle license, silently curse oracle for their lack of compliance with linux
+		ubuntu@redacted:~/categorizeus$ java -version
+		java version "1.8.0_131"
+		Java(TM) SE Runtime Environment (build 1.8.0_131-b11)
+		Java HotSpot(TM) 64-Bit Server VM (build 25.131-b11, mixed mode)
+		ubuntu@redacted:~/categorizeus$ 
+		if this command looks like something like this ^^^ then you've got your language installed
+2) install maven3
+	2a) sudo apt-get install maven
+	2b) ubuntu@redacted:~/categorizeus$ mvn -v
+		Apache Maven 3.3.9
+		Maven home: /usr/share/maven
+		Java version: 1.8.0_131, vendor: Oracle Corporation
+		Java home: /usr/lib/jvm/java-8-oracle/jre
+		Default locale: en_US, platform encoding: UTF-8
+		OS name: "linux", version: "4.4.0-1013-aws", arch: "amd64", family: "unix"
+3) Test Compile
+	3a) cd core	
+	3b) mvn clean compile, should look something like this
+		[INFO] Compiling 42 source files to /home/ubuntu/categorizeus/core/target/classes
+		[INFO] ------------------------------------------------------------------------
+		[INFO] BUILD SUCCESS
+		[INFO] ------------------------------------------------------------------------
+		[INFO] Total time: 12.974 s
+		[INFO] Finished at: 2017-05-28T22:54:41+00:00
+		[INFO] Final Memory: 19M/50M
+		[INFO] ------------------------------------------------------------------------
+4) Setup Database
+
+	4a) sudo apt-get install postgresql postgresql-contrib pgadmin3
+	4b) sudo -u postgres psql postgres
+	4c) setup a password
+	postgres=# create user categorizeus with password 'redacted';
+		CREATE ROLE
+	postgres=# create database categories;
+		CREATE DATABASE
+	postgres=# GRANT ALL PRIVILEGES ON DATABASE categories to categorizeus;
+		GRANT
+	postgres-# \q
+		ubuntu@redacted:~/categorizeus$
+5) Setup database connection
+	5a) we're going to put our database details in a properties file, so let's make sure that file is not tracked and committed
+	git update-index --assume-unchanged src/main/resources/categorizeus.properties
+	Edit src/main/resources/categorizeus.properties and enter the password from the last step run git status and verify is not in
+	ubuntu@redacted:~/categorizeus/core$ nano src/main/resources/categorizeus.properties 
+	ubuntu@redacted:~/categorizeus/core$ ls
+	categorizeus.properties.example  make_eclipse.sh  message.json  pom.xml  src  target
+	ubuntu@redacted:~/categorizeus/core$ git status
+	On branch master
+	Your branch is ahead of 'origin/master' by 1 commit.
+	  (use "git push" to publish your local commits)
+	Changes not staged for commit:
+	  (use "git add <file>..." to update what will be committed)
+	  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	        modified:   ../README.md
+	        modified:   ../setup.txt
+
+	no changes added to commit (use "git add" and/or "git commit -a")
+
+6) setup location of seed files in categorizeus.properties
+	ubuntu@redacted:~/categorizeus/core$ cd src/main/resources/
+	ubuntu@redacted:~/categorizeus/core/src/main/resources$ pwd /home/ubuntu/categorizeus/core/src/main/resource
+	similarly, enter the absolute path of the static resources directory
+	It should look something like this
+	ubuntu@redacted:~/categorizeus/core/src/main/resources$ cat categorizeus.properties 
+	STATIC_DIR=/home/ubuntu/categorizeus/static
+	PORT=8080
+	DB_USER=categorizeus
+	DB_PASS=redacted
+	DB_HOST=something?
+	DB_PORT=5432
+	DB_NAME=categories
+	SQL_BASE=/home/ubuntu/categorizeus/core/src/main/resources
+	MAX_UPLOAD_SIZE=3145728
+	MAX_THUMB_WIDTH=250
+	MAX_THUMB_HEIGHT=250
+7) notice my instructions were lost with my old machine, be extremely frustrated
+8) Run database initialization from the core directory
+mvn -X exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args="initialize"
+output should look something like that
+
+nc Connect String Detected As jdbc:postgresql://127.0.0.1:5432/categories
+Postgres Driver Loaded
+Attempting connect to jdbc:postgresql://127.0.0.1:5432/categories
+Connected to database for initialization
+
+9) If there is a connection error, then extra super fun awesome debugging time...
+   Verify that the connection string looks right, if the connection doesn't work
+   then check that the command line connection works and listen_address is * in 
+   the pga_hba.conf and make sure connect via IP address works
+
+10) Login to the AWS console and edit the inbound TCP/IP connection rules to allow server connection
+We should allow standard HTTP connections (80), standard HTTPS (443) and the server (443)
+it should look something like this
+TCP 80 0.0.0.0/0
+TCP 80 ::/0
+TCP 8080 0.0.0.0/0
+TCP 8080 ::/0
+TCP 22 0.0.0.0/0
+TCP 443 0.0.0.0/0
+TCP 443 ::/0
+
+
+11) Go find the public DNS of your EC2 instance and visit http://whatever:8080 you should see some basic forum stuff
+When you do stuff, you should see some SQL logs
+this version has some issues so lemme fix that figure out where the missing code is...
+
+12) Setup your development environment and checkout your fork 
+(please don't checkout my repo, I don't roll like that) 
+actually it's kind of messed up working on forks, because commits don't hit your punch card
+I'm currently using cloud9 because of my messed up personal situation, it works ok
+
+13) (optional) login to your DNS host and setup a dev box
+If you have a fresh domain, it's ideal to use Route 53 because it makes the setup all pretty
+If you're using a different host, e.g. Dyn, then we'll just setup simple redirects
+we'll verify this stuff and make sure that the javascript CORS is working properly after while
+
+14) Make some simple change and do a round trip to verify setup is OK
+
+15) go into categorizeus/core and execute run.sh, you should see something like [fig0]
+16) Go to whateverDNS and create a document, you should see something like [fig1]
+    At this point if a document is created (amusingly, it should be #23) and after refresh it persists, then the basic DB conn works
