@@ -28,6 +28,17 @@ basic client implementation, rough capacity writing and metrics
     
 think through the basic data model, maybe an OWL model, dunno
 
+corpus of information beyond ngrams, spellcheck suggestions might offer some level 
+of insight into phonological or morphological similarities, the basic idea is looking at related words
+It's not clear if this particular data structure is all that well suited for what we want to do,
+but let's get something running in it and then review, the linguistic variant stuff might
+happen in one of the private code binaries and then we feed in here for demo purposes
+
+generate ERD diagram of data model
+
+performance testing on data model
+explore idea of tags having a real valued relationship to a message (this is in the data model already)
+
 
 tune this and review it several times, setup blog host, then move on to lyrics generator thing
 

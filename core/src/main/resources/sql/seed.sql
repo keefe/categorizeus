@@ -1,9 +1,9 @@
-insert into users(username, email, passhash) values ('keefe', 'keefe@categorize.us', 'de6626d4074d5ec122eb3c3f18ba1f8a3f706dee5dbe2d73189309a6bcf8601d');
-insert into users(username, email, passhash) values ('keefe1', 'keefe+1@categorize.us', 'de6626d4074d5ec122eb3c3f18ba1f8a3f706dee5dbe2d73189309a6bcf8601d');
-insert into users(username, email, passhash) values ('keefe2', 'keefe+2@categorize.us', 'de6626d4074d5ec122eb3c3f18ba1f8a3f706dee5dbe2d73189309a6bcf8601d');
-insert into users(username, email, passhash) values ('keefe3', 'keefe+3@categorize.us', 'de6626d4074d5ec122eb3c3f18ba1f8a3f706dee5dbe2d73189309a6bcf8601d');
-insert into users(username, email, passhash) values ('keefe4', 'keefe+4@categorize.us', 'de6626d4074d5ec122eb3c3f18ba1f8a3f706dee5dbe2d73189309a6bcf8601d');
-insert into users(username, email, passhash) values ('katie', 'katie@categorize.us', 'de6626d4074d5ec122eb3c3f18ba1f8a3f706dee5dbe2d73189309a6bcf8601d');
+insert into users(username, email, passhash) values ('keefe', 'keefe@categorize.us', '1bde02e24c6d8620c9f39da824e1dd65a94799350264beb4db02bbca57ee06c4');
+insert into users(username, email, passhash) values ('keefe1', 'keefe+1@categorize.us', '1bde02e24c6d8620c9f39da824e1dd65a94799350264beb4db02bbca57ee06c4');
+insert into users(username, email, passhash) values ('keefe2', 'keefe+2@categorize.us', '1bde02e24c6d8620c9f39da824e1dd65a94799350264beb4db02bbca57ee06c4');
+insert into users(username, email, passhash) values ('keefe3', 'keefe+3@categorize.us', '1bde02e24c6d8620c9f39da824e1dd65a94799350264beb4db02bbca57ee06c4');
+insert into users(username, email, passhash) values ('keefe4', 'keefe+4@categorize.us', '1bde02e24c6d8620c9f39da824e1dd65a94799350264beb4db02bbca57ee06c4');
+insert into users(username, email, passhash) values ('you', 'amyourweapon@categorize.us', '1bde02e24c6d8620c9f39da824e1dd65a94799350264beb4db02bbca57ee06c4');
 
 
 insert into tags(tag) values ('tag1');
