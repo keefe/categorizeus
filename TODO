@@ -40,6 +40,8 @@ performance testing on data model
 explore idea of tags having a real valued relationship to a message (this is in the data model already)
 
 
+*** include associated tags in http JSON response from the thread endpoint *** 
+
 tune this and review it several times, setup blog host, then move on to lyrics generator thing
 
 General Code review, blog post
