@@ -40,12 +40,14 @@ public class SQLMessageRepository implements MessageRepository {
 		}
 		//continuing to be extremely inefficient, let's do ANOTHER query
 		//curious if doing another query vs doing a join above would lead to more efficient results
-		String findTags = "select *from message_tags, tags where message_tags.tag_id=tags.id AND message_id = ?";
+		String findTags = "select * from message_tags, tags where message_tags.tag_id=tags.id AND message_id = ?";
+		System.out.println("Tags found as  " + findTags);
 		PreparedStatement findTagsStmt = connection.prepareStatement(findTags);
 		findTagsStmt.setLong(1, id);
 		rs = findTagsStmt.executeQuery();
 		while(rs.next()){
 			Tag tag = new Tag(rs.getLong("id"), rs.getString("tag"));
+			System.out.println(tag.getTag());
 			message.getTags().add(tag);
 		}
 		return message;
