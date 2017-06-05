@@ -27,6 +27,9 @@
 				posted by {{postedBy.userName}}
 				<input type="button" class="viewButton" value="view"/>
 			</div>
+			{{#each tags}}
+				{{tag}},
+			{{/each}}
 			<div class="body">
 				{{body}}
 			</div>
