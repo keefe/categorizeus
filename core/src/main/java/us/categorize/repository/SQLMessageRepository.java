@@ -137,7 +137,7 @@ public class SQLMessageRepository implements MessageRepository {
 		}
 		String sql = "";
 		if(tags.length==0){
-			sql = "SELECT messages.* from messages";
+			sql = "SELECT messages.id* from messages";
 			if(startId !=null){
 				sql+=" where id"+idOp+startId;
 			}
@@ -161,13 +161,18 @@ public class SQLMessageRepository implements MessageRepository {
 		try {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
+			LinkedList<Long> messageIds = new LinkedList<Long>();//TODO check if we should be using HashSet<Long> here, ugh ordering issue
 			while(rs.next()){
 				if(reverse){
-					messages.addFirst(mapMessageRow(rs));
+					messageIds.addFirst(rs.getLong("id"));
 				}else{
-					messages.add(mapMessageRow(rs));
+					messageIds.add(rs.getLong("id"));
 				}
 			}
+			for(long msgId : messageIds){
+				messages.add(getMessage(msgId));
+			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
