@@ -1,6 +1,6 @@
 package us.categorize.integration;
 import twitter4j.*;
-
+import java.util.*;
 public class TwitterVerify{
     public static void main(String args[]){
         System.out.println("Hey Look I'm a class act");

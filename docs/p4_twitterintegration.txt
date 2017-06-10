@@ -41,10 +41,56 @@ e.g.
 :~/categorizeus/core$ ls target/classes/
 categorizeus.properties  sql  twitter4j.properties  us
 cd target/classes
-Run the following class, which will verify twitter connectivity:
+Run checkTwitter.sh, which will verify twitter connectivity.
+You should see something like below, but with your timeline. 
 
+Note that you CANNOT just run
 java -cp . us.categorize.integration.TwitterVerify
+Because we need to get maven dependenices into the classpath. 
+At this point, you've successfully created a twitter application, good job!
 
-You should see something like the following:
+:~/categorizeus/core$ ./checkTwitter.sh 
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building core 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ core ---
+Hey Look I'm a class act
+Showing @keefe's home timeline.
+@arangeroftexas - "The stoat twisted the dial on his scope, watching the silhouette of his target come into view: three bales of hay with a paper bulls-eye."
+@PublicInterests - #TheAirLeague "President" HRH#PrincePhilip Duke of #Edinburgh #RoyalFamily #ScotlandYard Identity Theft Affair https://t.co/GPkErGQsTy
+@AbusedKids - Child Trafficking Daily X2 is out! https://t.co/KP2PPLzCyO Stories via @BlendPolitics @HopeRunKenosha @AlmightywindFan #humantrafficking
+@josephcarter235 - Download 10 FREE BEATS On US! Go Here To Download https://t.co/I1v8i5WMws https://t.co/XHvroZLgWz
+@tatianamaslany - Outtake from our @SpaceChannel shoot with Caitlin Cronenberg. @KathrynAlexand3, I love you. I am lucky to have youâ¦ https://t.co/F7kMvqB0dI
+@CharlieDaniels - Has anybody ever seen Jerry Brown smile?
+@Longreads - "I play out the possibilities of escape, but I know that each door will squeak or groan" @cactuswrenwrite #longreads https://t.co/1Jt1t43Yha
+@PublicInterests - #RoyalAero Club "President" HRH The #DukeofYork #RoyalFamily #ScotlandYard Most Famous Identity Theft Affair https://t.co/381YV7ezxX  @topix
+@TheSylviaConner - Cashing in: Illegal immigrants get $1,261 more welfare than American families, $5,692 vs. $4,431 https://t.co/VFmjvVTR6j 
+
+NOT
+
+FOR
+
+LONG
+@EnasReview - New racy #thriller based around #Sheffield @AjTarn777123 https://t.co/u8GUb3Y7jd https://t.co/1W45804aSc
+@ebookbuzzer - New racy #thriller based around #Sheffield @AjTarn777123 https://t.co/MtC7hMrar2 https://t.co/CD33wLPwin
+@nytimes - The Week in Pictures https://t.co/6bqA3aiZPn https://t.co/34JyaQKw6I
+@debra_giese - Have a great evening friends! Heading out to give love to all my fur animals, at the shelter, whom I adore and loveâ¦ https://t.co/jX8S9r1xY2
+@thehill - THE MEMO: Team Trump sees silver lining in Comey cloud https://t.co/GKdq0950Wk https://t.co/CsRJq3Oilg
+@TheSylviaConner - RT @pink_lady56: @boominhoomin Christian children aren't allowed to pray in school and Muslim students have a prayer room. What's wrong witâ¦
+@AndHerDeadPets - https://t.co/pOI22kEaug
+@cyruzradiate - eu tÃ´ sÃ³ a miley nesse frio https://t.co/Sx3zufzjno
+@AP - Tapwrit overtakes favored Irish War Cry in the stretch to win Belmont Stakes by 2 lengths, @bethharrisap writes. https://t.co/bRYSPgqUeO
+@Longreads - RT @Longreads: The Rogers Park school has welcomed a staggering 89 refugees this year â 3x as many as last year @Elly33 @ChicagoMag https:/â¦
+@EnasReview - Well worth reading. Keeps you hooked #horror @adrianrussell62 https://t.co/mFJLjYWhcS https://t.co/cGBDqh7l1g
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.159 s
+[INFO] Finished at: 2017-06-10T23:27:58+00:00
+[INFO] Final Memory: 13M/33M
+[INFO] ------------------------------------------------------------------------
 
 
