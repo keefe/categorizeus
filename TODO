@@ -4,6 +4,12 @@ fix new post flow, add keyboard shortcuts, figure out like autoscroll or somethi
 finish twitter API integration so we have some kind of data to look at
 use model needs work
 
+More documentation:
+
+    AWS Integration
+    Google Apps Integration
+    
+
 Externalize handlebars templates!
 
 Review basic post and refresh flow, we need to make this thing basically useful, so two people can have a convo on screencast. 

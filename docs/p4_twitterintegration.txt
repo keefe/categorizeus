@@ -10,3 +10,28 @@ friends failed the Turing test, maybe you need a Turing Test Test lol)
 
 You want to have at least two accounts, one to run the application and one to 
 login to make sure that it works. 
+
+1. Visit apps.twitter.com and create a new app for testing
+This is your test application, so you're not posting to all your friends,
+am I right?
+
+2. Create a new file in the current directory for categorize.us called
+twitter4j.properties, it should look like this:
+debug=true
+oauth.consumerKey=*********************
+oauth.consumerSecret=******************************************
+oauth.accessToken=**************************************************
+oauth.accessTokenSecret=******************************************
+
+3. Click keys and access tokens on apps.twitter.com you will find two sections
+one for the consumer Key and Secret, one for the access token and secret for 
+your user. 
+
+Paste these values into twitter4j.properties
+
+4. Now, we will run a simple, standalone test class to verify that we have
+access, all the files are in the right place and the right location etc. 
+If you have problems with this step, please create an Issue here:
+https://github.com/categorizeus/categorizeus/issues
+So that I can address your problem, this all works for me. If I find common
+errors, I will eventually add them to the wiki.
