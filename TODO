@@ -1,3 +1,9 @@
+Change the way of running the standalone to run via jar, you idiot
+    do some script to move stuff from home directory into building jar with shell script
+fix new post flow, add keyboard shortcuts, figure out like autoscroll or something
+finish twitter API integration so we have some kind of data to look at
+use model needs work
+
 Externalize handlebars templates!
 
 Review basic post and refresh flow, we need to make this thing basically useful, so two people can have a convo on screencast. 

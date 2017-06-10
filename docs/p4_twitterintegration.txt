@@ -1,0 +1,12 @@
+    A lot of interesting things can come from short snippets of text, 
+as anybody with a texting partner knows. So, we're going to use twitter for our
+first cut of authentication. Coincidentally, my first prototype also used twitter
+so I know these APIs pretty well, so let's get started. 
+
+    First, I would suggest you create multiple throwaway twitter accounts for this.
+In my initial prototype, I ended up running one of the NLP apps on my main
+account. The result was ugly, so please don't do that. (Aside: some of my
+friends failed the Turing test, maybe you need a Turing Test Test lol)
+
+You want to have at least two accounts, one to run the application and one to 
+login to make sure that it works. 
