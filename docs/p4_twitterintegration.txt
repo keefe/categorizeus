@@ -34,4 +34,17 @@ access, all the files are in the right place and the right location etc.
 If you have problems with this step, please create an Issue here:
 https://github.com/categorizeus/categorizeus/issues
 So that I can address your problem, this all works for me. If I find common
-errors, I will eventually add them to the wiki.
+
+Run mvn clean compile from core
+verify target/classes has got the categorizeus.properties and twitter4j.properties
+e.g.
+:~/categorizeus/core$ ls target/classes/
+categorizeus.properties  sql  twitter4j.properties  us
+cd target/classes
+Run the following class, which will verify twitter connectivity:
+
+java -cp . us.categorize.integration.TwitterVerify
+
+You should see something like the following:
+
+

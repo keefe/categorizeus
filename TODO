@@ -3,6 +3,8 @@ Change the way of running the standalone to run via jar, you idiot
 fix new post flow, add keyboard shortcuts, figure out like autoscroll or something
 finish twitter API integration so we have some kind of data to look at
 use model needs work
+Need a twitter enabled flag in categorizeus.properties
+need to fix properties file integration and running as a jar, critically
 
 More documentation:
 
