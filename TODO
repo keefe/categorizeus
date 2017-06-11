@@ -1,3 +1,7 @@
+For twitter integration, need to look at not using the accesstoken hard coded there
+this in general we need to do in order to login each time with lambda
+so let's put a pause on that and move back to fixing the configuration part, which is messed up anyway
+
 So there isn't even a real internal API for using this thing
 Let's put quite a bit of thought into THAT
 
