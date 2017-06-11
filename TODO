@@ -1,0 +1,73 @@
+So there isn't even a real internal API for using this thing
+Let's put quite a bit of thought into THAT
+
+Change the way of running the standalone to run via jar, you idiot
+    do some script to move stuff from home directory into building jar with shell script
+fix new post flow, add keyboard shortcuts, figure out like autoscroll or something
+finish twitter API integration so we have some kind of data to look at
+use model needs work
+Need a twitter enabled flag in categorizeus.properties
+need to fix properties file integration and running as a jar, critically
+More documentation:
+
+    AWS Integration
+        wow that is clear as fucking mud, preferably we need a cloudformation script
+        or at least a bloody bit of java setting things up
+        let's also move all these settings into the properties file
+        and I think also move the twitter settings into categorizeus.properties
+    Google Apps Integration
+    
+
+Externalize handlebars templates!
+
+Review basic post and refresh flow, we need to make this thing basically useful, so two people can have a convo on screencast. 
+    ^^above is the goal state, will show some rudimentary understanding of UX, etc. 
+    the biggest issue, the #1 problem is after posting a reply you don't see it on the same screen
+    
+Initialization Fix inside of App.java
+    InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
+    I hate this initialization shit with a burning fucking passion
+
+Hey guess what more initialization ?!
+    Need to make this seemlessly work from a jar and get it deployed on S3/lambda again
+    and then make the SAME codebase work with inside the jar and on the local file system
+    maybe like have a series of places to search for the categorizeus.properties file?
+
+Improved rudimentary UI stuff
+    create post page
+    next and previous buttons
+    review search vs tag mode stuff
+    
+Thumbnail creation for large uploads
+
+
+
+Review and Cleanup, descriptions for use as a compsci teaching tool
+basic client implementation, rough capacity writing and metrics
+    how would triggering action based on code work
+    
+think through the basic data model, maybe an OWL model, dunno
+
+corpus of information beyond ngrams, spellcheck suggestions might offer some level 
+of insight into phonological or morphological similarities, the basic idea is looking at related words
+It's not clear if this particular data structure is all that well suited for what we want to do,
+but let's get something running in it and then review, the linguistic variant stuff might
+happen in one of the private code binaries and then we feed in here for demo purposes
+
+generate ERD diagram of data model
+
+performance testing on data model
+explore idea of tags having a real valued relationship to a message (this is in the data model already)
+
+
+*** include associated tags in http JSON response from the thread endpoint *** 
+
+tune this and review it several times, setup blog host, then move on to lyrics generator thing
+
+General Code review, blog post
+
+Think about hibernate style 1:1 object relationship and how that should all work
+
+bloody hell this secure shell bullshit thing about keyboard shortcutes, ctrl+w closes window fucking great
+	maybe is easier to remap nano than chrome or somet shit
+

@@ -1,0 +1,54 @@
+Prerequisites
+--------------
+
+1) AWS server is running
+2) dev DNS is running, e.g. dev.yourdomain.net
+3) You should be able to create and respond to posts
+
+This is a basic code path review, where the root of the repository is considered ~/
+
+~/static is the starting point for the rudimentary UI that is included
+This is effectively a 1 page application where the entire content is based on 
+JSON content retrieved dynamically from the server in real MVC fashion. 
+
+obvious subdirectories are obvious
+
+This UI is based on :
+    HTML 5
+    CSS 3
+    Handlebars for Runtime Templates
+    jQuery for AJAX and bootstrapping
+    liberal use of closures and an attempt at clean event driven architecture
+
+~/static/index.html
+    The overall structure of this page is minimal. 
+    There is a simple jquery include that calls the initailize() function on startup.
+    This is actually important, because we need all associated scripts to be loaded BEFORE initalization. 
+    There are a number of handlebars templates and the general structure of the page. 
+    The CSS is deliberately simple at this point, using a basic flexbox grid model. 
+    
+
+~/scripts/categorizeus.js
+    This is the API connection layer, used to communicate with the server. 
+    The structure follows a simple basic pattern, with no object oriented behavior at this time. 
+    The general structure is functionName(some,relavent, objects, callback)
+    At this time, each function call is assumed to operate with EXACTLY the number of arguments specified. 
+    Callbacks operate in nodejs style, where the first argument to the callback will be an error. 
+    If the first argument is not null or undefined, (!=null) then there has been an error. 
+    Any and all HTTP specific operation should be IN THIS FILE ONLY
+    There is no reason to believe that this API will remain HTTP only, for example
+    I might want to cross compile this code or use it on an android app. 
+    The purpose and the sole purpose of this file is to translate javascript objects to HTTP calls. 
+    No logic goes here, if I left logic in there, I'm an idiot and will fix it. 
+    It's very important to maintain this discipline. 
+    
+~/scripts/mainui.js
+    This file handles the mapping between user actions and the HTTP layer. 
+    I Would say this is very close to the controller in a classic MVC application. 
+    Ideally, the view layer will be in handlebars templates and CSS styling those templates. 
+    The model will be in javascript objects marshalled and serialized in this file and the network
+    communication layer will be handled in the other file. 
+    This file is currently quite long and needs to be broken down. 
+    Note the initialization block at the top, I forget why this is there...
+    
+

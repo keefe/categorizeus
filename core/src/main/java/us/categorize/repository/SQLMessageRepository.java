@@ -38,6 +38,18 @@ public class SQLMessageRepository implements MessageRepository {
 		if(rs.next()){
 			message = mapMessageRow(rs);
 		}
+		//continuing to be extremely inefficient, let's do ANOTHER query
+		//curious if doing another query vs doing a join above would lead to more efficient results
+		String findTags = "select * from message_tags, tags where message_tags.tag_id=tags.id AND message_id = ?";
+		System.out.println("Tags found as  " + findTags);
+		PreparedStatement findTagsStmt = connection.prepareStatement(findTags);
+		findTagsStmt.setLong(1, id);
+		rs = findTagsStmt.executeQuery();
+		while(rs.next()){
+			Tag tag = new Tag(rs.getLong("id"), rs.getString("tag"));
+			System.out.println(tag.getTag());
+			message.getTags().add(tag);
+		}
 		return message;
 	}
 
@@ -125,7 +137,7 @@ public class SQLMessageRepository implements MessageRepository {
 		}
 		String sql = "";
 		if(tags.length==0){
-			sql = "SELECT messages.* from messages";
+			sql = "SELECT messages.id* from messages";
 			if(startId !=null){
 				sql+=" where id"+idOp+startId;
 			}
@@ -149,13 +161,18 @@ public class SQLMessageRepository implements MessageRepository {
 		try {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
+			LinkedList<Long> messageIds = new LinkedList<Long>();//TODO check if we should be using HashSet<Long> here, ugh ordering issue
 			while(rs.next()){
 				if(reverse){
-					messages.addFirst(mapMessageRow(rs));
+					messageIds.addFirst(rs.getLong("id"));
 				}else{
-					messages.add(mapMessageRow(rs));
+					messageIds.add(rs.getLong("id"));
 				}
 			}
+			for(long msgId : messageIds){
+				messages.add(getMessage(msgId));
+			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

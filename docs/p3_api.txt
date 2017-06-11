@@ -1,0 +1,40 @@
+At this point, we've discussed the rudimentary API. 
+So, login to your EC2 shell change directories to categorizeus/core
+and then execute run.sh 
+
+Go to your domain and open the developer console and go to the network tab. 
+At this level, we're interacting with the /thread/ endpoint so let's start with that. 
+
+/thread/
+
+An HTTP POST (we're a REST API implemented in HTTP, so we're trying to keep our verbs clean)
+
+to this endpoint will get a set of "threads"
+A thread is an array of messages matching a tag. 
+While the initial page appears not to have any tags associated to it, in fact it does. 
+Any top level post includes a "top" tag, this indicates that it is an original post. 
+Note that this is how a forum structure is implemented in this schema - 
+there is, in fact, no reason that categorize.us needs to implement a forum, 
+I'm just interested in linguistics so I'm starting with an asynchronous conversation. 
+
+You should see queries like the ones below:
+
+Handling thread and / as POST
+We're checking out {"searchTags":["top","tag1"],"transitiveTags":["repliesTo"]}
+Criteria
+Search [7:top, 1:tag1] 
+ Transitive Tags [6:repliesTo]
+ starting at null reversed ? false
+SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND tag_id = 7 AND exists (select 1 from message_tags where messages.id = message_id and tag_id=1) order by id DESC LIMIT 10
+Finding Related with 
+SELECT message_relations.* from message_relations where tag_id IN (6) AND message_sink_id IN (29,2,1)
+Finding Related with 
+SELECT message_relations.* from message_relations where tag_id IN (6) AND message_sink_id IN (6,30)
+Finding Related with 
+SELECT message_relations.* from message_relations where tag_id IN (6) AND message_sink_id IN (7,8,9)
+
+I'm sure an experienced engineer will notice that this codebase is relatively simple - lots of copy and paste boilerplate.
+This was done intentionally, this is supposed to be a rapid prototype, suitable for code generation. 
+There is an interesting abstraction layer at the lambda vs servlet level that will be discussed later,
+but core functionality should be accessible with a relatively low coding level. 
+

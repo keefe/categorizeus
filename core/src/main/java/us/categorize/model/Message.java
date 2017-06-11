@@ -1,4 +1,5 @@
 package us.categorize.model;
+import java.util.*;
 
 public class Message {
 	private String title;
@@ -6,8 +7,16 @@ public class Message {
 	private User postedBy;
 	private long id;
 	private String link, thumbLink;//TODO what belongs in this class, what belongs in a relationship?
+	private List<Tag> tags;
+	
 	public String getThumbLink() {
 		return thumbLink;
+	}
+	public List<Tag> getTags(){
+		if(tags==null){
+			tags = new LinkedList<Tag>();
+		}
+		return tags;
 	}
 
 	public void setThumbLink(String thumbLink) {

@@ -1,0 +1,67 @@
+When looking at a new system, it's good to start with the data model. 
+The data model is the resting state of the data and perhaps many applications will connect to it. 
+Assuming instructions followed per the setup.txt, then we can connect to the database as so:
+
+0) psql -h localhost categories categorizeus
+You should then be prompted for your password.
+
+type \dt and see a list of the tables
+
+For this prototype system, we should see this:
+
+                 List of relations
+ Schema |       Name        | Type  |    Owner     
+--------+-------------------+-------+--------------
+ public | message_relations | table | categorizeus
+ public | message_tags      | table | categorizeus
+ public | messages          | table | categorizeus
+ public | tags              | table | categorizeus
+ public | user_sessions     | table | categorizeus
+ public | users             | table | categorizeus
+ 
+ Rather than poke around the database with SQL, I suggest referring to seed.sql
+ 
+ This data model is meant to be a generic data model, so I think with this sort of a model
+ then it's important not to get caught up on the particular words. 
+ 
+ Message, in particular, is a term I spent a lot of time debating about. 
+ It could be document or fragment or whatever, it doesn't matter, it's a piece of text. 
+ It's also important not to debate whether table names should be plural ;) 
+ 
+ So here is the basic structure:
+ 
+ So, let's refer to tables.sql and discuss the general data model:
+ 
+ Messages are the object of discourse in categorize.us. 
+ Each message is basically a piece of text. I had thought about using the json data type for this for indexing purposes, 
+ but it wasn't looking that promising at that time. 
+ I'm not exactly sure why link and title are independent fields at this time. 
+ 
+ There are two differences between tags and messages.
+ Tags are limited to 255 characters and are assumed to be unique upon insert. 
+ I've considered using a hash function to index these, but for this initial prototype it did not get there. 
+ After there is some performance metrics, we can look into this kind of thing and other indexing schemes. 
+ 
+ Tags already implement a real valued rating, but this has not been implemented yet. 
+ Each message is associated to a set of tags, which is the message_tags table. 
+ 
+ This data model is deliberately simple, but I think it leads to reasonably efficient queries. 
+ user_sessions is simply used for book keeping the HTTP sessions of logged in users. 
+ 
+ The message relations model is moderately interesting. 
+ This is how things like the forum relationship, which is represented by repliesTo, is stored. 
+ Any message can be related to any other message and tags are used to make that relationship. 
+ 
+ At this point in time, those familiar with referential semantics probably notice that this is getting
+ similar to a triple store. I think the idea I have is to use this system for prototyping various applications, 
+ then manually or (eventually) automatically generate a more efficient domain specific model. 
+ 
+ I would really like to use RDF, RDF-Schema or OWL to specify the model. 
+ So, the theory we have here is that this is a data model that can be efficiently queries and used for rapid prototyping. 
+ 
+--- Homework ---
+
+At this point in time, it's a good idea to change the login emails and passwords. 
+Currently, the passwods are SHA256 so just use whatever password you want and put it in seeds 
+http://www.sha1-online.com/
+This should be your first commit to your fork. 

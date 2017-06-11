@@ -4,8 +4,8 @@
   <groupId>us.categorize</groupId>
   <artifactId>core</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>core</name>
+  <version>0.1-SNAPSHOT</version>
+  <name>categorizeus</name>
   <url>http://maven.apache.org</url>
   <build>
   	<plugins>
@@ -31,6 +31,14 @@
             <goals>
               <goal>shade</goal>
             </goals>
+            <configuration>
+               <finalName>categorizeus-${project.version}</finalName>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>us.categorize.App</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -100,5 +108,10 @@
     <artifactId>aws-java-sdk-s3</artifactId>
       <version>1.11.65</version>
   </dependency>
+      <dependency>
+           <groupId>org.twitter4j</groupId>
+           <artifactId>twitter4j-core</artifactId>
+           <version>[4.0,)</version>
+       </dependency>
   </dependencies>
 </project>
