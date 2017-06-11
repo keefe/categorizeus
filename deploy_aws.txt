@@ -1,3 +1,14 @@
+what the hell was I thiking when I first set this up, just trying to get it works I guess
+
+1. Create two S3 buckets, one for static files and one for uploaded images. 
+
+2. Copy these names into ~/.bash_profile - this must change. 
+export S3_STATIC_BUCKET=static.v2.categorize.us
+export AWS_REGION=us-west-2
+export ATTACHMENT_URL_PREFIX=https://s3-us-west-2.amazonaws.com/categorize.us/
+
+3. 
+
 For this serverless application, we will host the static files in S3, build an API Gateway connection to Lambda for the API itself. 
 Typically, it would be best to use route 53 DNS to keep everything in one silo, but my domain is setup with Dyn so I will use that. 
 AWS has a certificate manager, but I believe it means the hosting has to be setup through cloudfront. 
@@ -16,7 +27,8 @@ After that, there is a configured application available for testing. We'll creat
         ATTACHMENT_URL_PREFIX=https://s3-us-west-2.amazonaws.com/categorize.us/
 maybe the bucket itself needs to be initially public as well?
 5. At this point, start the server and visit localhost:8080
-6. Go back to AWS and create a postgres compatible database and note the connection string. Connect to it from the client, then configure the properties file to include this database.
+6. Go back to AWS and create a postgres compatible database and note the connection string. 
+Connect to it from the client, then configure the properties file to include this database.
 By default, the gitignore policy SHOULD allow the categorizeus.properties file to bundle into the jar without adding to source code, but don't commit this stuff. 
 Also, make sure that the security group associated with the RDS instance allows connections from your IP.
 7. Run the initialization code to seed the database
