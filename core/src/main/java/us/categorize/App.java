@@ -40,7 +40,8 @@ public class App {
 		Properties properties = new Properties();
 		
 		//properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
-		InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
+		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
+		//InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
 		properties.load(input);
 		StringWriter writer = new StringWriter();
 		properties.list(new PrintWriter(writer));
