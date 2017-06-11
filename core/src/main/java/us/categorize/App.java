@@ -33,6 +33,7 @@ import us.categorize.server.http.legacy.TagServlet;
 import us.categorize.server.http.legacy.ThreadServlet;
 import us.categorize.server.http.legacy.UserServlet;
 import us.categorize.server.*;
+import us.categorize.server.http.*;
 
 import java.io.*;
 
