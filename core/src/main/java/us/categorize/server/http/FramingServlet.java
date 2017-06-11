@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.categorize.communication.Categorizer;
 import us.categorize.model.User;
+import twitter4j.*;
 
 public class FramingServlet extends HttpServlet{
 	private Categorizer categorizer;
@@ -20,6 +21,12 @@ public class FramingServlet extends HttpServlet{
 	private void handle(String method, HttpServletRequest request, HttpServletResponse response) {
 		HTTPFrame frame = new HTTPFrame(resource, method, request, response);
 		try {
+			Twitter twitter = (Twitter)request.getSession().getAttribute("twitter");
+			if(twitter!=null){
+				System.out.println("Twitter session object found " + twitter.getScreenName());
+			}else{
+				System.out.println("Twitter Login Object Not Present ");
+			}
 			categorizer.handle(frame);
 			return;
 		} catch (Exception e) {

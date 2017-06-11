@@ -17,7 +17,9 @@ More documentation:
         and I think also move the twitter settings into categorizeus.properties
     Google Apps Integration
     
-
+    How does login with twitter work in the context of a Lambda application that has no session object,
+    looks like have to do request against twitter API each time?
+    
 Externalize handlebars templates!
 
 Review basic post and refresh flow, we need to make this thing basically useful, so two people can have a convo on screencast. 
