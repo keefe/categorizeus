@@ -1,3 +1,6 @@
+So there isn't even a real internal API for using this thing
+Let's put quite a bit of thought into THAT
+
 Change the way of running the standalone to run via jar, you idiot
     do some script to move stuff from home directory into building jar with shell script
 fix new post flow, add keyboard shortcuts, figure out like autoscroll or something
@@ -5,10 +8,13 @@ finish twitter API integration so we have some kind of data to look at
 use model needs work
 Need a twitter enabled flag in categorizeus.properties
 need to fix properties file integration and running as a jar, critically
-
 More documentation:
 
     AWS Integration
+        wow that is clear as fucking mud, preferably we need a cloudformation script
+        or at least a bloody bit of java setting things up
+        let's also move all these settings into the properties file
+        and I think also move the twitter settings into categorizeus.properties
     Google Apps Integration
     
 

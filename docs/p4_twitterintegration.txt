@@ -42,13 +42,22 @@ e.g.
 categorizeus.properties  sql  twitter4j.properties  us
 cd target/classes
 Run checkTwitter.sh, which will verify twitter connectivity.
-You should see something like below, but with your timeline. 
+You should see something like below [1], but with your timeline. 
 
 Note that you CANNOT just run
 java -cp . us.categorize.integration.TwitterVerify
 Because we need to get maven dependenices into the classpath. 
 At this point, you've successfully created a twitter application, good job!
 
+
+#REMEMBERTOUPDATE <-- this tag is for sections that are going to likely rapidly change
+5. Now, let's take a look at accessing the categorizeus API from java using 
+twitter data. 
+
+
+
+#REMEMBERTOUPDATE
+[1]
 :~/categorizeus/core$ ./checkTwitter.sh 
 [INFO] Scanning for projects...
 [INFO]                                                                         
