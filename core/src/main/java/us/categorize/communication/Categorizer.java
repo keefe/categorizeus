@@ -148,7 +148,7 @@ public class Categorizer {
 			user = userCommunicator.loginUser(request.bodyInputStream(), request.getOutputStream(), sessionUUID);
 			if(user==null){
 				System.out.println("User Is Not Valid");
-				request.prepareResponse("UNAUTHORIZED", new HashMap<>());
+				request.prepareResponse("Forbidden", new HashMap<>());
 				request.getOutputStream().write("Must Login!".getBytes());
 				request.finalizeResponse();
 				return;
