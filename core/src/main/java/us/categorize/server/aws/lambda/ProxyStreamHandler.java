@@ -9,7 +9,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 
 import us.categorize.App;
-import us.categorize.Config;
+import us.categorize.config.Config;
 import us.categorize.communication.Categorizer;
 import us.categorize.model.User;
 

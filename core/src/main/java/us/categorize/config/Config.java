@@ -1,6 +1,11 @@
-package us.categorize;
+package us.categorize.config;
 
 import java.util.Properties;
+
+//TODO this needs to be broken off into multiple classes, for sure
+//think about the annotations stuff or a builder/factory pattern probably something?
+import twitter4j.*;
+import twitter4j.conf.*;
 
 public class Config {
 	private String clearSql, createSql, dbHost, dbPort, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
@@ -13,6 +18,29 @@ public class Config {
 	private String driverName = "org.postgresql.Driver";
 	private String uploadStorage = "S3";
 
+
+	//TODO this is going to the twitter section
+	private String twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessSecret;
+	public Twitter configureTwitter(){
+		System.out.println("Twitter Read as " + twitterConsumerKey+","+twitterConsumerSecret+","+twitterAccessToken+","+twitterAccessSecret); 
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		cb.setDebugEnabled(true)//TODO what do about this?
+		  .setOAuthConsumerKey(twitterConsumerKey)
+		  .setOAuthConsumerSecret(twitterConsumerSecret)
+		  .setOAuthAccessToken(twitterAccessToken)
+		  .setOAuthAccessTokenSecret(twitterAccessSecret);
+		TwitterFactory tf = new TwitterFactory(cb.build());
+		return tf.getInstance();
+	}
+	
+	
+	//TODO this is going tot he AWS specific section
+	//TODO is AWS stuff appropriate to even use keys AT ALL with role based auth on EC2 instances of lambda roles?
+	private String awsAccessKey, awsAccessSecret;
+	
+	
+	
+	
 	public String getAttachmentURLPrefix() {
 		return attachmentURLPrefix;
 	}
@@ -177,6 +205,10 @@ public class Config {
 		dbPass = properties.getProperty("DB_PASS");
 		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
 		s3region = properties.getProperty("AWS_REGION");
+		twitterConsumerKey= properties.getProperty("TWITTER_CONSUMER_KEY");
+		twitterConsumerSecret= properties.getProperty("TWITTER_CONSUMER_SECRET");
+		twitterAccessToken= properties.getProperty("TWITTER_ACCESS_TOKEN");
+		twitterAccessSecret= properties.getProperty("TWITTER_ACCESS_SECRET");
 		if(properties.containsKey("UPLOAD_STORAGE")){
 			uploadStorage = properties.getProperty("UPLOAD_STORAGE");
 		}

@@ -25,29 +25,18 @@ import us.categorize.communication.UserCommunicator;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.creation.attachment.S3AttachmentHandler;
-import us.categorize.server.http.AuthFilter;
-import us.categorize.server.http.FramingServlet;
-import us.categorize.server.http.SessionCookieFilter;
-import us.categorize.server.http.legacy.MessageServlet;
-import us.categorize.server.http.legacy.TagServlet;
-import us.categorize.server.http.legacy.ThreadServlet;
-import us.categorize.server.http.legacy.UserServlet;
+import us.categorize.server.http.*;
+import us.categorize.server.*;
+import us.categorize.config.*;
+
 import java.io.*;
 
 public class App {
 	
 	public static void main(String args[]) throws Exception {
-		Properties properties = new Properties();
 		
 		//properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
-		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
-		//InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
-		properties.load(input);
-		StringWriter writer = new StringWriter();
-		properties.list(new PrintWriter(writer));
-		System.out.println("Properties File Read As " + properties.getProperty("DB_NAME"));
-	  	System.out.println(writer.getBuffer().toString());
-		Config config = new Config(properties);
+		Config config = readConfig();
 		Class.forName("org.postgresql.Driver");
 		System.out.println("Postgres Driver Loaded");
 		if (args.length > 0 && "initialize".equals(args[0])){
@@ -56,6 +45,19 @@ public class App {
 		System.out.println("Initialization Complete");
 		//serverUp(config);
 		serverUpGeneric(config);
+	}
+	public static Config readConfig() throws Exception{
+		Properties properties = new Properties();
+
+		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
+		//InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
+		properties.load(input);
+		StringWriter writer = new StringWriter();
+		properties.list(new PrintWriter(writer));
+		System.out.println("Properties File Read As " + properties.getProperty("DB_NAME"));
+	  	System.out.println(writer.getBuffer().toString());
+		Config config = new Config(properties);
+		return config;
 	}
 
 	public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
@@ -106,7 +108,10 @@ public class App {
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
 		FramingServlet userServlet = new FramingServlet("user", categorizer);
 		context.addServlet(new ServletHolder(userServlet), "/user/*");
-
+		TwitterSigninServlet twitterSignin = new TwitterSigninServlet();
+		context.addServlet(new ServletHolder(twitterSignin), "/twitter_signin/*");
+		TwitterSigninCallbackServlet twitterSigninCallback = new TwitterSigninCallbackServlet();
+		context.addServlet(new ServletHolder(twitterSignin), "/twitter_callback/*");
 		
 		context.addServlet(DefaultServlet.class, "/");
 		server.setHandler(context);

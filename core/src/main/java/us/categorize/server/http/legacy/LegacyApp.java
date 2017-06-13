@@ -11,7 +11,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import us.categorize.Config;
+import us.categorize.config.*;
 import us.categorize.communication.Categorizer;
 import us.categorize.server.http.AuthFilter;
 import us.categorize.server.http.SessionCookieFilter;
