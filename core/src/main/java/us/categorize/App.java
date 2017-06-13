@@ -25,13 +25,7 @@ import us.categorize.communication.UserCommunicator;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
 import us.categorize.communication.creation.attachment.S3AttachmentHandler;
-import us.categorize.server.http.AuthFilter;
-import us.categorize.server.http.FramingServlet;
-import us.categorize.server.http.SessionCookieFilter;
-import us.categorize.server.http.legacy.MessageServlet;
-import us.categorize.server.http.legacy.TagServlet;
-import us.categorize.server.http.legacy.ThreadServlet;
-import us.categorize.server.http.legacy.UserServlet;
+import us.categorize.server.http.*;
 import us.categorize.server.*;
 import us.categorize.config.*;
 
@@ -40,7 +34,6 @@ import java.io.*;
 public class App {
 	
 	public static void main(String args[]) throws Exception {
-		Properties properties = new Properties();
 		
 		//properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
 		Config config = readConfig();
@@ -53,7 +46,9 @@ public class App {
 		//serverUp(config);
 		serverUpGeneric(config);
 	}
-	public static Config readConfig(){
+	public static Config readConfig() throws Exception{
+		Properties properties = new Properties();
+
 		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
 		//InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
 		properties.load(input);

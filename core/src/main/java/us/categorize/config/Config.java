@@ -1,10 +1,11 @@
-package us.categorize;
+package us.categorize.config;
 
 import java.util.Properties;
 
 //TODO this needs to be broken off into multiple classes, for sure
 //think about the annotations stuff or a builder/factory pattern probably something?
 import twitter4j.*;
+import twitter4j.conf.*;
 
 public class Config {
 	private String clearSql, createSql, dbHost, dbPort, dbName, dbUser, dbPass, staticDir, indexSql, seedSql, fileBase;
@@ -208,7 +209,6 @@ public class Config {
 		twitterConsumerSecret= properties.getProperty("TWITTER_CONSUMER_SECRET");
 		twitterAccessToken= properties.getProperty("TWITTER_ACCESS_TOKEN");
 		twitterAccessSecret= properties.getProperty("TWITTER_ACCESS_SECRET");
-		TWITTER_CONSUMER_KEY=thekey
 		if(properties.containsKey("UPLOAD_STORAGE")){
 			uploadStorage = properties.getProperty("UPLOAD_STORAGE");
 		}
