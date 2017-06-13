@@ -121,11 +121,12 @@ public class Categorizer {
 		}
 	}
 	public void handleUser(Frame request) throws Exception{
+		User user = request.getCurrentUser();
+		if(user==null){
+			user = loadCurrentUser(request);
+		}
 		if("GET".equals(request.getMethod())){
-			if(request.getCurrentUser()==null){
-				loadCurrentUser(request);
-			}
-			if(request.getCurrentUser()==null){
+			if(user==null){
 				request.prepareResponse("NotFound", new HashMap<>());
 				request.getOutputStream().write("Not Found".getBytes());
 				request.finalizeResponse();
@@ -137,16 +138,13 @@ public class Categorizer {
 			request.finalizeResponse();
 
 		}else if("POST".equals(request.getMethod())){
-			if(request.getCurrentUser()==null){
-				loadCurrentUser(request);
+			if(user!=null){//we're already logged in
+				request.getOutputStream().write("OK".getBytes());
+				request.finalizeResponse();
+				return;
 			}
 			String sessionUUID = request.findSessionUUID();
-			Map<String, String> headers = new HashMap<>();
-			String cookieString = "categorizeus="+sessionUUID;
-			headers.put("Set-Cookie", cookieString);
-			request.prepareResponse("OK", headers);//TODO this is feeling all kinds of wrong
-			User user = userCommunicator.loginUser(request.bodyInputStream(), request.getOutputStream(), sessionUUID);
-			
+			user = userCommunicator.loginUser(request.bodyInputStream(), request.getOutputStream(), sessionUUID);
 			if(user==null){
 				request.prepareResponse("UNAUTHORIZED", new HashMap<>());
 				request.getOutputStream().write("Must Login!".getBytes());
@@ -154,15 +152,15 @@ public class Categorizer {
 				return;
 			}else{
 				request.setCurrentUser(user);
-				request.getOutputStream().write("OK".getBytes());
+				Map<String, String> headers = new HashMap<>();
+				String cookieString = "categorizeus="+sessionUUID;
+				headers.put("Set-Cookie", cookieString);
+				request.prepareResponse("OK", headers);//TODO this is feeling all kinds of wrong
 				request.finalizeResponse();
 			}
 			
 		}else if("PUT".equals(request.getMethod())){
-			if(request.getCurrentUser()==null){
-				loadCurrentUser(request);
-			}
-			if(request.getCurrentUser()==null){
+			if(user==null){
 				request.prepareResponse("UNAUTHORIZED", new HashMap<>());
 				request.getOutputStream().write("Must Login as Admin!".getBytes());
 				request.finalizeResponse();
@@ -174,10 +172,7 @@ public class Categorizer {
 			request.finalizeResponse();
 			
 		}else if("DELETE".equals(request.getMethod())){
-			if(request.getCurrentUser()==null){
-				loadCurrentUser(request);
-			}
-			if(request.getCurrentUser()==null){
+			if(user==null){
 				request.prepareResponse("NotFound", new HashMap<>());
 				request.getOutputStream().write("Not Found".getBytes());
 				request.finalizeResponse();

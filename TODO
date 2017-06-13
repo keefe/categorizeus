@@ -1,6 +1,20 @@
+General Plan
+    Get basic functionality working properly
+    Update basic UI look and feel
+    refactor java for better code quality
+    add forum concept?
+    rethink overall UI, functionality
+    add keyboard support, gesture support
+    
+
 ** Better Login Failure Page
 ** Better design on post, design
-
+** tight coupling between input JSON objects and APIs, SQL repositories shouldn't know about JSON
+    ^^quite important
+** Admin user stuff is hardcoded to a specific user number, that needs to stop
+** session management and cookie stuff needs to be cleaned up and documented
+    logic separation isn't super clean here, need to sort this out
+** need to pull out request objects rather than passing bodies into communicator
 
 >>>>>>>>>>>> Twitter Sign In Integration <<<<<<<<<<<<<<
 
