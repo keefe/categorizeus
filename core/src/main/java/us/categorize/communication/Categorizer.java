@@ -139,6 +139,7 @@ public class Categorizer {
 
 		}else if("POST".equals(request.getMethod())){
 			if(user!=null){//we're already logged in
+				System.out.println("User is Already Logged In");
 				request.getOutputStream().write("OK".getBytes());
 				request.finalizeResponse();
 				return;
@@ -146,11 +147,13 @@ public class Categorizer {
 			String sessionUUID = request.findSessionUUID();
 			user = userCommunicator.loginUser(request.bodyInputStream(), request.getOutputStream(), sessionUUID);
 			if(user==null){
+				System.out.println("User Is Not Valid");
 				request.prepareResponse("UNAUTHORIZED", new HashMap<>());
 				request.getOutputStream().write("Must Login!".getBytes());
 				request.finalizeResponse();
 				return;
 			}else{
+				System.out.println("User Not Logged in OK");
 				request.setCurrentUser(user);
 				Map<String, String> headers = new HashMap<>();
 				String cookieString = "categorizeus="+sessionUUID;
