@@ -4,11 +4,11 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import twitter4j.*;
 import twitter4j.auth.*;
+import java.io.*;
 
-
-public class TwitterSigninServlet{
+public class TwitterSigninServlet extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.prntln("Twitter Signin Servlet Handling Get");
+        System.out.println("Twitter Signin Servlet Handling Get");
         Twitter twitter = new TwitterFactory().getInstance();
         request.getSession().setAttribute("twitter", twitter);
         try {
