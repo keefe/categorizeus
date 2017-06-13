@@ -2,6 +2,9 @@ tl;dr edit src/main/resources/categorizeus.properties and twitter4j.properties
 run mvn package you should see target/categorizeus-something
 We now have a standalone jar, run it with java -jar categorizeus-<tab>
 
+Need to do something about registering initial user, small issue but is critical
+probably best thing to do is java command line to do registering
+
 developing using google chromebook
 
 	I'm using a samsung series 3
@@ -16,6 +19,7 @@ notice there is only vi, hit head against table several times
 reluctantly use vi or use cat to save hostname into a file
 do chmod 400 blah.pem and ssh -i blah.pem whatever.host
 ssh into ubuntu box
+
 
 --- at this point we're into a development box ---
 

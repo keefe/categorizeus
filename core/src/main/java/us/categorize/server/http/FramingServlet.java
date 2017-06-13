@@ -21,12 +21,6 @@ public class FramingServlet extends HttpServlet{
 	private void handle(String method, HttpServletRequest request, HttpServletResponse response) {
 		HTTPFrame frame = new HTTPFrame(resource, method, request, response);
 		try {
-			Twitter twitter = (Twitter)request.getSession().getAttribute("twitter");
-			if(twitter!=null){
-				System.out.println("Twitter session object found " + twitter.getScreenName());
-			}else{
-				System.out.println("Twitter Login Object Not Present ");
-			}
 			categorizer.handle(frame);
 			return;
 		} catch (Exception e) {
