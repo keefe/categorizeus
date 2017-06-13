@@ -78,10 +78,10 @@ var initialize = function(dontDoInitialSearch){
 	});
 
 	$("#btnSearch").click(function(){
-    if(tagSelectMode){
-      tagSelectedMessages();
-      return;
-    }
+		if(tagSelectMode){
+    		tagSelectedMessages();
+    		return;
+		}
 		var tags = $("#txtTagSearch").val();
 		var allTags = tags.split(" ");
 		var tagArray = ["top"];
@@ -95,15 +95,15 @@ var initialize = function(dontDoInitialSearch){
 
 	$("#btnTag").click(function(){
     
-    tagSelectMode = !tagSelectMode;
-    $("#btnTag").toggleClass('selected');
-    $(".basicDocument").toggleClass('selectable');
-    if(tagSelectMode){
-      $("#btnSearch").html("Apply Tag"); 
-    }else{
-      $("#btnSearch").html("Search");
-    }
-    return;
+	    tagSelectMode = !tagSelectMode;
+	    $("#btnTag").toggleClass('selected');
+	    $(".basicDocument").toggleClass('selectable');
+	    if(tagSelectMode){
+	      $("#btnSearch").html("Apply Tag"); 
+	    }else{
+	      $("#btnSearch").html("Search");
+	    }
+    	return;
     
 	});
 }
@@ -258,7 +258,7 @@ var displayMessages = function(err, messages){
 		appliedTemplate.bind('click',
 		   (function(template, message){ 
 			return function(event){
-        handleGridDocumentClick(event, template, message);
+		      handleGridDocumentClick(event, template, message);
 			}
 		   })(appliedTemplate, messages[i])
 		);
