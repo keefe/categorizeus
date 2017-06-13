@@ -15,13 +15,23 @@ login to make sure that it works.
 This is your test application, so you're not posting to all your friends,
 am I right?
 
-2. Create a new file in the current directory for categorize.us called
+Configure the following properties per the twitter4j documentation, but do it
+in the categorizeus.properties.
+TWITTER_CONSUMER_KEY=thekey
+TWITTER_CONSUMER_SECRET=thesecret
+TWITTER_ACCESS_TOKEN=theaccesstoken
+TWITTER_ACCESS_SECRET=theaccesstokensecret
+
+
+<-- Deprecated
+ Create a new file in the current directory for categorize.us called
 twitter4j.properties, it should look like this:
 debug=true
 oauth.consumerKey=*********************
 oauth.consumerSecret=******************************************
 oauth.accessToken=**************************************************
 oauth.accessTokenSecret=******************************************
+-->
 
 3. Click keys and access tokens on apps.twitter.com you will find two sections
 one for the consumer Key and Secret, one for the access token and secret for 

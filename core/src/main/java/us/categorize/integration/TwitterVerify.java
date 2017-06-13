@@ -1,11 +1,16 @@
 package us.categorize.integration;
 import twitter4j.*;
 import java.util.*;
+import us.categorize.config.*;
+import us.categorize.*;
+
 public class TwitterVerify{
     public static void main(String args[]){
         System.out.println("Hey Look I'm a class act");
         try {
             // gets Twitter instance with default credentials
+            Config config = App.readConfig();
+            
             Twitter twitter = new TwitterFactory().getInstance();
             User user = twitter.verifyCredentials();
             List<Status> statuses = twitter.getHomeTimeline();
