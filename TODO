@@ -2,10 +2,10 @@ General Plan
     Get basic functionality working properly
     Update basic UI look and feel
     refactor java for better code quality
-    add forum concept?
+    add forum concept? seems like a necessary component, some concept of list/group of messages
     rethink overall UI, functionality
     add keyboard support, gesture support
-    
+    avatar support
 
 ** Better Login Failure Page
 ** Better design on post, design

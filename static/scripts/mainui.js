@@ -115,7 +115,8 @@ var tagSelectedMessages = function(){
 	for(var i=0; i<allTags.length;i++){
 		if(allTags[i].length>0){
 			tagArray.push(allTags[i]);
-		}		}
+		}		
+	}
 
 	var whichTagged = [];
 	$('.basicDocument.selected').each(function () {
@@ -258,7 +259,7 @@ var displayMessages = function(err, messages){
 		appliedTemplate.bind('click',
 		   (function(template, message){ 
 			return function(event){
-		      handleGridDocumentClick(event, template, message);
+			      handleGridDocumentClick(event, template, message);
 			}
 		   })(appliedTemplate, messages[i])
 		);
@@ -364,7 +365,7 @@ var dynamicEditSubmit = function(el){
 						$("#status").append("<p>Created new document with id " + response.id + "</p>");
 					}
 					el.empty();
-          delete currentThread.searchCriteria.startingId;
+    			    delete currentThread.searchCriteria.startingId;
 					searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
 				});
 				return;
