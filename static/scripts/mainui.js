@@ -73,7 +73,10 @@ var initialize = function(dontDoInitialSearch){
 		if(currentUser==null){
 			displayLoginForm("#editor");
 		}else{
-			displayEditForm("#editor", {});
+			displayEditForm("#editor", {}, function(){
+				delete currentThread.searchCriteria.startingId;
+				searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
+			});
 		}
 	});
 
@@ -144,12 +147,9 @@ var tagSelectedMessages = function(){
 
 var displayEditForm = function(container, sourceMsg, cb){//#TODO don't just replace
 	var controls = $(container).append(tmplBasicDocumentEdit(sourceMsg));
-	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
+	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls, cb));
 	controls.find(".closeButton").click(function(event){
 		controls.find(".basicDocumentEdit").remove();
-		if(cb!=null){
-			cb();
-		}
 	});
 }
 
@@ -164,10 +164,10 @@ var displayLoginForm = function(container){ //#TODO hey we are seeing a template
 var displayMessageEditorCB = function(message, messageView){
   return function(event){
 		console.log("Replying to " + message.id);
-    displayEditForm("#editor", {repliesToId:message.id}, function(){
-    	console.log("Reply to " + message.id + " is complete");
-    	displayFullMessage(message);
-    });
+    	displayEditForm("#editor", {repliesToId:message.id}, function(){
+    		console.log("Reply to " + message.id + " is complete");
+    		displayFullMessage(message);
+		});
   };
 }
 
@@ -336,7 +336,7 @@ var dynamicRegister = function(el){
 	};
 }
 
-var dynamicEditSubmit = function(el){
+var dynamicEditSubmit = function(el, cb){
 
 	return function(){
 		console.log("Dynamically bound control OK");
@@ -361,31 +361,24 @@ var dynamicEditSubmit = function(el){
 			if(repliesToId!=null&& repliesToId.length>0){
 				newMessage.repliesToId = repliesToId;
 			}
-			if(file.val()!==''){//file[0].files.length?
-				console.log("Found an attached file");
-				console.log(file[0].files);
-				createEncodedMessage(newMessage, file[0].files, function(err, response){
-					if(err!=null){
-						$("#status").append("<p>Error: " + err + "</p>");
-					}else{
-						$("#status").append("<p>Created new document with id " + response.id + "</p>");
-					}
-					el.empty();
-    			    delete currentThread.searchCriteria.startingId;
-					searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
-				});
-				return;
-			}
-			createMessage(newMessage, function(err, response){
+			var handleCreatedMessage = function(err, response){
 				if(err!=null){
 					$("#status").append("<p>Error: " + err + "</p>");
 				}else{
-					$("#status").append("<p>Created new document with id " + response + "</p>");
+					$("#status").append("<p>Created new document with id " + response.id + "</p>");
 				}
 				el.empty();
-        delete currentThread.searchCriteria.startingId;
-				searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
-			});
+				if(cb!=null){
+					cb();
+				}
+			}
+			if(file.val()!==''){//file[0].files.length?
+				console.log("Found an attached file");
+				console.log(file[0].files);
+				createEncodedMessage(newMessage, file[0].files, handleCreatedMessage);
+				return;
+			}
+			createMessage(newMessage, handleCreatedMessage);
 
 		}else{
 			$("#status").append("<p>Currently, editing existing docs not supported. Clear and try again.</p>");
