@@ -142,11 +142,14 @@ var tagSelectedMessages = function(){
 }
 
 
-var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
+var displayEditForm = function(container, sourceMsg, cb){//#TODO don't just replace
 	var controls = $(container).append(tmplBasicDocumentEdit(sourceMsg));
 	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
 	controls.find(".closeButton").click(function(event){
 		controls.find(".basicDocumentEdit").remove();
+		if(cb!=null){
+			cb();
+		}
 	});
 }
 
@@ -161,7 +164,10 @@ var displayLoginForm = function(container){ //#TODO hey we are seeing a template
 var displayMessageEditorCB = function(message, messageView){
   return function(event){
 		console.log("Replying to " + message.id);
-    displayEditForm("#editor", {repliesToId:message.id});
+    displayEditForm("#editor", {repliesToId:message.id}, function(){
+    	console.log("Reply to " + message.id + " is complete");
+    	displayFullMessage(message);
+    });
   };
 }
 
