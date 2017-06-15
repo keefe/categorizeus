@@ -30,6 +30,7 @@ var threadMessages = {};
 var lastStartingId = null;
 var currentUser = null;
 var tagSelectMode = false;
+var currentMessage = null;
 
 var initialize = function(dontDoInitialSearch){
 	tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
@@ -73,15 +74,18 @@ var initialize = function(dontDoInitialSearch){
 		if(currentUser==null){
 			displayLoginForm("#editor");
 		}else{
-			displayEditForm("#editor", {});
+			displayEditForm("#editor", {}, function(){
+				delete currentThread.searchCriteria.startingId;
+				searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
+			});
 		}
 	});
 
 	$("#btnSearch").click(function(){
-    if(tagSelectMode){
-      tagSelectedMessages();
-      return;
-    }
+		if(tagSelectMode){
+    		tagSelectedMessages();
+    		return;
+		}
 		var tags = $("#txtTagSearch").val();
 		var allTags = tags.split(" ");
 		var tagArray = ["top"];
@@ -95,15 +99,15 @@ var initialize = function(dontDoInitialSearch){
 
 	$("#btnTag").click(function(){
     
-    tagSelectMode = !tagSelectMode;
-    $("#btnTag").toggleClass('selected');
-    $(".basicDocument").toggleClass('selectable');
-    if(tagSelectMode){
-      $("#btnSearch").html("Apply Tag"); 
-    }else{
-      $("#btnSearch").html("Search");
-    }
-    return;
+	    tagSelectMode = !tagSelectMode;
+	    $("#btnTag").toggleClass('selected');
+	    $(".basicDocument").toggleClass('selectable');
+	    if(tagSelectMode){
+	      $("#btnSearch").html("Apply Tag"); 
+	    }else{
+	      $("#btnSearch").html("Search");
+	    }
+    	return;
     
 	});
 }
@@ -115,7 +119,8 @@ var tagSelectedMessages = function(){
 	for(var i=0; i<allTags.length;i++){
 		if(allTags[i].length>0){
 			tagArray.push(allTags[i]);
-		}		}
+		}		
+	}
 
 	var whichTagged = [];
 	$('.basicDocument.selected').each(function () {
@@ -141,9 +146,9 @@ var tagSelectedMessages = function(){
 }
 
 
-var displayEditForm = function(container, sourceMsg){//#TODO don't just replace
+var displayEditForm = function(container, sourceMsg, cb){//#TODO don't just replace
 	var controls = $(container).append(tmplBasicDocumentEdit(sourceMsg));
-	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls));
+	controls.find(".inputMsgBtn").click(dynamicEditSubmit(controls, cb));
 	controls.find(".closeButton").click(function(event){
 		controls.find(".basicDocumentEdit").remove();
 	});
@@ -160,7 +165,18 @@ var displayLoginForm = function(container){ //#TODO hey we are seeing a template
 var displayMessageEditorCB = function(message, messageView){
   return function(event){
 		console.log("Replying to " + message.id);
-    displayEditForm("#editor", {repliesToId:message.id});
+    	displayEditForm("#editor", {repliesToId:message.id}, function(newMessage){
+    		console.log("Reply to " + message.id + " is complete");
+    		var newRelation = {
+    			tag:"repliesTo",
+    			sink:message,
+    			source:newMessage
+    		};
+    		threadMessages[newMessage.id] = newMessage;
+    		addThreadRelation(newRelation);
+		$(".fullMessage").remove();
+    		displayFullMessage(currentMessage);
+		});
   };
 }
 
@@ -181,6 +197,7 @@ var displayMessageComments = function(message, messageView){
 }
 var displayFullMessage = function(message){
 	console.log("View " + JSON.stringify(message));
+	currentMessage = message;
 	var appliedTemplate = $(tmplFullMessage(message));
 	var newFullMessage = $("#content").append(appliedTemplate);
 	var newMessageView = $("#content").find(".fullMessage.categorizeus"+message.id);
@@ -224,13 +241,17 @@ var displayMessageThread = function(err, messageThread){
 		threadMessages[message.id] = message;
 	}
 	for(var relation of currentThread.relations){
-		console.log(relation);
-		if(threadRelations[relation.sink.id]==null){//TODO source/sink vocab here is iffy at best
-			threadRelations[relation.sink.id] = [];
-		}
-		threadRelations[relation.sink.id].push(relation.source.id);//this is obviously assuming one predicate a.t.m.
+		addThreadRelation(relation);
 	}
 	displayMessages(err, currentThread.thread);
+}
+
+var addThreadRelation = function(relation){
+	console.log(relation);
+	if(threadRelations[relation.sink.id]==null){//TODO source/sink vocab here is iffy at best
+		threadRelations[relation.sink.id] = [];
+	}
+	threadRelations[relation.sink.id].push(relation.source.id);//this is obviously assuming one predicate a.t.m.	
 }
 
 
@@ -258,7 +279,7 @@ var displayMessages = function(err, messages){
 		appliedTemplate.bind('click',
 		   (function(template, message){ 
 			return function(event){
-        handleGridDocumentClick(event, template, message);
+			      handleGridDocumentClick(event, template, message);
 			}
 		   })(appliedTemplate, messages[i])
 		);
@@ -329,7 +350,7 @@ var dynamicRegister = function(el){
 	};
 }
 
-var dynamicEditSubmit = function(el){
+var dynamicEditSubmit = function(el, cb){
 
 	return function(){
 		console.log("Dynamically bound control OK");
@@ -354,31 +375,25 @@ var dynamicEditSubmit = function(el){
 			if(repliesToId!=null&& repliesToId.length>0){
 				newMessage.repliesToId = repliesToId;
 			}
-			if(file.val()!==''){//file[0].files.length?
-				console.log("Found an attached file");
-				console.log(file[0].files);
-				createEncodedMessage(newMessage, file[0].files, function(err, response){
-					if(err!=null){
-						$("#status").append("<p>Error: " + err + "</p>");
-					}else{
-						$("#status").append("<p>Created new document with id " + response.id + "</p>");
-					}
-					el.empty();
-          delete currentThread.searchCriteria.startingId;
-					searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
-				});
-				return;
-			}
-			createMessage(newMessage, function(err, response){
+			var handleCreatedMessage = function(err, response){
 				if(err!=null){
 					$("#status").append("<p>Error: " + err + "</p>");
 				}else{
-					$("#status").append("<p>Created new document with id " + response + "</p>");
+					$("#status").append("<p>Created new document with id " + response.id + "</p>");
 				}
 				el.empty();
-        delete currentThread.searchCriteria.startingId;
-				searchThreadCriteria(currentThread.searchCriteria, displayMessageThread);
-			});
+				if(cb!=null){
+					newMessage.id = response.id;
+					cb(newMessage);
+				}
+			}
+			if(file.val()!==''){//file[0].files.length?
+				console.log("Found an attached file");
+				console.log(file[0].files);
+				createEncodedMessage(newMessage, file[0].files, handleCreatedMessage);
+				return;
+			}
+			createMessage(newMessage, handleCreatedMessage);
 
 		}else{
 			$("#status").append("<p>Currently, editing existing docs not supported. Clear and try again.</p>");
