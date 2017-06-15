@@ -164,8 +164,19 @@ var displayLoginForm = function(container){ //#TODO hey we are seeing a template
 var displayMessageEditorCB = function(message, messageView){
   return function(event){
 		console.log("Replying to " + message.id);
-    	displayEditForm("#editor", {repliesToId:message.id}, function(){
+    	displayEditForm("#editor", {repliesToId:message.id}, function(newMessage){
     		console.log("Reply to " + message.id + " is complete");
+    		var newRelation = {
+    			tag:"repliesTo",
+    			source:{
+    				message
+    			},
+    			sink:{
+    				newMessage
+    			}
+    		};
+    		threadMessages[newMessage.id] = newMessage;
+    		addThreadRelation(newRelation);
     		displayFullMessage(message);
 		});
   };
@@ -231,13 +242,17 @@ var displayMessageThread = function(err, messageThread){
 		threadMessages[message.id] = message;
 	}
 	for(var relation of currentThread.relations){
-		console.log(relation);
-		if(threadRelations[relation.sink.id]==null){//TODO source/sink vocab here is iffy at best
-			threadRelations[relation.sink.id] = [];
-		}
-		threadRelations[relation.sink.id].push(relation.source.id);//this is obviously assuming one predicate a.t.m.
+		addThreadRelation(relation);
 	}
 	displayMessages(err, currentThread.thread);
+}
+
+var addThreadRelation = function(relation){
+	console.log(relation);
+	if(threadRelations[relation.sink.id]==null){//TODO source/sink vocab here is iffy at best
+		threadRelations[relation.sink.id] = [];
+	}
+	threadRelations[relation.sink.id].push(relation.source.id);//this is obviously assuming one predicate a.t.m.	
 }
 
 
@@ -369,7 +384,8 @@ var dynamicEditSubmit = function(el, cb){
 				}
 				el.empty();
 				if(cb!=null){
-					cb();
+					newMessage.id = response.id;
+					cb(newMessage);
 				}
 			}
 			if(file.val()!==''){//file[0].files.length?
