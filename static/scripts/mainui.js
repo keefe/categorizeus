@@ -168,15 +168,12 @@ var displayMessageEditorCB = function(message, messageView){
     		console.log("Reply to " + message.id + " is complete");
     		var newRelation = {
     			tag:"repliesTo",
-    			source:{
-    				message
-    			},
-    			sink:{
-    				newMessage
-    			}
+    			sink:message,
+    			source:newMessage
     		};
     		threadMessages[newMessage.id] = newMessage;
     		addThreadRelation(newRelation);
+		$(".fullMessage").remove();
     		displayFullMessage(message);
 		});
   };
