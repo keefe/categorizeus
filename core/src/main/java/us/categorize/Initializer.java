@@ -1,51 +1,57 @@
 package us.categorize;
 
 import java.util.*;
-
+import java.sql.*;
+import java.io.*;
+import us.categorize.config.*;
 
 public class Initializer{
     
     
-    private Scnner scanner;
+    private Scanner scanner;
     
     public Initializer(){
         scanner = new Scanner(System.in);
     }
     
-    public static void main(String args[]){
+    public static void main(String args[]) throws Exception{
         Initializer initializer = new Initializer();
-        scanner.mainLoop();
+        initializer.mainLoop();
     }
 
-    public void mainLoop(){
+    public void mainLoop() throws Exception{
         Config config = App.readConfig();
         String input = null;
-        
-        do{
+	System.out.println("Welcome to admin initialization interface");
+	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
+	String greeting = "Valid choices are addAdmin, resetDatabase, addUser, createMessage, tagSearch, login or exit to stop";
+	do{
+	    System.out.println(greeting);
+	    input = scanner.nextLine();
             switch(input){//requires JDK7, more efficient now I guess
-                case:"admin"//once again I am tempted to use reflection
+                case "addAdmin"://once again I am tempted to use reflection
                     createAdmin();
                     break;
-                case:"resetDatabase"
+                case "resetDatabase":
                     initializeDB(config);
                     break;
-                case:"addUser"
+                case "addUser":
                     addUser();
                     break;
-                case:"createMessage"
+                case "createMessage":
                     createMessage();
                     break;
-                case:"tagSearch"
+                case "tagSearch":
                     tagSearch();
                     break;
-                case:"login"
+                case "login":
                     login();
                     break;
                 default:
                     System.out.println("That was not a recognized choice, please trying again");
                     break;
-            }
-        }while((input = scanner.nextLine())!=null && !"exit".equals(input));
+		}
+        }while(!"exit".equals(input));
     }
     
     private void createMessage(){
@@ -58,7 +64,7 @@ public class Initializer{
         System.out.println("Tags to search, one at a time, -1 to stop");
         do{
             if(input!=null){
-                tags.push(input);
+                tags.add(input);
             }
         }while((input = scanner.nextLine())!=null && !"-1".equals(input));
         System.out.println("Tags Entered Were ");

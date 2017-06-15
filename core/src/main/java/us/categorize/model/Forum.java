@@ -1,4 +1,5 @@
 package us.categorize.model;
+import java.util.*;
 
 public class Forum{
     

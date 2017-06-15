@@ -39,11 +39,6 @@ public class App {
 		Config config = readConfig();
 		Class.forName("org.postgresql.Driver");
 		System.out.println("Postgres Driver Loaded");
-		if (args.length > 0 && "initialize".equals(args[0])){
-			initializeDB(config);
-		}
-		System.out.println("Initialization Complete");
-		//serverUp(config);
 		serverUpGeneric(config);
 	}
 	public static Config readConfig() throws Exception{
