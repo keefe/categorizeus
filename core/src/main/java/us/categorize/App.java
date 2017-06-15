@@ -60,31 +60,7 @@ public class App {
 		return config;
 	}
 
-	public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
-		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
-		System.out.println("Attempting connect to " + config.getConnectString());
-		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
-		System.out.println("Connected to database for initialization");
-		Statement st = conn.createStatement();
-		executeFile(config.getClearSql(), st);
-		executeFile(config.getCreateSql(), st);
-		executeFile(config.getIndexSql(), st);
-		executeFile(config.getSeedSql(), st);
-		st.close();
-		conn.close();
-	}
 
-	private static void executeFile(String filename, Statement st) throws IOException, SQLException {
-		SQLReader init = new SQLReader(filename);
-		for (String sql : init.getStatements()) {
-			System.out.println("Executing " + sql);
-			try {
-				st.execute(sql);
-			} catch (Exception e) {
-				System.out.println("Error " + e.getMessage());
-			}
-		}
-	}
 	public static void serverUpGeneric(Config config) throws Exception{
 		Categorizer categorizer = new Categorizer(config);
 		System.out.println("Starting Server on Port " + config.getPort());
