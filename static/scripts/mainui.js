@@ -30,6 +30,7 @@ var threadMessages = {};
 var lastStartingId = null;
 var currentUser = null;
 var tagSelectMode = false;
+var currentMessage = null;
 
 var initialize = function(dontDoInitialSearch){
 	tmplBasicDocument = Handlebars.compile($("#tmplBasicDocument").html());
@@ -174,7 +175,7 @@ var displayMessageEditorCB = function(message, messageView){
     		threadMessages[newMessage.id] = newMessage;
     		addThreadRelation(newRelation);
 		$(".fullMessage").remove();
-    		displayFullMessage(message);
+    		displayFullMessage(currentMessage);
 		});
   };
 }
@@ -196,6 +197,7 @@ var displayMessageComments = function(message, messageView){
 }
 var displayFullMessage = function(message){
 	console.log("View " + JSON.stringify(message));
+	currentMessage = message;
 	var appliedTemplate = $(tmplFullMessage(message));
 	var newFullMessage = $("#content").append(appliedTemplate);
 	var newMessageView = $("#content").find(".fullMessage.categorizeus"+message.id);
