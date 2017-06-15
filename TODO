@@ -1,8 +1,30 @@
+refactor java for better code quality
+add forum concept? seems like a necessary component, some concept of list/group of messages
+    
+    ** need to pull out request objects rather than passing bodies into communicator
+    Here's the plan - let's get the core functionality pulled into a higher level repository.
+    It should be agnostic about whether it is SQL or whatever, even mysql vs postgres will be different initialization
+    so this stuff is way too tightly coupled right now
+    
+    Also, obviously we have no unit testing, this was just a quick hack, so let's break things down. 
+    There's also no reason to work on UI etc until we have a cleaner basic functionality
+    I particularly dislike the JSON streams ending up at the repository level that seems
+    very clearly wrong so let's do it like this
+    
+        1) Create an initialization rudimentary command line interface
+        2) Move the seed data from the raw SQL into higher level objects
+           this should show basic exercise of the simple API we're working with here
+        3) Get all the SQL stuff pushed down into the repository level
+        4) Look at request objects and revisit this whole message relation, thread query stuff
+        5) stabilize the basic API, make sure the models are decoupled from the SQL schema
+        6) Update the javascript to handle the new API
+        7) make some simple js/css updates to make it more usable
+    
+    Revisit the planning stage
+
 General Plan
     Get basic functionality working properly
     Update basic UI look and feel
-    refactor java for better code quality
-    add forum concept? seems like a necessary component, some concept of list/group of messages
     rethink overall UI, functionality
     add keyboard support, gesture support
     avatar support
@@ -14,7 +36,6 @@ General Plan
 ** Admin user stuff is hardcoded to a specific user number, that needs to stop
 ** session management and cookie stuff needs to be cleaned up and documented
     logic separation isn't super clean here, need to sort this out
-** need to pull out request objects rather than passing bodies into communicator
 
 >>>>>>>>>>>> Twitter Sign In Integration <<<<<<<<<<<<<<
 

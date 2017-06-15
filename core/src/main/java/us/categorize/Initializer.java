@@ -5,17 +5,20 @@ import java.util.*;
 
 public class Initializer{
     
+    
+    private Scnner scanner;
+    
     public Initializer(){
-        
+        scanner = new Scanner(System.in);
     }
     
     public static void main(String args[]){
         Initializer initializer = new Initializer();
+        scanner.mainLoop();
     }
 
     public void mainLoop(){
         Config config = App.readConfig();
-        Scanner scanner = new Scanner(System.in);
         String input = null;
         
         do{
@@ -29,17 +32,67 @@ public class Initializer{
                 case:"addUser"
                     addUser();
                     break;
+                case:"createMessage"
+                    createMessage();
+                    break;
+                case:"tagSearch"
+                    tagSearch();
+                    break;
+                case:"login"
+                    login();
+                    break;
                 default:
                     System.out.println("That was not a recognized choice, please trying again");
                     break;
             }
         }while((input = scanner.nextLine())!=null && !"exit".equals(input));
     }
+    
+    private void createMessage(){
+        System.out.println("Enter Message Details");
+    }
+    
+    private void tagSearch(){
+        List<String> tags = new LinkedList<String>();
+        String input = null;
+        System.out.println("Tags to search, one at a time, -1 to stop");
+        do{
+            if(input!=null){
+                tags.push(input);
+            }
+        }while((input = scanner.nextLine())!=null && !"-1".equals(input));
+        System.out.println("Tags Entered Were ");
+        for(String tag : tags){
+            System.out.print(tag+",");
+        }
+        
+    }
+    
+    private void login(){
+        System.out.println("Enter Login Details");
+        System.out.print("Username :");
+        String userName = scanner.nextLine();
+        System.out.print("Password :");
+        String password = scanner.nextLine();
+        System.out.println("Credentials entered as " + userName + " , " + password);
+    }
     private void createAdmin(){
         System.out.println("Creating Admin User");
+        System.out.println("Enter Login Details");
+        System.out.print("Username :");
+        String userName = scanner.nextLine();
+        System.out.print("Password :");
+        String password = scanner.nextLine();
+        System.out.println("Credentials entered as " + userName + " , " + password);
     }
     private void addUser(){
         System.out.println("Adding User");
+        System.out.println("Enter Login Details");//mmmm copy paste to get to more interesting stuff
+        System.out.print("Username :");
+        String userName = scanner.nextLine();
+        System.out.print("Password :");
+        String password = scanner.nextLine();
+        System.out.println("Credentials entered as " + userName + " , " + password);
     }
     
     public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
