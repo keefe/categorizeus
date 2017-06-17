@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class User {
 	private String userName;
 	
-	@JsonIgnore
+	@JsonIgnore//all this stuff is heinously tightly coupled why did I do this?
 	private String passhash;
 	private String email; 
 	private long userId;

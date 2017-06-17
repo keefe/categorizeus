@@ -4,6 +4,13 @@ create table if not exists tags(
 	tag varchar(255) not null
 );
 
+create table if not exists forums(
+	id bigserial primary key,
+	tag_id bigint,
+	base_post_id bigint,
+	owner_id bigint
+);
+
 create table if not exists messages(
 	id bigserial primary key,
 	body text,

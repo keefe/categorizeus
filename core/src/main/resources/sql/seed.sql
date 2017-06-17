@@ -14,7 +14,6 @@ insert into tags(tag) values ('tag5');
 insert into tags(tag) values ('repliesTo');
 insert into tags(tag) values ('top');
 
-
 insert into messages(body, title, posted_by) values ('Here is the body1', 'Thread:Here is the title1', 1);/*1*/
 insert into messages(body, title, posted_by) values ('Here is the body2', 'Here is the title2', 2);/*2*/
 insert into messages(body, title, posted_by) values ('Here is the body3', 'Here is the title3', 3);/*3*/
@@ -70,3 +69,6 @@ insert into message_tags(message_id, tag_id) values (1, 3);
 insert into message_tags(message_id, tag_id) values (2, 1);
 insert into message_tags(message_id, tag_id) values (2, 2);
 
+insert into forums(tag_id, base_post_id, owner_id) values (1,13,1);
+insert into forums(tag_id, base_post_id, owner_id) values (2,3,1);
+insert into forums(tag_id, base_post_id, owner_id) values (3,3,1);
