@@ -16,6 +16,7 @@ public interface Corpus{
     public boolean read(User user);
     
     public List<Message> tagSearch(TagSearchRequest request);
+    public boolean tagMessage(Message message, List<Tag> tags);
     public ThreadResponse findThread(ThreadRequest request);
     
 }
