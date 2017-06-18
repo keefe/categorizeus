@@ -1,3 +1,5 @@
+package us.categorize.model;
+
 public class Identifiable{
     
     private Long id;//TODO think about UUIDs, OK for now, maybe we do this as a generic?

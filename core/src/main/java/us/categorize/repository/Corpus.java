@@ -1,6 +1,8 @@
 package us.categorize.repository;
 
 import us.categorize.model.*;
+import us.categorize.api.*;
+import java.util.*;
 
 public interface Corpus{
     

@@ -17,12 +17,12 @@ public class ThreadResponse{
         
     }
     
-    public Message getMessage() {
-        return message;
+    public Message getBaseMessage() {
+        return baseMessage;
     }
 
-    public void setMessage(Message message) {
-        this.message = message;
+    public void setBaseMessage(Message message) {
+        this.baseMessage = message;
     }
 
     public List<Message> getRelated() {

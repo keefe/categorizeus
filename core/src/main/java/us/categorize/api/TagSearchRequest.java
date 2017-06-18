@@ -1,4 +1,6 @@
 package us.categorize.api;
+import us.categorize.model.*;
+import java.util.*;
 
 public class TagSearchRequest{
     private List<Tag> tags;

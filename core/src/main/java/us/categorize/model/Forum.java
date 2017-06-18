@@ -15,7 +15,7 @@ public class Forum extends Identifiable{
     
     public String toString(){
         String s = "";
-        s+="Forum ID " + getId() + " has topic " + tag.toString();
+        s+="Forum ID " + getId() + " has topic " + topic.toString();
         s+=" Owner is " + owner.toString();
         s+=" Base Message is " + basePost.toString();
         return s;

@@ -15,7 +15,7 @@ public class CLI{
     }
     
     public static void main(String args[]) throws Exception{
-        Initializer initializer = new Initializer();
+        CLI initializer = new CLI();
         initializer.mainLoop();
     }
 
