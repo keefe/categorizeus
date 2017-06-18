@@ -1,6 +1,7 @@
 package us.categorize.repository;
 
 import us.categorize.model.*;
+import us.categorize.api.*;
 import java.util.*;
 import java.sql.*;
 
@@ -39,10 +40,12 @@ public class SQLCorpus implements Corpus{
 		return true;   
     }
     
-    private void mapMessageRow(Message message, ResultSet rs) throws SQLException, Exception {
+    private void mapMessageRow(Message message, ResultSet rs) throws SQLException {
 		message.setBody(rs.getString("body"));
 		message.setTitle(rs.getString("title"));
-		message.setPostedBy(userRepository.find(rs.getLong("posted_by")));
+		User user = new User();
+		user.setId(rs.getLong("posted_by"));
+		message.setPostedBy(user);
 		message.setId(rs.getLong("id"));
 		message.setLink(rs.getString("link"));
 		message.setImgWidth(rs.getInt("img_width"));
@@ -58,15 +61,12 @@ public class SQLCorpus implements Corpus{
     
     public boolean read(Message message){
         try{
-            
-            String findMessage = "select * from messages where id=?";
+            	String findMessage = "select * from messages where id=?";
     		PreparedStatement stmt = connection.prepareStatement(findMessage);
     		stmt.setLong(1, message.getId());
     		ResultSet rs = stmt.executeQuery();
-    		Message message = null;
     		if(rs.next()){
-    		    message = new Message();
-    			mapMessageRow(message, rs);
+    		    mapMessageRow(message, rs);
     		}else{
     		    return false;
     		}
@@ -75,7 +75,7 @@ public class SQLCorpus implements Corpus{
     		String findTags = "select * from message_tags, tags where message_tags.tag_id=tags.id AND message_id = ?";
     		System.out.println("Tags found as  " + findTags);
     		PreparedStatement findTagsStmt = connection.prepareStatement(findTags);
-    		findTagsStmt.setLong(1, id);
+    		findTagsStmt.setLong(1, message.getId());
     		rs = findTagsStmt.executeQuery();
     		while(rs.next()){
     			Tag tag = new Tag(rs.getLong("id"), rs.getString("tag"));
@@ -94,7 +94,7 @@ public class SQLCorpus implements Corpus{
 		try {
 			for(Tag tag: tags){
 				PreparedStatement stmt = connection.prepareStatement(tagStatement);
-				stmt.setLong(1, messageId);
+				stmt.setLong(1, message.getId());
 				stmt.setLong(2, tag.getId());
 				stmt.executeUpdate();
 			}	
