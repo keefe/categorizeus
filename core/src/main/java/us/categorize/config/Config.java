@@ -3,6 +3,7 @@ package us.categorize.config;
 import java.util.*;
 import java.io.*;
 import us.categorize.repository.*;
+import us.categorize.App;
 import java.sql.*;
 //TODO this needs to be broken off into multiple classes, for sure
 //think about the annotations stuff or a builder/factory pattern probably something?
@@ -30,7 +31,7 @@ public class Config {
 
 	public static Config readRelativeConfig() throws Exception{
 		Properties properties = new Properties();
-		InputStream input = Config.class.getResourceAsStream("/categorizeus.properties");
+		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
 		properties.load(input);
 		StringWriter writer = new StringWriter();
 		properties.list(new PrintWriter(writer));
@@ -72,7 +73,7 @@ public class Config {
 	}
 	
 	public Corpus initialize() throws Exception{
-		if(!"sql".equals(repositoryType.toLowerCase())){
+		if(repositoryType==null || !"sql".equals(repositoryType.toLowerCase())){
 			throw new Exception(repositoryType + " is not a known repository type, exiting");
 		}
 		Class.forName("org.postgresql.Driver");

@@ -30,10 +30,11 @@ public class CLI{
         String input = null;
     	System.out.println("Welcome to admin initialization interface");
     	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
-    	String greeting = "Valid choices are addAdmin, resetDatabase, addUser, createMessage, tagSearch, login or exit to stop";
+    	String greeting = "Please Select Admin function, valid choices are addAdmin,resetDatabase,addUser,createMessage,readMessage,tagSearch,login or exit to stop";
     	do{
 	        System.out.println(greeting);
 	        input = scanner.nextLine();
+//		System.out.print("READ |||"+input+"|||");
             switch(input){//requires JDK7, more efficient now I guess
                 case "addAdmin"://once again I am tempted to use reflection
                     createAdmin();
@@ -72,6 +73,7 @@ public class CLI{
         String body = scanner.nextLine();
         System.out.print("User ID of Posted By: ");
         long userId = scanner.nextLong();
+	scanner.nextLine();//again this trailing newline business
         User fauxUser = new User();
         fauxUser.setId(userId);
         Message message = new Message();
@@ -133,6 +135,7 @@ public class CLI{
 	private void readMessage(){
 	    System.out.print("Enter Message ID : ");
 	    long id = scanner.nextLong();
+	    scanner.nextLine();//this is confusing, maybe there is better way to approach this
 	    Message stub = new Message();
 	    stub.setId(id);
 	    if(corpus.read(stub)){
