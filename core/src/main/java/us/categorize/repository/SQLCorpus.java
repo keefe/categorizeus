@@ -162,8 +162,8 @@ public class SQLCorpus implements Corpus{
 		String sql = "";
 		if(tags.length==0){
 			sql = "SELECT messages.id* from messages";
-			if(startId !=null){
-				sql+=" where id"+idOp+startId;
+			if(lastKnownMessage !=null){
+				sql+=" where id"+idOp+lastKnownMessage.getId();
 			}
 		}else{
 			sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND tag_id = "+tags[0].getId();
