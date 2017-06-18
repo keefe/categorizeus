@@ -4,32 +4,21 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class User {
+public class User extends Identifiable{
 	private String userName;
 	
 	@JsonIgnore//all this stuff is heinously tightly coupled why did I do this?
 	private String passhash;
 	private String email; 
-	private long userId;
-	
-	public static void main(String args[]){
-		String password = "";
-		System.out.println(DigestUtils.sha256Hex(password));
-	}
+
 	public String toString(){
-		return userId+":"+userName+":"+email;
+		return getId()+":"+userName+":"+email;
 	}
 	public String getUserName() {
 		return userName;
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-	public long getUserId() {
-		return userId;
-	}
-	public void setUserId(long userId) {
-		this.userId = userId;
 	}
 	public String getPasshash() {
 		return passhash;

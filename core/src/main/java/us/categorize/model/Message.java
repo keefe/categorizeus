@@ -1,11 +1,10 @@
 package us.categorize.model;
 import java.util.*;
 
-public class Message {
+public class Message extends Identifiable{
 	private String title;
 	private String body;
 	private User postedBy;
-	private long id;
 	private String link, thumbLink;//TODO what belongs in this class, what belongs in a relationship?
 	private List<Tag> tags;
 	
@@ -59,15 +58,9 @@ public class Message {
 	}
 
 	public String toString(){
-		return id+":"+title+":"+body+":"+postedBy;
+		return getId()+":"+title+":"+body+":"+postedBy;
 	}
 	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
 	public String getTitle() {
 		return title;
 	}

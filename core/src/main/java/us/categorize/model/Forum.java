@@ -1,9 +1,7 @@
 package us.categorize.model;
 import java.util.*;
 
-public class Forum{
-    
-    private long id;
+public class Forum extends Identifiable{
     
     private User owner;
     
@@ -14,13 +12,16 @@ public class Forum{
     public Forum(){
         
     }
-    public long getId() {
-        return id;
+    
+    public String toString(){
+        String s = "";
+        s+="Forum ID " + getId() + " has topic " + tag.toString();
+        s+=" Owner is " + owner.toString();
+        s+=" Base Message is " + basePost.toString();
+        return s;
     }
+    public Long getId() {
 
-    public void setId(long id) {
-        this.id = id;
-    }
     public User getOwner() {
         return owner;
     }

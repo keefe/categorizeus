@@ -40,7 +40,7 @@ public class UserCommunicator {
 		 * 
 		 * 
 		 * **/
-		if(currentUser==null || currentUser.getUserId()>=7){
+		if(currentUser==null || currentUser.getId()>=7){
 	        throw new Exception("[FORBIDDEN] Stay tuned for a user model with authorization that makes sense");
 		}
 		ObjectMapper mapper = new ObjectMapper();

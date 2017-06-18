@@ -5,7 +5,7 @@ import java.sql.*;
 import java.io.*;
 import us.categorize.config.*;
 
-public class Initializer{
+public class CLI{
     
     
     private Scanner scanner;
