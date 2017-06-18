@@ -9,6 +9,8 @@ public class CLI{
     
     
     private Scanner scanner;
+    private Corpus corpus;
+    private Config config;
     
     public CLI(){
         scanner = new Scanner(System.in);
@@ -20,14 +22,16 @@ public class CLI{
     }
 
     public void mainLoop() throws Exception{
-        Config config = App.readConfig();
+        config = Config.readRelativeConfig();
+        corpus = config.initialize();
+        
         String input = null;
-	System.out.println("Welcome to admin initialization interface");
-	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
-	String greeting = "Valid choices are addAdmin, resetDatabase, addUser, createMessage, tagSearch, login or exit to stop";
-	do{
-	    System.out.println(greeting);
-	    input = scanner.nextLine();
+    	System.out.println("Welcome to admin initialization interface");
+    	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
+    	String greeting = "Valid choices are addAdmin, resetDatabase, addUser, createMessage, tagSearch, login or exit to stop";
+    	do{
+	        System.out.println(greeting);
+	        input = scanner.nextLine();
             switch(input){//requires JDK7, more efficient now I guess
                 case "addAdmin"://once again I am tempted to use reflection
                     createAdmin();
@@ -40,6 +44,9 @@ public class CLI{
                     break;
                 case "createMessage":
                     createMessage();
+                    break;
+                case "readMessage":
+                    readMessage();
                     break;
                 case "tagSearch":
                     tagSearch();
@@ -55,7 +62,25 @@ public class CLI{
     }
     
     private void createMessage(){
-        System.out.println("Enter Message Details");
+        System.out.println("Creating a new message, please enter details: ");
+        System.out.print("Title: ");
+        String title = scanner.nextLine();
+        System.out.println();
+        System.out.print("Body: ");
+        String body = scanner.nextLine();
+        System.out.print("User ID of Posted By: ");
+        long userId = scanner.nextLong();
+        User fauxUser = new User();
+        fauxUser.setId(userId);
+        Message message = new Message();
+        message.setTitle(title);
+        message.setBody(body);
+        message.setPostedBy(fauxUser);
+        if(corpus.create(message)){
+            System.out.println("New Message Created with ID " + message.getId());
+        }else{
+            System.out.println("Failed to create message for some reason");
+        }
     }
     
     private void tagSearch(){
@@ -101,6 +126,23 @@ public class CLI{
         System.out.println("Credentials entered as " + userName + " , " + password);
     }
     
+
+	
+	private void readMessage(){
+	    System.out.print("Enter Message ID : ");
+	    long id = scanner.nextLong();
+	    Message stub = new Message();
+	    message.setId(id);
+	    if(corpus.read(stub)){
+	        System.out.println("Message Found as " + stub);
+	    }else{
+	        System.out.println("Message with id " + id + " was not found");
+	    }
+	}
+
+
+
+//TODO this stuff absolutely does not belong here, needs to be backing store specific
     public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
         //this is a bloody mess!
 		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
@@ -115,7 +157,7 @@ public class CLI{
 		st.close();
 		conn.close();
 	}
-
+	
 	private static void executeFile(String filename, Statement st) throws IOException, SQLException {
 		SQLReader init = new SQLReader(filename);
 		for (String sql : init.getStatements()) {

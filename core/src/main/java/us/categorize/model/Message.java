@@ -58,7 +58,11 @@ public class Message extends Identifiable{
 	}
 
 	public String toString(){
-		return getId()+":"+title+":"+body+":"+postedBy;
+		String s= getId()+":"+title+":"+body+":"+postedBy;
+		for(Tag t : tags){
+			s+=t.getTag();
+		}
+		return s;
 	}
 	
 	public String getTitle() {

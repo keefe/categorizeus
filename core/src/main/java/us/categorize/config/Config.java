@@ -17,10 +17,70 @@ public class Config {
 	private String s3bucket, s3region, attachmentURLPrefix, connectString;
 	private String driverName = "org.postgresql.Driver";
 	private String uploadStorage = "S3";
-
-
 	//TODO this is going to the twitter section
 	private String twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessSecret;
+	private String repositoryType;
+	//TODO this is going tot he AWS specific section
+	//TODO is AWS stuff appropriate to even use keys AT ALL with role based auth on EC2 instances of lambda roles?
+	private String awsAccessKey, awsAccessSecret;
+	
+	
+
+	public static Config readRelativeConfig() throws Exception{
+		Properties properties = new Properties();
+		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
+		properties.load(input);
+		StringWriter writer = new StringWriter();
+		properties.list(new PrintWriter(writer));
+		System.out.println("Properties File Read As ");
+	  	System.out.println(writer.getBuffer().toString());
+		Config config = new Config(properties);
+		return config;
+	}
+	
+	public Config(Properties properties){
+		clearSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/clear.sql";//TODO refactor to load from the jar as above
+		createSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/tables.sql";
+		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
+		seedSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/seed.sql";		
+		dbName = properties.getProperty("DB_NAME");
+		dbHost = properties.getProperty("DB_HOST");
+		dbPort = properties.getProperty("DB_PORT");
+		dbUser = properties.getProperty("DB_USER");
+		dbPass = properties.getProperty("DB_PASS");
+		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
+		s3region = properties.getProperty("AWS_REGION");
+		repositoryType = properties.getProperty("REPOSITORY_TYPE");
+		twitterConsumerKey= properties.getProperty("TWITTER_CONSUMER_KEY");
+		twitterConsumerSecret= properties.getProperty("TWITTER_CONSUMER_SECRET");
+		twitterAccessToken= properties.getProperty("TWITTER_ACCESS_TOKEN");
+		twitterAccessSecret= properties.getProperty("TWITTER_ACCESS_SECRET");
+		if(properties.containsKey("UPLOAD_STORAGE")){
+			uploadStorage = properties.getProperty("UPLOAD_STORAGE");
+		}
+		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
+		connectString = "jdbc:postgresql:" +"/"+"/"+ dbHost+":"+dbPort+"/"+dbName;
+		System.out.println("nc Connect String Detected As " + connectString);
+		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
+		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
+		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
+		port = Integer.parseInt(properties.getProperty("PORT"));
+		staticDir = properties.getProperty("STATIC_DIR");
+		fileBase = staticDir + "/files";
+	}
+	
+	public Corpus initialize() throws Exception{
+		if(!"sql".equals(repositoryType.toLowerCase()){
+			throw new Exception(repositoryType + " is not a known repository type, exiting");
+		}
+		Class.forName("org.postgresql.Driver");
+		System.out.println("Postgres Driver Loaded");
+		System.out.println("Connecting " + getConnectString()+","+getDbUser()+","+getDbPass());
+		Connection conn = DriverManager.getConnection(getConnectString(), getDbUser(), getDbPass());
+		return new SQLCorpus(conn);
+	}
+
+
 	public Twitter configureTwitter(){
 		System.out.println("Twitter Read as " + twitterConsumerKey+","+twitterConsumerSecret+","+twitterAccessToken+","+twitterAccessSecret); 
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -33,12 +93,12 @@ public class Config {
 		return tf.getInstance();
 	}
 	
-	
-	//TODO this is going tot he AWS specific section
-	//TODO is AWS stuff appropriate to even use keys AT ALL with role based auth on EC2 instances of lambda roles?
-	private String awsAccessKey, awsAccessSecret;
-	
-	
+	public String getRepositoryType(){
+		return repositoryType;
+	}
+	public void setRepositoryType(String type){
+		this.repositoryType = type;
+	}
 	
 	
 	public String getAttachmentURLPrefix() {
@@ -193,35 +253,6 @@ public class Config {
 		this.staticDir = staticDir;
 	}
 	
-	public Config(Properties properties){
-		clearSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/clear.sql";//TODO refactor to load from the jar as above
-		createSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/tables.sql";
-		indexSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/indices.sql";
-		seedSql = properties.getProperty("SQL_BASE") + "core/src/main/resources/sql/seed.sql";		
-		dbName = properties.getProperty("DB_NAME");
-		dbHost = properties.getProperty("DB_HOST");
-		dbPort = properties.getProperty("DB_PORT");
-		dbUser = properties.getProperty("DB_USER");
-		dbPass = properties.getProperty("DB_PASS");
-		s3bucket = properties.getProperty("S3_ASSETS_BUCKET");
-		s3region = properties.getProperty("AWS_REGION");
-		twitterConsumerKey= properties.getProperty("TWITTER_CONSUMER_KEY");
-		twitterConsumerSecret= properties.getProperty("TWITTER_CONSUMER_SECRET");
-		twitterAccessToken= properties.getProperty("TWITTER_ACCESS_TOKEN");
-		twitterAccessSecret= properties.getProperty("TWITTER_ACCESS_SECRET");
-		if(properties.containsKey("UPLOAD_STORAGE")){
-			uploadStorage = properties.getProperty("UPLOAD_STORAGE");
-		}
-		attachmentURLPrefix = properties.getProperty("ATTACHMENT_URL_PREFIX");
-		connectString = "jdbc:postgresql:" +"/"+"/"+ dbHost+":"+dbPort+"/"+dbName;
-		System.out.println("nc Connect String Detected As " + connectString);
-		maxUploadSize = Long.parseLong(properties.getProperty("MAX_UPLOAD_SIZE"));
-		maxThumbWidth = Double.parseDouble(properties.getProperty("MAX_THUMB_WIDTH"));
-		maxThumbHeight = Double.parseDouble(properties.getProperty("MAX_THUMB_HEIGHT"));
-		port = Integer.parseInt(properties.getProperty("PORT"));
-		staticDir = properties.getProperty("STATIC_DIR");
-		fileBase = staticDir + "/files";
-	}
 
 	public String getDriverName() {
 		return driverName;
