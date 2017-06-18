@@ -20,8 +20,6 @@ public class Forum extends Identifiable{
         s+=" Base Message is " + basePost.toString();
         return s;
     }
-    public Long getId() {
-
     public User getOwner() {
         return owner;
     }

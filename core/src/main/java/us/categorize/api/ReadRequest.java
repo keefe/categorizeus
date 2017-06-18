@@ -2,7 +2,7 @@ package us.categorize.api;
 
 import us.categorize.model.*;
 
-public ReadRequest<T extends Identifiable>{
+public class ReadRequest<T extends Identifiable>{
     
     private T payload;
     

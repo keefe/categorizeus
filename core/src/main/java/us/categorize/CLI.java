@@ -10,7 +10,7 @@ public class CLI{
     
     private Scanner scanner;
     
-    public Initializer(){
+    public CLI(){
         scanner = new Scanner(System.in);
     }
     

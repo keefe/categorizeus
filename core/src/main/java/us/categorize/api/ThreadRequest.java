@@ -5,7 +5,7 @@ import us.categorize.model.*;
 public class ThreadRequest{
     private Message baseMessage;
     private Tag transitivePredicate;
-    private int maximumResults
+    private int maximumResults;
     public ThreadRequest(){
         
     }
