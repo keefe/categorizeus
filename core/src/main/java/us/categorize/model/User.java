@@ -12,7 +12,7 @@ public class User extends Identifiable{
 	private String email; 
 
 	public String toString(){
-		return getId()+":"+userName+":"+email;
+		return "User String\n " + getId()+"\n"+userName+"\n"+email;
 	}
 	public String getUserName() {
 		return userName;

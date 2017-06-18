@@ -7,7 +7,6 @@ import java.sql.*;
 
 public class SQLCorpus implements Corpus{
     
-    
     private Connection connection;
     
     public SQLCorpus(Connection connection){
@@ -61,7 +60,7 @@ public class SQLCorpus implements Corpus{
     
     public boolean read(Message message){
         try{
-            	String findMessage = "select * from messages where id=?";
+            String findMessage = "select * from messages where id=?";
     		PreparedStatement stmt = connection.prepareStatement(findMessage);
     		stmt.setLong(1, message.getId());
     		ResultSet rs = stmt.executeQuery();
@@ -73,14 +72,15 @@ public class SQLCorpus implements Corpus{
     		//continuing to be extremely inefficient, let's do ANOTHER query
     		//curious if doing another query vs doing a join above would lead to more efficient results
     		String findTags = "select * from message_tags, tags where message_tags.tag_id=tags.id AND message_id = ?";
-    		System.out.println("Tags found as  " + findTags);
     		PreparedStatement findTagsStmt = connection.prepareStatement(findTags);
     		findTagsStmt.setLong(1, message.getId());
     		rs = findTagsStmt.executeQuery();
     		while(rs.next()){
     			Tag tag = new Tag(rs.getLong("id"), rs.getString("tag"));
-    			System.out.println(tag.getTag());
     			message.getTags().add(tag);
+    		}
+    		if(!read(message.getPostedBy()){
+    			System.out.println("Message Poster Not Found in Database " + message.getPostedBy());
     		}
     		return true;
         }catch(SQLException sqe){
@@ -216,6 +216,22 @@ public class SQLCorpus implements Corpus{
 
     
     public boolean read(User user){
+		String findUser = "select * from users where id=?";
+		try{
+			PreparedStatement stmt = connection.prepareStatement(findUser);
+			stmt.setLong(1, id);
+			ResultSet rs = stmt.executeQuery();
+			if(rs!=null && rs.next()){
+				user = new User();
+				user.setId(rs.getLong("id"));
+				user.setEmail(rs.getString("email"));
+				user.setPasshash(rs.getString("passhash"));
+				user.setUserName(rs.getString("username"));
+				return true;
+			}
+		}catch(SQLException sqe){
+			sqe.printStackTrace();
+		}
         return false;//TODO need to think about user validation setup
     }
     public boolean create(User user){
