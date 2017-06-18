@@ -142,8 +142,74 @@ public class SQLCorpus implements Corpus{
     }
 
     public List<Message> tagSearch(TagSearchRequest request){
-        return null;
+        Tag tags[] = request.getTags().toArray(new Tag[]{});
+        List<Message> results = findMessages(tags, request.getLastKnownMessage(), request.getMaximumResults(), !request.getFindAfter());
+        return results;
     }
+    private String tagSubquery(Tag tag){
+		String sql = "exists (select 1 from message_tags where messages.id = message_id and tag_id="+tag.getId();
+		sql = sql+")";
+		return sql;
+	}
+
+    private List<Message> findMessages(Tag[] tags, Message lastKnownMessage, Integer limit, boolean reverse) {//TODO think about callback form or streaming, something not in RAM
+		String idOp = "<";
+		String sortOp = "DESC";
+		if(reverse){
+			idOp = ">";
+			sortOp = "ASC";
+		}
+		String sql = "";
+		if(tags.length==0){
+			sql = "SELECT messages.id* from messages";
+			if(startId !=null){
+				sql+=" where id"+idOp+startId;
+			}
+		}else{
+			sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND tag_id = "+tags[0].getId();
+			for(int i=1; i<tags.length;i++){
+				sql = sql + " AND " + tagSubquery(tags[i]);
+			}
+		}
+		if(lastKnownMessage!=null){
+			sql+=" AND id"+idOp+lastKnownMessage.getId();//TODO more sophisticated query for different ordering etc
+		}
+
+		sql+=" order by id ";
+		sql+=sortOp;
+		if(limit!=null){
+			sql+=" LIMIT " + limit;
+		}
+		System.out.println(sql);
+		LinkedList<Message> messages = new LinkedList<Message>(); 
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			LinkedList<Long> messageIds = new LinkedList<Long>();//TODO check if we should be using HashSet<Long> here, ugh ordering issue
+			while(rs.next()){
+				if(reverse){
+					messageIds.addFirst(rs.getLong("id"));
+				}else{
+					messageIds.add(rs.getLong("id"));
+				}
+			}
+			for(long msgId : messageIds){
+			    Message msg = new Message();
+			    msg.setId(msgId);
+			    read(msg);
+				messages.add(msg);
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return messages;		
+		
+	}
+
+
     public ThreadResponse findThread(ThreadRequest request){
         return null;
     }

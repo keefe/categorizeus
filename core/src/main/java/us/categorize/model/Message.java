@@ -7,7 +7,8 @@ public class Message extends Identifiable{
 	private User postedBy;
 	private String link, thumbLink;//TODO what belongs in this class, what belongs in a relationship?
 	private List<Tag> tags;
-	
+	private int imgWidth, imgHeight, thumbWidth, thumbHeight;
+
 	public String getThumbLink() {
 		return thumbLink;
 	}
@@ -22,7 +23,6 @@ public class Message extends Identifiable{
 		this.thumbLink = thumbLink;
 	}
 
-	private int imgWidth, imgHeight, thumbWidth, thumbHeight;
 
 	
 	public int getImgWidth() {

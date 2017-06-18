@@ -6,9 +6,17 @@ public class TagSearchRequest{
     private List<Tag> tags;
     private Message lastKnownMessage;
     private boolean findAfter = true;
-    
+    private int maximumResults = 10;
     public TagSearchRequest(){
         
+    }
+    
+    public int getMaximumResults(){
+        return maximumResults;
+    }
+    
+    public void setMaximumResults(int max){
+        maximumResults = max;
     }
     
     public List<Tag> getTags() {

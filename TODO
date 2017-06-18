@@ -1,6 +1,13 @@
 refactor java for better code quality
 add forum concept? seems like a necessary component, some concept of list/group of messages
-    
+add predicate and transitive stuff for tag search, for first few messages
+avatar support pulled from google or twitter
+instagram API integration
+signin with twitter integration
+signin with google integration
+messages as immutable for now? seems like a good start, maybe just include relationships in message model
+analyze different approaches for loading threads, tag search and do some performance comparison
+
     ** need to pull out request objects rather than passing bodies into communicator
     Here's the plan - let's get the core functionality pulled into a higher level repository.
     It should be agnostic about whether it is SQL or whatever, even mysql vs postgres will be different initialization
