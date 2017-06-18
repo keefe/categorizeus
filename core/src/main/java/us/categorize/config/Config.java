@@ -1,7 +1,9 @@
 package us.categorize.config;
 
-import java.util.Properties;
-
+import java.util.*;
+import java.io.*;
+import us.categorize.repository.*;
+import java.sql.*;
 //TODO this needs to be broken off into multiple classes, for sure
 //think about the annotations stuff or a builder/factory pattern probably something?
 import twitter4j.*;
@@ -28,7 +30,7 @@ public class Config {
 
 	public static Config readRelativeConfig() throws Exception{
 		Properties properties = new Properties();
-		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
+		InputStream input = Config.class.getResourceAsStream("/categorizeus.properties");
 		properties.load(input);
 		StringWriter writer = new StringWriter();
 		properties.list(new PrintWriter(writer));
@@ -70,7 +72,7 @@ public class Config {
 	}
 	
 	public Corpus initialize() throws Exception{
-		if(!"sql".equals(repositoryType.toLowerCase()){
+		if(!"sql".equals(repositoryType.toLowerCase())){
 			throw new Exception(repositoryType + " is not a known repository type, exiting");
 		}
 		Class.forName("org.postgresql.Driver");

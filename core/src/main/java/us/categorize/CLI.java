@@ -4,6 +4,8 @@ import java.util.*;
 import java.sql.*;
 import java.io.*;
 import us.categorize.config.*;
+import us.categorize.repository.*;
+import us.categorize.model.*;
 
 public class CLI{
     
@@ -132,7 +134,7 @@ public class CLI{
 	    System.out.print("Enter Message ID : ");
 	    long id = scanner.nextLong();
 	    Message stub = new Message();
-	    message.setId(id);
+	    stub.setId(id);
 	    if(corpus.read(stub)){
 	        System.out.println("Message Found as " + stub);
 	    }else{
