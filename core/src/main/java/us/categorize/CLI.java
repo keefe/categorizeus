@@ -82,6 +82,10 @@ public class CLI{
         try{
             ThreadRequest request = new ThreadRequest();
             request.setBaseMessage(new Message(Long.parseLong(baseIdLine)));
+	    Tag transitivePredicate = new Tag();
+	    transitivePredicate.setTag(predicate);
+	    request.setTransitivePredicate(transitivePredicate);
+	    System.out.println("Performing Request With " + request);
             ThreadResponse response = corpus.findThread(request);
             System.out.println(response);
         }catch(NumberFormatException nfe){

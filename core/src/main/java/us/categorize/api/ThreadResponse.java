@@ -18,10 +18,10 @@ public class ThreadResponse{
     }
     
     public String toString(){
-        String s = baseMessage;
+        String s = ""+baseMessage;
         s+="===Related Messages===\n";
         for(Message m : related){
-            s+=m;
+            s+= m;
         }
         s+=" === Message Relationships === \n";
         for(Message key: messageRelationships.keySet()){
