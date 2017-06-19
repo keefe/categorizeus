@@ -79,7 +79,7 @@ public class SQLCorpus implements Corpus{
     			Tag tag = new Tag(rs.getLong("id"), rs.getString("tag"));
     			message.getTags().add(tag);
     		}
-    		if(!read(message.getPostedBy()){
+    		if(!read(message.getPostedBy())){
     			System.out.println("Message Poster Not Found in Database " + message.getPostedBy());
     		}
     		return true;
@@ -296,10 +296,9 @@ public class SQLCorpus implements Corpus{
 		String findUser = "select * from users where id=?";
 		try{
 			PreparedStatement stmt = connection.prepareStatement(findUser);
-			stmt.setLong(1, id);
+			stmt.setLong(1, user.getId());
 			ResultSet rs = stmt.executeQuery();
 			if(rs!=null && rs.next()){
-				user = new User();
 				user.setId(rs.getLong("id"));
 				user.setEmail(rs.getString("email"));
 				user.setPasshash(rs.getString("passhash"));
