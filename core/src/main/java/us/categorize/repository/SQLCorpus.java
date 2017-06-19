@@ -272,9 +272,10 @@ public class SQLCorpus implements Corpus{
 					relatedId = sink;
 					relatingId = source;
 				}
+				System.out.println("Considering " + relatingId + " , " + relatedId);
 				Message relatingMessage = findOrCreate(messageIdentity, relatingId);
 				Message relatedMessage = findOrCreate(messageIdentity, relatedId);
-				response.getMessageRelationships().put(relatingMessage, relatedMessage);
+				response.getMessageRelationships().put(relatedMessage, relatingMessage);
 				currentLevel.add(relatedId);
 				response.getRelated().add(relatedMessage);
 			}

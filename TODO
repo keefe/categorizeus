@@ -7,6 +7,8 @@ signin with twitter integration
 signin with google integration
 messages as immutable for now? seems like a good start, maybe just include relationships in message model
 analyze different approaches for loading threads, tag search and do some performance comparison
+	this turns out to open a can of worms relate to the edge structure and all that
+	let's think more about that and revisit after this basic refactoring
 login stuff just blindly fails right now, that is no bueno
 replies in line broken yet again, let's fix it after refactor
 Need to rethink initialization stuff - there is too much stuff in Config, maybe an Initialization class?
