@@ -17,6 +17,23 @@ public class ThreadResponse{
         
     }
     
+    public String toString(){
+        String s = baseMessage;
+        s+="===Related Messages===\n";
+        for(Message m : related){
+            s+=m;
+        }
+        s+=" === Message Relationships === \n";
+        for(Message key: messageRelationships.keySet()){
+            Message sink = messageRelationships.get(key);
+            if(sink==null){
+                throw new RuntimeException("Unexpected Null Relationship Found in Message " + baseMessage.getId());
+            }
+            s+=key.getId()+" ==> " + sink.getId()+"\n";
+        }
+        return s;
+    }
+    
     public Message getBaseMessage() {
         return baseMessage;
     }

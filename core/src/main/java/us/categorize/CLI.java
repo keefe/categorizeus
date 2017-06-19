@@ -6,6 +6,7 @@ import java.io.*;
 import us.categorize.config.*;
 import us.categorize.repository.*;
 import us.categorize.model.*;
+import us.categorize.api.*;
 
 public class CLI{
     
@@ -30,7 +31,7 @@ public class CLI{
         String input = null;
     	System.out.println("Welcome to admin initialization interface");
     	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
-    	String greeting = "Please Select Admin function, valid choices are addAdmin,resetDatabase,addUser,createMessage,readMessage,tagSearch,login or exit to stop";
+    	String greeting = "Please Select Admin function, valid choices are addAdmin,resetDatabase,addUser,createMessage,readMessage,tagSearch,readThread,login or exit to stop";
     	do{
 	        System.out.println(greeting);
 	        input = scanner.nextLine();
@@ -48,6 +49,9 @@ public class CLI{
                 case "createMessage":
                     createMessage();
                     break;
+                case "readThread":
+                    readThread();
+                    break;
                 case "readMessage":
                     readMessage();
                     break;
@@ -64,6 +68,27 @@ public class CLI{
         }while(!"exit".equals(input));
     }
     
+    private void readThread(){
+        System.out.println("Load a message and all related messages based on some predicate");
+        System.out.print("Base Message ID: ");
+        String baseIdLine = scanner.nextLine();
+        System.out.print("Transitive Predicate: ");
+        String predicate = scanner.nextLine();
+        //TODO add depth, search sink fields
+        if(predicate.length()==0){
+            System.out.println("Error, must specify a predicate to read a thread");
+            return;
+        }
+        try{
+            ThreadRequest request = new ThreadRequest();
+            request.setBaseMessage(new Message(Long.parseLong(baseIdLine)));
+            ThreadResponse response = corpus.findThread(request);
+            System.out.println(response);
+        }catch(NumberFormatException nfe){
+            nfe.printStackTrace();
+        }
+    }
+    
     private void createMessage(){
         System.out.println("Creating a new message, please enter details: ");
         System.out.print("Title: ");
@@ -73,7 +98,9 @@ public class CLI{
         String body = scanner.nextLine();
         System.out.print("User ID of Posted By: ");
         long userId = scanner.nextLong();
-	scanner.nextLine();//again this trailing newline business
+    	System.out.print("Message ID to reply to: ");
+    	String replyLine = scanner.nextLine();
+    	System.out.println("Finish Refactoring how to deal with reply " + replyLine);
         User fauxUser = new User();
         fauxUser.setId(userId);
         Message message = new Message();

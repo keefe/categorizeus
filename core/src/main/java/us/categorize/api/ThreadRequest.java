@@ -15,6 +15,9 @@ public class ThreadRequest{
     public ThreadRequest(){
         
     }
+    public String toString(){
+        return baseMessage+"\n"+transitivePredicate+"\n Max Depth " + maxDepth + "\n Search Sink? " + searchSink + "\n";
+    }
     
     public boolean getSearchSink(){
         return searchSink;

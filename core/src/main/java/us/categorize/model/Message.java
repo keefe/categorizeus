@@ -66,10 +66,11 @@ public class Message extends Identifiable{
 	}
 
 	public String toString(){
-		String s= getId()+":"+title+":"+body+":"+postedBy;
+		String s= "ID "getId()+"\nTitle "+title+"\n Body "+body+"\n Posted By"+postedBy + " \n Tags \n";
 		for(Tag t : getTags()){
 			s+=t.getTag()+",";
 		}
+		s+="\n";
 		return s;
 	}
 	
