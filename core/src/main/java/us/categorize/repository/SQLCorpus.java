@@ -234,6 +234,9 @@ public class SQLCorpus implements Corpus{
 		Message msg = messageIdentity.get(id);
 		if(msg==null){
 			msg = new Message(id);
+			if(!read(msg)){
+				System.out.println("Found relationship to a message we don't know about?");
+			}
 			messageIdentity.put(id, msg);
 		}
 		return msg;
@@ -263,13 +266,16 @@ public class SQLCorpus implements Corpus{
 				long sink = matching.getLong("message_sink_id");
 				long tag = matching.getLong("tag_id");
 				//relations.put(source, sink);//TODO what is the relationshi betwee this map and the source,sink table? Think more of this.
-				long toAdd = source;
-				
+				long relatedId = source;
+				long relatingId = sink;
 				if(request.getSearchSink()){
-					toAdd = sink;
+					relatedId = sink;
+					relatingId = source;
 				}
-				Message relatedMessage = findOrCreate(messageIdentity, toAdd);
-				currentLevel.add(toAdd);
+				Message relatingMessage = findOrCreate(messageIdentity, relatingId);
+				Message relatedMessage = findOrCreate(messageIdentity, relatedId);
+				response.getMessageRelationships().put(relatingMessage, relatedMessage);
+				currentLevel.add(relatedId);
 				response.getRelated().add(relatedMessage);
 			}
 		    	loadTransitiveThread(request, response, messageIdentity, currentLevel, level+1);
