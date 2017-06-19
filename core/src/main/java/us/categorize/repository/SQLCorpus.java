@@ -214,16 +214,16 @@ public class SQLCorpus implements Corpus{
     	
     	ThreadResponse response = new ThreadResponse();
     	response.setBaseMessage(request.getBaseMessage());
-    	if(!read(request.getBaseMessage()){
+    	if(!read(request.getBaseMessage())){
     		response.setBaseMessage(null);
     		return response;
     	}
-    	if(!read(request.getTransitivePredicate()){
+    	if(!read(request.getTransitivePredicate())){
     		return response;//the relationship doesn't exist, so it can't have any theads
     	}
     	
     	Map<Long, Message> messageIdentity = new HashMap<Long, Message>();
-    	messageIdentity.put(baseMessage.getId(), baseMessage);
+    	messageIdentity.put(request.getBaseMessage().getId(), request.getBaseMessage());
     	loadTransitiveThread(request, response, messageIdentity, null, 0);
 		 
 		return response;
@@ -243,7 +243,7 @@ public class SQLCorpus implements Corpus{
 			currentLevel = new LinkedList<Long>();
 			currentLevel.add(request.getBaseMessage().getId());
 		}
-		if(currentLevel.size()==0 || level > request.getMaxTransitiveDepth()) return;
+		if(currentLevel.size()==0 || level > request.getMaxDepth()) return;
 		String sql = "SELECT message_relations.* from message_relations where";
 		sql = sql+" tag_id ="+request.getTransitivePredicate().getId();
 		
@@ -262,7 +262,7 @@ public class SQLCorpus implements Corpus{
 				long source = matching.getLong("message_source_id");
 				long sink = matching.getLong("message_sink_id");
 				long tag = matching.getLong("tag_id");
-				relations.put(source, sink);//TODO what is the relationshi betwee this map and the source,sink table? Think more of this.
+				//relations.put(source, sink);//TODO what is the relationshi betwee this map and the source,sink table? Think more of this.
 				long toAdd = source;
 				
 				if(request.getSearchSink()){
@@ -272,7 +272,7 @@ public class SQLCorpus implements Corpus{
 				currentLevel.add(toAdd);
 				response.getRelated().add(relatedMessage);
 			}
-			loadTransitiveThread(request, response, currentLevel, relations, level+1);
+		    	loadTransitiveThread(request, response, messageIdentity, currentLevel, level+1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
