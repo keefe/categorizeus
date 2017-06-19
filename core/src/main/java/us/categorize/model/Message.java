@@ -9,6 +9,14 @@ public class Message extends Identifiable{
 	private List<Tag> tags;
 	private int imgWidth, imgHeight, thumbWidth, thumbHeight;
 
+	public Message(){
+		
+	}
+	
+	public Message(long id){
+		super.setId(id);
+	}
+
 	public String getThumbLink() {
 		return thumbLink;
 	}

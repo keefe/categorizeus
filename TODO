@@ -12,6 +12,9 @@ replies in line broken yet again, let's fix it after refactor
 Need to rethink initialization stuff - there is too much stuff in Config, maybe an Initialization class?
     at least we should support mysql as well for generality, again this is not even considered
 pull class initialization stuff into corpus, read files from classpath and get rid of this FS path nonsense
+write up some discussion of the fact that we are assuming the only type of relationship is unique,
+that is not reflected in database contraints (e.g. X repliesTo Y, it's a Many:One relationship)
+compare with hibernate approach and triple store approaches
 
     ** need to pull out request objects rather than passing bodies into communicator
     Here's the plan - let's get the core functionality pulled into a higher level repository.

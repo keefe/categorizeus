@@ -211,9 +211,86 @@ public class SQLCorpus implements Corpus{
 
 
     public ThreadResponse findThread(ThreadRequest request){
-        return null;
-    }
-
+    	
+    	ThreadResponse response = new ThreadResponse();
+    	response.setBaseMessage(request.getBaseMessage());
+    	if(!read(request.getBaseMessage()){
+    		response.setBaseMessage(null);
+    		return response;
+    	}
+    	if(!read(request.getTransitivePredicate()){
+    		return response;//the relationship doesn't exist, so it can't have any theads
+    	}
+    	
+    	Map<Long, Message> messageIdentity = new HashMap<Long, Message>();
+    	messageIdentity.put(baseMessage.getId(), baseMessage);
+    	loadTransitiveThread(request, response, messageIdentity, null, 0);
+		 
+		return response;
+	}
+	
+	
+	private Message findOrCreate(Map<Long, Message> messageIdentity, Long id){
+		Message msg = messageIdentity.get(id);
+		if(msg==null){
+			msg = new Message(id);
+			messageIdentity.put(id, msg);
+		}
+		return msg;
+	}
+	private void loadTransitiveThread(ThreadRequest request, ThreadResponse response, Map<Long, Message> messageIdentity, List<Long> currentLevel, int level) {
+		if(level==0){
+			currentLevel = new LinkedList<Long>();
+			currentLevel.add(request.getBaseMessage().getId());
+		}
+		if(currentLevel.size()==0 || level > request.getMaxTransitiveDepth()) return;
+		String sql = "SELECT message_relations.* from message_relations where";
+		sql = sql+" tag_id ="+request.getTransitivePredicate().getId();
+		
+		String searchWhat = " AND message_sink_id ";//if we're searching the source, we're fixing the sink
+		if(request.getSearchSink()){//if we're searching the sink, we're fixing the source
+			searchWhat = " AND message_source_id ";
+		}
+		
+		sql = sql + searchWhat + buildOrList(currentLevel);
+		currentLevel = new LinkedList<>();//dupes in here?
+		System.out.println("Finding Related with \n" + sql);
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet matching = stmt.executeQuery(sql);
+			while(matching.next()){
+				long source = matching.getLong("message_source_id");
+				long sink = matching.getLong("message_sink_id");
+				long tag = matching.getLong("tag_id");
+				relations.put(source, sink);//TODO what is the relationshi betwee this map and the source,sink table? Think more of this.
+				long toAdd = source;
+				
+				if(request.getSearchSink()){
+					toAdd = sink;
+				}
+				Message relatedMessage = findOrCreate(messageIdentity, toAdd);
+				currentLevel.add(toAdd);
+				response.getRelated().add(relatedMessage);
+			}
+			loadTransitiveThread(request, response, currentLevel, relations, level+1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private String buildOrList(List<Long> identifiers){//#TODO this is dying to be merged together into a nice generic function, like identity OrList and make an interface or something
+		if(identifiers.size()==0){//yeah yeah copy paste, trying to nail down the basics
+			return null;
+		}
+		String orList = "";//#TODO replace with stringbuilder, this is likely very expensive, also memoizable
+		for(Long id : identifiers){
+			if(!"".equals(orList))orList =orList+",";
+			orList = orList + id;
+		}
+		return "IN ("+orList+")";
+	}
+	
+	
     
     public boolean read(User user){
 		String findUser = "select * from users where id=?";
