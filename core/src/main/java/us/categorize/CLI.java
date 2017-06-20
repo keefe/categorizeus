@@ -31,7 +31,7 @@ public class CLI{
         String input = null;
     	System.out.println("Welcome to admin initialization interface");
     	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
-    	String greeting = "Please Select Admin function, valid choices are addAdmin,resetDatabase,addUser,createMessage,readMessage,tagSearch,readThread,login or exit to stop";
+    	String greeting = "Please Select Admin function, valid choices are addAdmin,resetDatabase,addUser,createMessage,readMessage,tagSearch,readThread,login,resetCorpus or exit to stop";
     	do{
 	        System.out.println(greeting);
 	        input = scanner.nextLine();
@@ -66,6 +66,17 @@ public class CLI{
                     break;
 		}
         }while(!"exit".equals(input));
+    }
+    
+    private void resetCorpus(){
+        System.out.println("This option will reset all persistent data, type yes if you are sure you want to do this");
+        String isYes = scanner.nextLine();
+        if("yes".equals(isYes)){
+            corpus.resetCorpus();
+        }else{
+            System.out.println("Reset is not acknowledged, please try again");
+        }
+        
     }
     
     private void readThread(){

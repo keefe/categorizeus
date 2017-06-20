@@ -1,5 +1,4 @@
 refactor java for better code quality
-add forum concept? seems like a necessary component, some concept of list/group of messages
 add predicate and transitive stuff for tag search, for first few messages
 avatar support pulled from google or twitter
 instagram API integration
@@ -17,6 +16,9 @@ pull class initialization stuff into corpus, read files from classpath and get r
 write up some discussion of the fact that we are assuming the only type of relationship is unique,
 that is not reflected in database contraints (e.g. X repliesTo Y, it's a Many:One relationship)
 compare with hibernate approach and triple store approaches
+
+add forum concept? seems like a necessary component, some concept of list/group of messages
+    This seems good, but let's hold off need to get the whole structure moving first.
 
     ** need to pull out request objects rather than passing bodies into communicator
     Here's the plan - let's get the core functionality pulled into a higher level repository.

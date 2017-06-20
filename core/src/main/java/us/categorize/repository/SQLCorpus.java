@@ -4,10 +4,13 @@ import us.categorize.model.*;
 import us.categorize.api.*;
 import java.util.*;
 import java.sql.*;
+import java.io.*;
+
 
 public class SQLCorpus implements Corpus{
     
     private Connection connection;
+    private String initializeSQLBase = "sql/basic/";
     
     public SQLCorpus(Connection connection){
         this.connection = connection;    
@@ -320,5 +323,26 @@ public class SQLCorpus implements Corpus{
     public boolean create(User user){
         return false;
     }
+    
+    public boolean resetCorpus(){
+    	try{
+    		execClasspathFile(initializeSQLBase + "clear.sql");
+    	}catch(IOException ioe){
+    		ioe.printStackTrace();
+    	}
+    	return false;
+    }
+	private void execClasspathFile(String fname) throws IOException{
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource(fileName).getFile());
+		Scanner scanner = new Scanner(file);
+		while(scanner.hasNextLine()){
+			String line = scanner.nextLine();
+			System.out.println(line);
+		}
+		
+	}   
+    
+    
 
 }
