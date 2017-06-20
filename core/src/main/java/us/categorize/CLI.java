@@ -118,14 +118,33 @@ public class CLI{
         }
     }
     
+    private Long readLongMaybe(){
+        String input = scanner.nextLine();
+        if(input.length()!=0){
+            try{
+                return Long.parseLong(input);                
+            }catch(NumberFormatException nfe){
+                System.out.println(input + " is not a number, IDs are longs right now");
+            }
+        }
+        return null;
+    }
+    
     private void tagSearch(){
         String input = null;
         System.out.println("Performing Tag Search, last seen message ID? ");
-        input = scanner.nextLine();
-        System.out.println("Check " + input);
-        input = null;
-        System.out.println("Tags to search, one at a time, -1 to stop");
         TagSearchRequest request = new TagSearchRequest();
+        System.out.println("Enter last seen message ID or enter for none");
+        Long lastSeenId = readLongMaybe();
+        if(lastSeenId!=null){
+            request.setLastKnownMessage(new Message(lastSeenId));
+        }
+        System.out.println("Enter Maximum Results or enter for none");
+        Long maxMessages = readLongMaybe();
+        if(maxMessages!=null){
+            request.setMaximumResults(maxMessages);
+        }
+        System.out.println("Tags to search, one at a time, -1 to stop");
         do{
             if(input!=null){
                 Tag tag = new Tag(input.trim());

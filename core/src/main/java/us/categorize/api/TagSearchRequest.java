@@ -16,8 +16,8 @@ public class TagSearchRequest{
     }
     public String toString(){
         String s = "Last Known Message: " + lastKnownMessage + "\n";
-        s+="Find After? " + findAfter;
-        s+="Max Results? " + maximumResults;
+        s+="Find After? " + findAfter+"\n";
+        s+="Max Results? " + maximumResults+"\n";
         for(Tag t : tags){
             s+=t+"\n";
         }
