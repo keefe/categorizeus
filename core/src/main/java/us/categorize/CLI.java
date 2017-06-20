@@ -142,7 +142,7 @@ public class CLI{
         System.out.println("Enter Maximum Results or enter for none");
         Long maxMessages = readLongMaybe();
         if(maxMessages!=null){
-            request.setMaximumResults(maxMessages);
+            request.setMaximumResults((int)(maxMessages.longValue()));
         }
         System.out.println("Tags to search, one at a time, -1 to stop");
         do{
