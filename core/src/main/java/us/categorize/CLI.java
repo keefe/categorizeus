@@ -119,19 +119,25 @@ public class CLI{
     }
     
     private void tagSearch(){
-        List<String> tags = new LinkedList<String>();
         String input = null;
+        System.out.println("Performing Tag Search, last seen message ID? ");
+        input = scanner.nextLine();
+        System.out.println("Check " + input);
+        input = null;
         System.out.println("Tags to search, one at a time, -1 to stop");
+        TagSearchRequest request = new TagSearchRequest();
         do{
             if(input!=null){
-                tags.add(input);
+                Tag tag = new Tag(input.trim());
+                corpus.readOrCreate(tag);
+                request.getTags().add(tag);
             }
         }while((input = scanner.nextLine())!=null && !"-1".equals(input));
-        System.out.println("Tags Entered Were ");
-        for(String tag : tags){
-            System.out.print(tag+",");
+        System.out.println(request);
+        List<Message> results = corpus.tagSearch(request);
+        for(Message m : results){
+            System.out.println(m);
         }
-        
     }
     
     private void login(){

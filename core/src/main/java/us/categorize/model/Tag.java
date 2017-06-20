@@ -5,7 +5,9 @@ public class Tag extends Identifiable{
 	public Tag(){
 		
 	}
-	
+	public Tag(String t){
+		tag = t;
+	}
 	public String toString(){
 		return "Tag:: " + getId() + " is " + tag;
 	}

@@ -3,7 +3,7 @@ import us.categorize.model.*;
 import java.util.*;
 
 public class TagSearchRequest{
-    private List<Tag> tags;
+    private List<Tag> tags = new LinkedList<Tag>();
     private Message lastKnownMessage;
     private boolean findAfter = true;
     private int maximumResults = 10;
@@ -13,6 +13,15 @@ public class TagSearchRequest{
     
     public int getMaximumResults(){
         return maximumResults;
+    }
+    public String toString(){
+        String s = "Last Known Message: " + lastKnownMessage + "\n";
+        s+="Find After? " + findAfter;
+        s+="Max Results? " + maximumResults;
+        for(Tag t : tags){
+            s+=t+"\n";
+        }
+        return s;
     }
     
     public void setMaximumResults(int max){
