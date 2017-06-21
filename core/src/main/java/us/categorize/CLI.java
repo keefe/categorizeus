@@ -31,7 +31,7 @@ public class CLI{
         String input = null;
     	System.out.println("Welcome to admin initialization interface");
     	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
-    	String greeting = "Please Select Admin function, valid choices are addAdmin,resetDatabase,addUser,createMessage,readMessage,tagSearch,readThread,login,resetCorpus or exit to stop";
+    	String greeting = "Please Select Admin function, valid choices are addAdmin,addUser,createMessage,readMessage,tagSearch,readThread,login,resetCorpus or exit to stop";
     	do{
 	        System.out.println(greeting);
 	        input = scanner.nextLine();
@@ -39,9 +39,6 @@ public class CLI{
             switch(input){//requires JDK7, more efficient now I guess
                 case "addAdmin"://once again I am tempted to use reflection
                     createAdmin();
-                    break;
-                case "resetDatabase":
-                    initializeDB(config);
                     break;
                 case "addUser":
                     addUser();
@@ -61,6 +58,9 @@ public class CLI{
                 case "login":
                     login();
                     break;
+		case "resetCorpus":
+		    resetCorpus();
+		    break;
                 default:
                     System.out.println("That was not a recognized choice, please trying again");
                     break;
@@ -72,7 +72,11 @@ public class CLI{
         System.out.println("This option will reset all persistent data, type yes if you are sure you want to do this");
         String isYes = scanner.nextLine();
         if("yes".equals(isYes)){
-            corpus.resetCorpus();
+            if(corpus.resetCorpus()){
+		System.out.println("Reset of Database Completed Successfully"); 
+	    }else{
+		System.out.println("Reset of database failed for some reason, please check logs");
+	    }
         }else{
             System.out.println("Reset is not acknowledged, please try again");
         }
@@ -211,37 +215,5 @@ public class CLI{
 	        System.out.println("Message with id " + id + " was not found");
 	    }
 	}
-
-
-
-//TODO this stuff absolutely does not belong here, needs to be backing store specific
-    public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
-        //this is a bloody mess!
-		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
-		System.out.println("Attempting connect to " + config.getConnectString());
-		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
-		System.out.println("Connected to database for initialization");
-		Statement st = conn.createStatement();
-		executeFile(config.getClearSql(), st);
-		executeFile(config.getCreateSql(), st);
-		executeFile(config.getIndexSql(), st);
-		executeFile(config.getSeedSql(), st);
-		st.close();
-		conn.close();
-	}
-	
-	private static void executeFile(String filename, Statement st) throws IOException, SQLException {
-		SQLReader init = new SQLReader(filename);
-		for (String sql : init.getStatements()) {
-			System.out.println("Executing " + sql);
-			try {
-				st.execute(sql);
-			} catch (Exception e) {
-				System.out.println("Error " + e.getMessage());
-			}
-		}
-	}
-    
-    
 }
 

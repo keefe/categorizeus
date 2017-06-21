@@ -326,20 +326,37 @@ public class SQLCorpus implements Corpus{
     
     public boolean resetCorpus(){
     	try{
-    		execClasspathFile(initializeSQLBase + "clear.sql");
+		Statement stmt = connection.createStatement();
+    		execClasspathFile(initializeSQLBase + "clear.sql", stmt);
+    		execClasspathFile(initializeSQLBase + "tables.sql", stmt);
+    		execClasspathFile(initializeSQLBase + "indices.sql", stmt);
+    		execClasspathFile(initializeSQLBase + "seed.sql", stmt);
+		stmt.close();
+		return true;
     	}catch(IOException ioe){
     		ioe.printStackTrace();
-    	}
+    	}catch(SQLException sqe){
+		sqe.printStackTrace();
+	}
     	return false;
     }
-	private void execClasspathFile(String fname) throws IOException{
+	private void execClasspathFile(String fname, Statement stmt) throws IOException, SQLException{
+		System.out.println("Executing " + fname);
 		ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource(fileName).getFile());
+		File file = new File(classLoader.getResource(fname).getFile());
 		Scanner scanner = new Scanner(file);
+		String currentStatement = "";
 		while(scanner.hasNextLine()){
 			String line = scanner.nextLine();
-			System.out.println(line);
+			currentStatement = currentStatement + line.trim();
+			if(line.contains(";")){
+				currentStatement = currentStatement.trim();
+				System.out.println(currentStatement);
+				stmt.execute(currentStatement);
+				currentStatement = "";
+			}
 		}
+		scanner.close();
 		
 	}   
     

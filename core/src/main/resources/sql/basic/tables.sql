@@ -1,6 +1,5 @@
-
 create table if not exists tags(
-	id bigserial primary key, 
+	id bigserial primary key,
 	tag varchar(255) not null
 );
 
