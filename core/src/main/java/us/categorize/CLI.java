@@ -149,7 +149,7 @@ public class CLI{
         
         for(String tag : tags){
             Tag t = new Tag(tag);
-            t = corpus.readOrCreate(t);
+            corpus.readOrCreate(t);
             tagList.add(t);
         }
         Message msg = new Message(id);

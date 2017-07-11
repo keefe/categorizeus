@@ -34,29 +34,10 @@ import java.io.*;
 public class App {
 	
 	public static void main(String args[]) throws Exception {
-		
-		//properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
-		Config config = readConfig();
-		Class.forName("org.postgresql.Driver");
-		System.out.println("Postgres Driver Loaded");
-		serverUpGeneric(config);
+		serverUpGeneric();
 	}
-	public static Config readConfig() throws Exception{
-		Properties properties = new Properties();
-
-		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
-		properties.load(input);
-		StringWriter writer = new StringWriter();
-		properties.list(new PrintWriter(writer));
-		System.out.println("Properties File Read As ");
-	  	System.out.println(writer.getBuffer().toString());
-		Config config = new Config(properties);
-		return config;
-	}
-
-
-	public static void serverUpGeneric(Config config) throws Exception{
-		Categorizer categorizer = new Categorizer(config);
+	public static void serverUpGeneric() throws Exception{
+		Categorizer categorizer = new Categorizer();
 		System.out.println("Starting Server on Port " + config.getPort());
 		Server server = new Server(config.getPort());
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		

@@ -18,6 +18,7 @@ import us.categorize.repository.SQLTagRepository;
 import us.categorize.repository.SQLUserRepository;
 import us.categorize.repository.TagRepository;
 import us.categorize.*;
+import us.categorize.repository.*;
 import us.categorize.repository.UserRepository;
 
 public class Categorizer {
