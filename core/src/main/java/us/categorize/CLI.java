@@ -58,9 +58,12 @@ public class CLI{
                 case "login":
                     login();
                     break;
-		case "resetCorpus":
-		    resetCorpus();
-		    break;
+	        	case "resetCorpus":
+		            resetCorpus();
+		            break;
+		        case "tagMessage":
+		            tagMessage();
+		            break;
                 default:
                     System.out.println("That was not a recognized choice, please trying again");
                     break;
@@ -131,6 +134,26 @@ public class CLI{
         }else{
             System.out.println("Failed to create message for some reason");
         }
+    }
+    public void tagMessage(){
+        System.out.println("Tagging an existing message");
+        Long id = null;
+        while(id==null){
+            System.out.println("Enter Message ID as an integer");
+            id = reaDLongMaybe();
+        }
+        System.out.println("Enter Tags, separated by spaces");
+        String tagString = scanner.nextLine();
+        String tags[] = tagString.split(" ");
+        List<Tag> tags = new LinkedList<Tag>();
+        
+        for(String tag : tags){
+            Tag t = new Tag(tag);
+            t = corpus.readOrCreate(tag);
+            tags.add(t);
+        }
+        Message msg = new Message(id);
+        corpus.tagMessage(msg, tags);
     }
     
     private Long readLongMaybe(){

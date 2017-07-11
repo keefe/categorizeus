@@ -1,4 +1,5 @@
 refactor java for better code quality
+    relate messages into corpus API and CLI
 add predicate and transitive stuff for tag search, for first few messages
 avatar support pulled from google or twitter
 instagram API integration

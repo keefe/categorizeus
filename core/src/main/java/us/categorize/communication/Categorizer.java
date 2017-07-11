@@ -24,10 +24,13 @@ public class Categorizer {
 	private TagCommunicator tagCommunicator;
 	private ThreadCommunicator threadCommunicator;
 	private UserCommunicator userCommunicator;
+	private Corpus corpus;
 	private Config config;
 	
-	public Categorizer(Config config) throws SQLException{
-		this.config = config;
+	public Categorizer() throws SQLException{
+		this.config = Config.readRelativeConfig();
+		this.corpus = config.initialize();
+		
 		System.out.println("Connecting " + config.getConnectString()+","+config.getDbUser()+","+config.getDbPass());
 		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		UserRepository userRepository = new SQLUserRepository(conn);
