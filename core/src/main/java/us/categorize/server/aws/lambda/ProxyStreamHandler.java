@@ -26,10 +26,7 @@ public class ProxyStreamHandler implements RequestStreamHandler {
 		Properties properties = new Properties();
 		
 		try {
-			properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
-			Config config = new Config(properties);
-			Class.forName("org.postgresql.Driver");
-			categorizer = new Categorizer(config);
+			categorizer = new Categorizer();
 			System.out.println("Initialization Complete");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

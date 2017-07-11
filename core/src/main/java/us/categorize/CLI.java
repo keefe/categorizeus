@@ -140,20 +140,20 @@ public class CLI{
         Long id = null;
         while(id==null){
             System.out.println("Enter Message ID as an integer");
-            id = reaDLongMaybe();
+            id = readLongMaybe();
         }
         System.out.println("Enter Tags, separated by spaces");
         String tagString = scanner.nextLine();
         String tags[] = tagString.split(" ");
-        List<Tag> tags = new LinkedList<Tag>();
+        List<Tag> tagList = new LinkedList<Tag>();
         
         for(String tag : tags){
             Tag t = new Tag(tag);
-            t = corpus.readOrCreate(tag);
-            tags.add(t);
+            t = corpus.readOrCreate(t);
+            tagList.add(t);
         }
         Message msg = new Message(id);
-        corpus.tagMessage(msg, tags);
+        corpus.tagMessage(msg, tagList);
     }
     
     private Long readLongMaybe(){
