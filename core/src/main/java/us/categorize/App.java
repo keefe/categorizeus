@@ -38,6 +38,7 @@ public class App {
 	}
 	public static void serverUpGeneric() throws Exception{
 		Categorizer categorizer = new Categorizer();
+		Config config = categorizer.getConfig();
 		System.out.println("Starting Server on Port " + config.getPort());
 		Server server = new Server(config.getPort());
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		

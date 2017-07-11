@@ -29,7 +29,7 @@ public class Categorizer {
 	private Corpus corpus;
 	private Config config;
 	
-	public Categorizer() throws SQLException{
+	public Categorizer() throws Exception{//TODO better exception handling
 		this.config = Config.readRelativeConfig();
 		this.corpus = config.initialize();
 		
