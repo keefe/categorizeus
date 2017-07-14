@@ -42,6 +42,28 @@ public class SQLCorpus implements Corpus{
 		return true;   
     }
     
+    public boolean create(Message message, Long repliesToId){
+    	if(!create(message)) return false;
+    	Tag repliesTo = new Tag("repliesTo");
+    	read(repliesTo);
+    	relate(message.getId(), repliesTo.getId(), repliesToId);
+    }
+	public boolean relate(long from, Tag relation, long to) {
+		String relationStatement = "insert into message_relations(message_source_id, tag_id, message_sink_id) values (?,?,?)";
+		try {
+			PreparedStatement stmt = connection.prepareStatement(relationStatement);
+			stmt.setLong(1, from);
+			stmt.setLong(2, relation.getId());
+			stmt.setLong(3, to);
+			stmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block, this is particularly important because of unique constraint violations
+			e.printStackTrace();
+		}
+		return false;
+	}
+    
     private void mapMessageRow(Message message, ResultSet rs) throws SQLException {
 		message.setBody(rs.getString("body"));
 		message.setTitle(rs.getString("title"));

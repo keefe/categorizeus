@@ -31,7 +31,7 @@ public class CLI{
         String input = null;
     	System.out.println("Welcome to admin initialization interface");
     	System.out.println("If this is your first time, please select resetDatabase");//TODO this needs to be a command line argument
-    	String greeting = "Please Select Admin function, valid choices are addAdmin,addUser,createMessage,readMessage,tagSearch,readThread,login,resetCorpus or exit to stop";
+    	String greeting = "Please Select Admin function, valid choices are addAdmin,addUser,createMessage,readMessage,tagSearch,readThread,tagMessage,login,resetCorpus or exit to stop";
     	do{
 	        System.out.println(greeting);
 	        input = scanner.nextLine();
@@ -121,15 +121,14 @@ public class CLI{
         System.out.print("User ID of Posted By: ");
         long userId = scanner.nextLong();
     	System.out.print("Message ID to reply to: ");
-    	String replyLine = scanner.nextLine();
-    	System.out.println("Finish Refactoring how to deal with reply " + replyLine);
+    	Long repliesToId = readLongMaybe();
         User fauxUser = new User();
         fauxUser.setId(userId);
         Message message = new Message();
         message.setTitle(title);
         message.setBody(body);
         message.setPostedBy(fauxUser);
-        if(corpus.create(message)){
+        if(corpus.create(message, repliesToId)){
             System.out.println("New Message Created with ID " + message.getId());
         }else{
             System.out.println("Failed to create message for some reason");
