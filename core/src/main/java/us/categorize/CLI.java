@@ -99,7 +99,7 @@ public class CLI{
         }
         try{
             ThreadRequest request = new ThreadRequest();
-            if(basedId!=null){
+            if(baseId!=null){
                 request.setBaseMessage(new Message(baseId));
             }
     	    Tag transitivePredicate = new Tag();
