@@ -46,7 +46,7 @@ public class SQLCorpus implements Corpus{
     	if(!create(message)) return false;
     	Tag repliesTo = new Tag("repliesTo");
     	read(repliesTo);
-    	relate(message.getId(), repliesTo.getId(), repliesToId);
+    	relate(message.getId(), repliesTo, repliesToId);
     }
 	public boolean relate(long from, Tag relation, long to) {
 		String relationStatement = "insert into message_relations(message_source_id, tag_id, message_sink_id) values (?,?,?)";
