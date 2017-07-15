@@ -14,6 +14,7 @@ public interface Corpus{
     public boolean read(Message message);
     public boolean read(Tag tag);
     public boolean readOrCreate(Tag tag);
+    public Tag tagFor(String tag);
     public boolean read(User user);
 
     

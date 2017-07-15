@@ -83,6 +83,12 @@ public class SQLCorpus implements Corpus{
         return readOrCreate(tag);
     }
     
+    public Tag tagFor(String tag){
+    	Tag tagObj = new Tag(tag);
+    	readOrCreate(tagObj);
+    	return tagObj;
+    }
+    
     public boolean read(Message message){
         try{
             String findMessage = "select * from messages where id=?";

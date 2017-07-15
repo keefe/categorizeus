@@ -7,19 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import us.categorize.config.Config;
-import us.categorize.communication.creation.MessageAssertion;
-import us.categorize.communication.creation.attachment.AttachmentHandler;
-import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
-import us.categorize.communication.creation.attachment.S3AttachmentHandler;
-import us.categorize.model.User;
-import us.categorize.repository.MessageRepository;
-import us.categorize.repository.SQLMessageRepository;
-import us.categorize.repository.SQLTagRepository;
-import us.categorize.repository.SQLUserRepository;
-import us.categorize.repository.TagRepository;
+import us.categorize.communication.creation.*;
+import us.categorize.communication.creation.attachment.*;
+import us.categorize.model.*;
 import us.categorize.*;
 import us.categorize.repository.*;
-import us.categorize.repository.UserRepository;
 
 public class Categorizer {
 	private MessageCommunicator messageCommunicator;
@@ -47,7 +39,7 @@ public class Categorizer {
 		}else{
 			attachmentHandler = new FileSystemAttachmentHandler(config.getFileBase());
 		}
-		messageCommunicator = new MessageCommunicator(messageRepository, tagRepository, attachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
+		messageCommunicator = new MessageCommunicator(messageRepository,corpus, tagRepository, attachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
 	}
 	
 	public void handle(Frame request) throws Exception{

@@ -121,7 +121,7 @@ public class CLI{
         System.out.print("Body: ");
         String body = scanner.nextLine();
         System.out.print("User ID of Posted By: ");
-        long userId = scanner.nextLong();
+        long userId = readLongMaybe();
     	System.out.print("Message ID to reply to: ");
     	Long repliesToId = readLongMaybe();
         User fauxUser = new User();

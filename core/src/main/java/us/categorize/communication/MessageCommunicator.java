@@ -15,25 +15,23 @@ import us.categorize.communication.creation.MessageAssertion;
 import us.categorize.communication.creation.MessageAssertionAttachment;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
 import us.categorize.communication.streams.MessageStreamReader;
-import us.categorize.model.Message;
-import us.categorize.model.MessageRelation;
-import us.categorize.model.Tag;
-import us.categorize.model.User;
-import us.categorize.repository.MessageRepository;
-import us.categorize.repository.TagRepository;
+import us.categorize.model.*;
+import us.categorize.repository.*;
+import java.util.*;
 
 public class MessageCommunicator {
 	
-	private User speaker;
+	private User speaker;//how does this make sense?
 	private MessageStreamReader messageStreamReader;
 	private MessageRepository messageRepository; 
 	private TagRepository tagRepository;
 	private AttachmentHandler attachmentHandler;
 	private double maxThumbWidth, maxThumbHeight, maxUploadSize;
+	private Corpus corpus;
 
-
-	public MessageCommunicator(MessageRepository repository, TagRepository tagRepository,AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight, double maxUploadSize){
+	public MessageCommunicator(MessageRepository repository, Corpus corpus, TagRepository tagRepository,AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight, double maxUploadSize){
 		messageStreamReader = new MessageStreamReader();
+		this.corpus = corpus;
 		this.messageRepository = repository;
 		this.tagRepository = tagRepository;
 		this.attachmentHandler = attachmentHandler;
@@ -47,22 +45,20 @@ public class MessageCommunicator {
 		MessageAssertion assertion = messageStreamReader.readMessageAssertion(stream);
 		assertion.getMessage().setPostedBy(speaker);
 		messageRepository.addMessage(assertion.getMessage());
+		Long repliesToId = null;
 		
 		if(assertion.getRelationships().containsKey("repliesToId")){
-			MessageRelation relation = new MessageRelation();
-			relation.setSource(assertion.getMessage());
-			relation.setRelation(tagRepository.tagFor("repliesTo"));
-			Message fauxReplySource = new Message();
-			fauxReplySource.setId(Long.parseLong(assertion.getRelationships().get("repliesToId")));
-			relation.setSink(fauxReplySource);
-			messageRepository.relate(relation);
+			repliesToId = Long.parseLong(assertion.getRelationships().get("repliesToId"));
 		}else{
 			assertion.getTags().add("top");
 		}
+		corpus.create(assertion.getMessage(), repliesToId);
+		List<Tag> tags = new LinkedList<Tag>();
+		for(String tag : assertion.getTags()){
+			tags.add(corpus.tagFor(tag));
+		}
+		corpus.tagMessage(assertion.getMessage(), tags);
 		
-		String[] tags = assertion.getTags().toArray(new String[]{});
-		Tag tagObjs[] = tagRepository.tagsFor(tags);
-		messageRepository.tag(assertion.getMessage(), tagObjs);
 		if(assertion.getAttachment()!=null && attachmentHandler!=null){
 			String furi = attachmentHandler.storeAttachment(""+assertion.getMessage().getId(), assertion.getAttachment(), assertion.getAttachment().getDataInputStream());
 			int resolutions[][] = generateThumbnail(assertion.getAttachment(), assertion.getAttachment().getDataInputStream(), assertion.getAttachment().getType(), furi, assertion.getMessage());
