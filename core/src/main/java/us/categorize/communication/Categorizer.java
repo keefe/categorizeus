@@ -30,8 +30,8 @@ public class Categorizer {
 		UserRepository userRepository = new SQLUserRepository(conn);
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
-		threadCommunicator = new ThreadCommunicator(tagRepository, messageRepository);
-		tagCommunicator = new TagCommunicator(tagRepository, messageRepository);
+		threadCommunicator = new ThreadCommunicator(corpus, messageRepository);
+		tagCommunicator = new TagCommunicator(corpus);
 		userCommunicator = new UserCommunicator(userRepository);
 		AttachmentHandler attachmentHandler = null;
 		if("S3".equals(config.getUploadStorage())){
@@ -39,7 +39,7 @@ public class Categorizer {
 		}else{
 			attachmentHandler = new FileSystemAttachmentHandler(config.getFileBase());
 		}
-		messageCommunicator = new MessageCommunicator(messageRepository,corpus, tagRepository, attachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
+		messageCommunicator = new MessageCommunicator(corpus, attachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
 	}
 	
 	public void handle(Frame request) throws Exception{
@@ -68,6 +68,8 @@ public class Categorizer {
 			request.prepareResponse("OK", headers);
 			messageCommunicator.readMessage(id, request.getOutputStream());
 			request.finalizeResponse();
+		}else if("POST".equals(request.getMethod()) && request.getPath()!=null && request.getPath().startsWith("/search")){
+				
 		}else if("POST".equals(request.getMethod())){
 			long statedSize = Long.parseLong(request.getHeader("Content-Length"));
 			if(statedSize>config.getMaxUploadSize()){

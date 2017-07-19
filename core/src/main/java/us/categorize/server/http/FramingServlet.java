@@ -18,6 +18,13 @@ public class FramingServlet extends HttpServlet{
 		this.categorizer = categorizer;
 		this.resource = resource;
 	}
+	
+	/*
+	so I'm reimplementing this after it gets called weird
+	was because quick hacking to get lambda up
+	http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServlet.html#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	
+	*/
 	private void handle(String method, HttpServletRequest request, HttpServletResponse response) {
 		HTTPFrame frame = new HTTPFrame(resource, method, request, response);
 		try {

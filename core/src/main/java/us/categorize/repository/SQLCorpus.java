@@ -20,26 +20,44 @@ public class SQLCorpus implements Corpus{
      	String insert = "insert into messages(body,title,posted_by,link,img_width, img_height, thumb_width, thumb_height, thumb_link) values (?,?,?,?,?,?,?,?,?)";
 		try {
 			PreparedStatement stmt = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, message.getBody());
-			stmt.setString(2, message.getTitle());
-			stmt.setLong(3, message.getPostedBy().getId());
-			stmt.setString(4, message.getLink());
-			stmt.setInt(5, message.getImgWidth());
-			stmt.setInt(6, message.getImgHeight());
-			stmt.setInt(7, message.getThumbWidth());
-			stmt.setInt(8, message.getThumbHeight());
-			stmt.setString(9, message.getThumbLink());
-			stmt.executeUpdate();
-			ResultSet rs = stmt.getGeneratedKeys();
-			rs.next();
-			long key = rs.getLong(1);
-			message.setId(key);
+			mapMessageUpdate(message, stmt);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
 		return true;   
+    }
+    public boolean update(Message message){
+		String update = "update messages set(body, title, posted_by, link, img_width, img_height, thumb_width, thumb_height, thumb_link) = (?,?,?,?,?,?,?,?,?) where id = ?";
+		try {
+			PreparedStatement stmt = connection.prepareStatement(update);
+			mapMessageUpdate(message, stmt);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;   
+    }
+    
+    
+    private void mapMessageUpdate(Message message, PreparedStatement stmt) throws SQLException
+    {
+    	stmt.setString(1, message.getBody());
+		stmt.setString(2, message.getTitle());
+		stmt.setLong(3, message.getPostedBy().getId());
+		stmt.setString(4, message.getLink());
+		stmt.setInt(5, message.getImgWidth());
+		stmt.setInt(6, message.getImgHeight());
+		stmt.setInt(7, message.getThumbWidth());
+		stmt.setInt(8, message.getThumbHeight());
+		stmt.setString(9, message.getThumbLink());
+		stmt.executeUpdate();
+		ResultSet rs = stmt.getGeneratedKeys();
+		rs.next();
+		long key = rs.getLong(1);
+		message.setId(key);
     }
     
     public boolean create(Message message, Long repliesToId){

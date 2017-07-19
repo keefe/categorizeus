@@ -8,6 +8,7 @@ public interface Corpus{
     
     public boolean create(Message message);
     public boolean create(Message message, Long repliesToId);
+    public boolean update(Message message);
     public boolean create(Tag tag);
     public boolean create(User user);
     
