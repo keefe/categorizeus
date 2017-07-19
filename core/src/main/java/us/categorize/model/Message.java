@@ -1,14 +1,22 @@
 package us.categorize.model;
 import java.util.*;
 
-public class Message {
+public class Message extends Identifiable{
 	private String title;
 	private String body;
 	private User postedBy;
-	private long id;
 	private String link, thumbLink;//TODO what belongs in this class, what belongs in a relationship?
 	private List<Tag> tags;
+	private int imgWidth, imgHeight, thumbWidth, thumbHeight;
+
+	public Message(){
+		
+	}
 	
+	public Message(long id){
+		super.setId(id);
+	}
+
 	public String getThumbLink() {
 		return thumbLink;
 	}
@@ -23,7 +31,6 @@ public class Message {
 		this.thumbLink = thumbLink;
 	}
 
-	private int imgWidth, imgHeight, thumbWidth, thumbHeight;
 
 	
 	public int getImgWidth() {
@@ -59,15 +66,14 @@ public class Message {
 	}
 
 	public String toString(){
-		return id+":"+title+":"+body+":"+postedBy;
+		String s= "ID " + getId()+"\nTitle "+title+"\n Body \n "+body+"\n Posted By \n"+postedBy + " \n Tags \n";
+		for(Tag t : getTags()){
+			s+=t.getTag()+",";
+		}
+		s+="\n";
+		return s;
 	}
 	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
 	public String getTitle() {
 		return title;
 	}

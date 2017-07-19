@@ -31,11 +31,11 @@ public class SQLUserRepository implements UserRepository {
 		ResultSet rs = stmt.executeQuery();
 		if(rs!=null && rs.next()){
 			User user = new User();
-			user.setUserId(rs.getLong("id"));
+			user.setId(rs.getLong("id"));
 			user.setEmail(rs.getString("email"));
 			user.setPasshash(rs.getString("passhash"));
 			user.setUserName(rs.getString("username"));
-			id2user.put(user.getUserId(), user);
+			id2user.put(user.getId(), user);
 			return user;
 		}
 		return null;
@@ -66,7 +66,7 @@ public class SQLUserRepository implements UserRepository {
 		rs.next();
 		long newId = rs.getLong(1);
 		User user = find(newId);
-		id2user.put(user.getUserId(), user);
+		id2user.put(user.getId(), user);
 		return user;
 	}
 
@@ -94,7 +94,7 @@ public class SQLUserRepository implements UserRepository {
 		try{
 			PreparedStatement stmt = connection.prepareStatement(createUserSession);
 			stmt.setString(1,sessionUUID);
-			stmt.setLong(2, user.getUserId());
+			stmt.setLong(2, user.getId());
 			stmt.executeUpdate();
 			return true;
 		}catch(Exception e){

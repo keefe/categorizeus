@@ -1,0 +1,11 @@
+drop index if exists messagetag;
+drop index if exists related_messages_source;
+drop index if exists related_messages_sink;
+drop index if exists user_messages;
+drop index if exists taglookup;
+drop table if exists tags;
+drop table if exists messages;
+drop table if exists users;
+drop table if exists message_tags;
+drop table if exists message_relations;
+drop table if exists user_sessions;

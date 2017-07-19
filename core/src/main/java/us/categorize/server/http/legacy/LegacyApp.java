@@ -18,7 +18,7 @@ import us.categorize.server.http.SessionCookieFilter;
 
 public class LegacyApp {
 	public static void serverUp(Config config) throws Exception{
-		Categorizer categorizer = new Categorizer(config);
+		Categorizer categorizer = new Categorizer();
 		
 		System.out.println("Starting Server on Port " + config.getPort());
 		Server server = new Server(config.getPort());

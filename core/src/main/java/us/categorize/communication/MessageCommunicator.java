@@ -6,6 +6,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.InputStream;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import us.categorize.communication.creation.MessageAssertion;
+import us.categorize.communication.creation.MessageAssertionAttachment;
+import us.categorize.model.Message;
 
 import javax.imageio.ImageIO;
 
@@ -14,28 +22,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import us.categorize.communication.creation.MessageAssertion;
 import us.categorize.communication.creation.MessageAssertionAttachment;
 import us.categorize.communication.creation.attachment.AttachmentHandler;
-import us.categorize.communication.streams.MessageStreamReader;
-import us.categorize.model.Message;
-import us.categorize.model.MessageRelation;
-import us.categorize.model.Tag;
-import us.categorize.model.User;
-import us.categorize.repository.MessageRepository;
-import us.categorize.repository.TagRepository;
+import us.categorize.model.*;
+import us.categorize.repository.*;
+import java.util.*;
 
 public class MessageCommunicator {
 	
-	private User speaker;
-	private MessageStreamReader messageStreamReader;
-	private MessageRepository messageRepository; 
-	private TagRepository tagRepository;
+	private User speaker;//how does this make sense? I think only works in lambda
 	private AttachmentHandler attachmentHandler;
 	private double maxThumbWidth, maxThumbHeight, maxUploadSize;
+	private Corpus corpus;
 
-
-	public MessageCommunicator(MessageRepository repository, TagRepository tagRepository,AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight, double maxUploadSize){
-		messageStreamReader = new MessageStreamReader();
-		this.messageRepository = repository;
-		this.tagRepository = tagRepository;
+	public MessageCommunicator(Corpus corpus, AttachmentHandler attachmentHandler, double maxThumbWidth, double maxThumbHeight, double maxUploadSize){
+		this.corpus = corpus;
 		this.attachmentHandler = attachmentHandler;
 		this.maxThumbWidth = maxThumbWidth;
 		this.maxThumbHeight = maxThumbHeight;
@@ -44,25 +43,22 @@ public class MessageCommunicator {
 	
 	public MessageAssertion createMessageFromStream(InputStream stream) throws Exception{
 		
-		MessageAssertion assertion = messageStreamReader.readMessageAssertion(stream);
+		MessageAssertion assertion = readMessageAssertion(stream);
 		assertion.getMessage().setPostedBy(speaker);
-		messageRepository.addMessage(assertion.getMessage());
+		Long repliesToId = null;
 		
 		if(assertion.getRelationships().containsKey("repliesToId")){
-			MessageRelation relation = new MessageRelation();
-			relation.setSource(assertion.getMessage());
-			relation.setRelation(tagRepository.tagFor("repliesTo"));
-			Message fauxReplySource = new Message();
-			fauxReplySource.setId(Long.parseLong(assertion.getRelationships().get("repliesToId")));
-			relation.setSink(fauxReplySource);
-			messageRepository.relate(relation);
+			repliesToId = Long.parseLong(assertion.getRelationships().get("repliesToId"));
 		}else{
 			assertion.getTags().add("top");
 		}
+		corpus.create(assertion.getMessage(), repliesToId);
+		List<Tag> tags = new LinkedList<Tag>();
+		for(String tag : assertion.getTags()){
+			tags.add(corpus.tagFor(tag));
+		}
+		corpus.tagMessage(assertion.getMessage(), tags);
 		
-		String[] tags = assertion.getTags().toArray(new String[]{});
-		Tag tagObjs[] = tagRepository.tagsFor(tags);
-		messageRepository.tag(assertion.getMessage(), tagObjs);
 		if(assertion.getAttachment()!=null && attachmentHandler!=null){
 			String furi = attachmentHandler.storeAttachment(""+assertion.getMessage().getId(), assertion.getAttachment(), assertion.getAttachment().getDataInputStream());
 			int resolutions[][] = generateThumbnail(assertion.getAttachment(), assertion.getAttachment().getDataInputStream(), assertion.getAttachment().getType(), furi, assertion.getMessage());
@@ -75,13 +71,14 @@ public class MessageCommunicator {
 				System.out.println("ERROR creating thumbnail for " + furi);
 			}
 			assertion.getMessage().setLink(furi);
-			messageRepository.updateMessage(assertion.getMessage());
+			corpus.update(assertion.getMessage());
 		}
 		return assertion;
 	}
 	
 	public void readMessage(long id, OutputStream output) throws Exception{
-		Message message = messageRepository.getMessage(id);
+		Message message = new Message(id);
+		corpus.read(message);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(output, message);
 	}
@@ -141,5 +138,46 @@ public class MessageCommunicator {
 		this.speaker = speaker;
 	}
 	
+	public Message readMessage(InputStream stream) throws Exception{
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode bodyObj = mapper.readTree(stream);		
+		return readMessage(bodyObj);
+	}
 	
+	public MessageAssertion readMessageAssertion(InputStream stream) throws Exception{
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode bodyObj = mapper.readTree(stream);
+		MessageAssertion assertion = new MessageAssertion();
+		assertion.setMessage(readMessage(bodyObj));
+		String tagString = bodyObj.get("tags").asText();
+		if(tagString!=null && tagString.length()>0){
+			String tagArray[] = tagString.split(" ");
+			for(String tag : tagArray)
+				assertion.getTags().add(tag);
+		}
+		//TODO change this payload to have a generic relationships object
+		if(bodyObj.has("repliesToId")){
+			assertion.getRelationships().put("repliesToId",  bodyObj.get("repliesToId").asText());
+		}
+		
+		if(bodyObj.has("attachment")){
+			MessageAssertionAttachment attachment = new MessageAssertionAttachment();
+			JsonNode attachmentNode = bodyObj.get("attachment");
+			attachment.setDataURL(attachmentNode.get("dataURL").asText());
+			attachment.setName(attachmentNode.get("name").asText());
+			attachment.setType(attachmentNode.get("type").asText());
+			attachment.setSize(attachmentNode.get("size").asText());
+			assertion.setAttachment(attachment);
+		}
+		return assertion;
+	}
+	
+	
+	private Message readMessage(JsonNode bodyObj){
+		Message message = new Message();
+		message.setBody(bodyObj.get("body").asText());
+		message.setTitle(bodyObj.get("title").asText());
+		
+		return message;
+	}
 }

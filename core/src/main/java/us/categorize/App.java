@@ -34,59 +34,11 @@ import java.io.*;
 public class App {
 	
 	public static void main(String args[]) throws Exception {
-		
-		//properties.load(App.class.getResourceAsStream("/categorizeus.properties"));
-		Config config = readConfig();
-		Class.forName("org.postgresql.Driver");
-		System.out.println("Postgres Driver Loaded");
-		if (args.length > 0 && "initialize".equals(args[0])){
-			initializeDB(config);
-		}
-		System.out.println("Initialization Complete");
-		//serverUp(config);
-		serverUpGeneric(config);
+		serverUpGeneric();
 	}
-	public static Config readConfig() throws Exception{
-		Properties properties = new Properties();
-
-		InputStream input = App.class.getResourceAsStream("/categorizeus.properties");
-		//InputStream input = new FileInputStream("/home/ubuntu/categorizeus/core/src/main/resources/categorizeus.properties");
-		properties.load(input);
-		StringWriter writer = new StringWriter();
-		properties.list(new PrintWriter(writer));
-		System.out.println("Properties File Read As " + properties.getProperty("DB_NAME"));
-	  	System.out.println(writer.getBuffer().toString());
-		Config config = new Config(properties);
-		return config;
-	}
-
-	public static void initializeDB(Config config) throws ClassNotFoundException, SQLException, IOException {
-		//System.out.println("Connecting with " + dbUser + " , " + dbPass);
-		System.out.println("Attempting connect to " + config.getConnectString());
-		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
-		System.out.println("Connected to database for initialization");
-		Statement st = conn.createStatement();
-		executeFile(config.getClearSql(), st);
-		executeFile(config.getCreateSql(), st);
-		executeFile(config.getIndexSql(), st);
-		executeFile(config.getSeedSql(), st);
-		st.close();
-		conn.close();
-	}
-
-	private static void executeFile(String filename, Statement st) throws IOException, SQLException {
-		SQLReader init = new SQLReader(filename);
-		for (String sql : init.getStatements()) {
-			System.out.println("Executing " + sql);
-			try {
-				st.execute(sql);
-			} catch (Exception e) {
-				System.out.println("Error " + e.getMessage());
-			}
-		}
-	}
-	public static void serverUpGeneric(Config config) throws Exception{
-		Categorizer categorizer = new Categorizer(config);
+	public static void serverUpGeneric() throws Exception{
+		Categorizer categorizer = new Categorizer();
+		Config config = categorizer.getConfig();
 		System.out.println("Starting Server on Port " + config.getPort());
 		Server server = new Server(config.getPort());
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);		
