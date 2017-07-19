@@ -7,34 +7,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 import us.categorize.config.Config;
-import us.categorize.communication.creation.MessageAssertion;
-import us.categorize.communication.creation.attachment.AttachmentHandler;
-import us.categorize.communication.creation.attachment.FileSystemAttachmentHandler;
-import us.categorize.communication.creation.attachment.S3AttachmentHandler;
-import us.categorize.model.User;
-import us.categorize.repository.MessageRepository;
-import us.categorize.repository.SQLMessageRepository;
-import us.categorize.repository.SQLTagRepository;
-import us.categorize.repository.SQLUserRepository;
-import us.categorize.repository.TagRepository;
-import us.categorize.repository.UserRepository;
+import us.categorize.communication.creation.*;
+import us.categorize.communication.creation.attachment.*;
+import us.categorize.model.*;
+import us.categorize.*;
+import us.categorize.repository.*;
 
 public class Categorizer {
 	private MessageCommunicator messageCommunicator;
 	private TagCommunicator tagCommunicator;
 	private ThreadCommunicator threadCommunicator;
 	private UserCommunicator userCommunicator;
+	private Corpus corpus;
 	private Config config;
 	
-	public Categorizer(Config config) throws SQLException{
-		this.config = config;
+	public Categorizer() throws Exception{//TODO better exception handling
+		this.config = Config.readRelativeConfig();
+		this.corpus = config.initialize();
+		
 		System.out.println("Connecting " + config.getConnectString()+","+config.getDbUser()+","+config.getDbPass());
 		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		UserRepository userRepository = new SQLUserRepository(conn);
 		TagRepository tagRepository = new SQLTagRepository(conn);
 		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
-		threadCommunicator = new ThreadCommunicator(tagRepository, messageRepository);
-		tagCommunicator = new TagCommunicator(tagRepository, messageRepository);
+		threadCommunicator = new ThreadCommunicator(corpus, messageRepository);
+		tagCommunicator = new TagCommunicator(corpus);
 		userCommunicator = new UserCommunicator(userRepository);
 		AttachmentHandler attachmentHandler = null;
 		if("S3".equals(config.getUploadStorage())){
@@ -42,7 +39,7 @@ public class Categorizer {
 		}else{
 			attachmentHandler = new FileSystemAttachmentHandler(config.getFileBase());
 		}
-		messageCommunicator = new MessageCommunicator(messageRepository, tagRepository, attachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
+		messageCommunicator = new MessageCommunicator(corpus, attachmentHandler, config.getMaxThumbWidth(), config.getMaxThumbHeight(), config.getMaxUploadSize());
 	}
 	
 	public void handle(Frame request) throws Exception{
@@ -71,6 +68,8 @@ public class Categorizer {
 			request.prepareResponse("OK", headers);
 			messageCommunicator.readMessage(id, request.getOutputStream());
 			request.finalizeResponse();
+		}else if("POST".equals(request.getMethod()) && request.getPath()!=null && request.getPath().startsWith("/search")){
+				
 		}else if("POST".equals(request.getMethod())){
 			long statedSize = Long.parseLong(request.getHeader("Content-Length"));
 			if(statedSize>config.getMaxUploadSize()){

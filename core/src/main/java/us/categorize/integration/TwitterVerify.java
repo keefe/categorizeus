@@ -9,7 +9,7 @@ public class TwitterVerify{
         System.out.println("Hey Look I'm a class act");
         try {
             // gets Twitter instance with default credentials
-            Config config = App.readConfig();
+            Config config = Config.readRelativeConfig();
             
             Twitter twitter = config.configureTwitter();
             User user = twitter.verifyCredentials();

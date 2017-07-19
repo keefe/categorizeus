@@ -76,7 +76,7 @@ public class SQLMessageRepository implements MessageRepository {
 			PreparedStatement stmt = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, message.getBody());
 			stmt.setString(2, message.getTitle());
-			stmt.setLong(3, message.getPostedBy().getUserId());
+			stmt.setLong(3, message.getPostedBy().getId());
 			stmt.setString(4, message.getLink());
 			stmt.setInt(5, message.getImgWidth());
 			stmt.setInt(6, message.getImgHeight());
@@ -102,7 +102,7 @@ public class SQLMessageRepository implements MessageRepository {
 			PreparedStatement stmt = connection.prepareStatement(update);//fold this into the insert?
 			stmt.setString(1, message.getBody());
 			stmt.setString(2, message.getTitle());
-			stmt.setLong(3, message.getPostedBy().getUserId());
+			stmt.setLong(3, message.getPostedBy().getId());
 			stmt.setString(4, message.getLink());
 			stmt.setInt(5, message.getImgWidth());
 			stmt.setInt(6, message.getImgWidth());

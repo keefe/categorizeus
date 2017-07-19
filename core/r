@@ -1,0 +1,4 @@
+#!/bin/bash
+git pull
+clear
+mvn clean compile

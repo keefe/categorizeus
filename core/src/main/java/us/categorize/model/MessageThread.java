@@ -12,6 +12,10 @@ public class MessageThread {
 	private List<MessageRelation> relations= new LinkedList<>();
 	
 	
+	public MessageThread(){
+		
+	}
+	
 	public String toString(){
 		String result = "All Messages In Thread";
 		for(Message message:thread){

@@ -1,4 +1,5 @@
-tl;dr edit src/main/resources/categorizeus.properties and twitter4j.properties
+tl;dr edit src/main/resources/categorizeus.properties
+
 run mvn package you should see target/categorizeus-something
 We now have a standalone jar, run it with java -jar categorizeus-<tab>
 
@@ -20,6 +21,10 @@ reluctantly use vi or use cat to save hostname into a file
 do chmod 400 blah.pem and ssh -i blah.pem whatever.host
 ssh into ubuntu box
 
+
+For work on a chromebook with nano, ^W interferes with the close window shortcut
+so if you are used to this editor, then add this line to /etc/nanorc to bind search to ALT+W
+bind M-S whereis main
 
 --- at this point we're into a development box ---
 
