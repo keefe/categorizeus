@@ -117,5 +117,44 @@ public class SQLUserRepository implements UserRepository {
 		}
 		return false;
 	}
+	
+	@Override
+	public User createUserFromTwitter(String sn, long id) throws SQLException {
+		String createTwitterUser = "insert into users(twitterId, username) values(?,?)";
+		PreparedStatement stmt = connection.prepareStatement(createTwitterUser, Statement.RETURN_GENERATED_KEYS);
+		stmt.setLong(1, id);
+		stmt.setString(2, sn);
+		stmt.executeUpdate();
+		ResultSet rs = stmt.getGeneratedKeys();
+		rs.next();
+		User user = new User();
+		user.setId(rs.getLong(1));
+		user.setTwitterId(id);
+		user.setUserName(sn);
+		id2user.put(user.getId(), user);
+		return user;		
+	}
+
+	@Override
+	public User findByTwitter(long id) throws Exception {
+		if(id2user.containsKey(id))
+			return id2user.get(id);
+		
+		String findUser = "select * from users where twitterId=?";
+		PreparedStatement stmt = connection.prepareStatement(findUser);
+		stmt.setLong(1, id);
+		ResultSet rs = stmt.executeQuery();
+		if(rs!=null && rs.next()){
+			User user = new User();
+			user.setId(rs.getLong("id"));
+			user.setEmail(rs.getString("email"));
+			user.setPasshash(rs.getString("passhash"));
+			user.setUserName(rs.getString("username"));
+			user.setTwitterId(rs.getLong("twitterId"));
+			id2user.put(user.getId(), user);
+			return user;
+		}
+		return null;
+	}
 
 }

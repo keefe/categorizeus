@@ -62,7 +62,7 @@ public class App {
 		context.addServlet(new ServletHolder(userServlet), "/user/*");
 		TwitterSigninServlet twitterSignin = new TwitterSigninServlet(config);
 		context.addServlet(new ServletHolder(twitterSignin), "/twitter_signin/*");
-		TwitterSigninCallbackServlet twitterSigninCallback = new TwitterSigninCallbackServlet();
+		TwitterSigninCallbackServlet twitterSigninCallback = new TwitterSigninCallbackServlet(config);
 		context.addServlet(new ServletHolder(twitterSigninCallback), "/twitter_callback/*");
 		
 		context.addServlet(DefaultServlet.class, "/");

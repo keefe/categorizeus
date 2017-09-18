@@ -27,7 +27,8 @@ create table if not exists users(
 	id bigserial primary key,
 	username text,
 	email text,
-	passhash text
+	passhash text,
+	twitterId bigint
 );
 
 create table if not exists message_tags(
