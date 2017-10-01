@@ -21,6 +21,11 @@ public class SQLCorpus implements Corpus{
 		try {
 			PreparedStatement stmt = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 			mapMessageUpdate(message, stmt);
+			stmt.executeUpdate();
+			ResultSet rs = stmt.getGeneratedKeys();
+			rs.next();
+			long key = rs.getLong(1);
+			message.setId(key);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -33,6 +38,8 @@ public class SQLCorpus implements Corpus{
 		try {
 			PreparedStatement stmt = connection.prepareStatement(update);
 			mapMessageUpdate(message, stmt);
+			stmt.setLong(10, message.getId());
+			stmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,18 +60,16 @@ public class SQLCorpus implements Corpus{
 		stmt.setInt(7, message.getThumbWidth());
 		stmt.setInt(8, message.getThumbHeight());
 		stmt.setString(9, message.getThumbLink());
-		stmt.executeUpdate();
-		ResultSet rs = stmt.getGeneratedKeys();
-		rs.next();
-		long key = rs.getLong(1);
-		message.setId(key);
+
     }
     
     public boolean create(Message message, Long repliesToId){
     	if(!create(message)) return false;
     	Tag repliesTo = new Tag("repliesTo");
     	read(repliesTo);
-    	return relate(message.getId(), repliesTo, repliesToId);
+    	if(repliesToId!=null)
+    		return relate(message.getId(), repliesTo, repliesToId);
+    	return true;
     }
 	public boolean relate(long from, Tag relation, long to) {
 		String relationStatement = "insert into message_relations(message_source_id, tag_id, message_sink_id) values (?,?,?)";

@@ -16,6 +16,10 @@ create user categorizeus with password 'password';
 create database categories;
 GRANT ALL PRIVILEGES ON DATABASE categories to categorizeus;
 
+In order to connect to the database on linux, make sure to connect via a socket if the categorizeus user
+doesn't exist on the local system, e.g.
+psql -h 127.0.0.1 -U categorizeus -W categories
+
 4. Ignore the properties file, you don't want your password in git
 
 git update-index --assume-unchanged src/main/resources/categorizeus.properties

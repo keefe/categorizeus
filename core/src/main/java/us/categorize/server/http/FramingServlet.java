@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.categorize.communication.Categorizer;
-import us.categorize.model.User;
-import twitter4j.*;
 
 public class FramingServlet extends HttpServlet{
 	private Categorizer categorizer;
