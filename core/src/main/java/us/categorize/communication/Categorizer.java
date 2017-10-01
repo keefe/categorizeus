@@ -126,7 +126,7 @@ public class Categorizer {
 		}
 		if("GET".equals(request.getMethod())){
 			if(user==null){
-				request.prepareResponse("NotFound", new HashMap<>());
+				request.prepareResponse("Not Found", new HashMap<>());
 				request.getOutputStream().write("Not Found".getBytes());
 				request.finalizeResponse();
 				return;
@@ -182,6 +182,7 @@ public class Categorizer {
 			}
 			request.prepareResponse("OK", new HashMap<>());
 			userCommunicator.logoutUser(request.getCurrentUser(), request.findSessionUUID(), request.getOutputStream());
+			request.clearUser();
 			request.finalizeResponse();
 		}else{
 			throw new Exception("[BadRequest] Unsupported request found");			

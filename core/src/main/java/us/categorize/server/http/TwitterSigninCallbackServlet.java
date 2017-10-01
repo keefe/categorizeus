@@ -42,6 +42,9 @@ public class TwitterSigninCallbackServlet extends HttpServlet{
             if(user==null) {
             	user = userRepository.createUserFromTwitter(twitter.getScreenName(), twitter.getId());
             }
+    		String sessionUUID =  (String) request.getSession().getAttribute("categorizeus");
+    		userRepository.createSessionUser(sessionUUID, user);
+    		request.getSession().setAttribute("user", user);
             System.out.println("We have a user " + user.getUserName() + " for twitter " + user.getTwitterId() + " at " + user.getId());
         } catch (TwitterException e) {
             throw new ServletException(e);

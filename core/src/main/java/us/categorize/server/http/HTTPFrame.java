@@ -86,6 +86,7 @@ public class HTTPFrame implements Frame {
 		}
 		return categorizeusCookie;
 	}
+	@Override
 	public void clearUser(){
 		Cookie categorizeusCookie = findCategorizeUsCookie();
 		if(categorizeusCookie!=null){//TODO this doesn't appear to be actually removing the cookie, look into this further

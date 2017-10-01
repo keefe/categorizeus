@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.categorize.communication.Categorizer;
+import us.categorize.communication.Frame;
 
 public class FramingServlet extends HttpServlet{
 	private Categorizer categorizer;
@@ -24,7 +25,7 @@ public class FramingServlet extends HttpServlet{
 	
 	*/
 	private void handle(String method, HttpServletRequest request, HttpServletResponse response) {
-		HTTPFrame frame = new HTTPFrame(resource, method, request, response);
+		Frame frame = new HTTPFrame(resource, method, request, response);
 		try {
 			categorizer.handle(frame);
 			return;
