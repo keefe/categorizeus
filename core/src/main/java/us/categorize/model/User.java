@@ -10,7 +10,14 @@ public class User extends Identifiable{
 	@JsonIgnore//all this stuff is heinously tightly coupled why did I do this?
 	private String passhash;
 	private String email; 
+	private long twitterId;
 
+	public long getTwitterId() {
+		return twitterId;
+	}
+	public void setTwitterId(long twitterId) {
+		this.twitterId = twitterId;
+	}
 	public String toString(){
 		return "User String\n " + getId()+"\n"+userName+"\n"+email;
 	}

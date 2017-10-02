@@ -28,9 +28,7 @@ public class Categorizer {
 		System.out.println("Connecting " + config.getConnectString()+","+config.getDbUser()+","+config.getDbPass());
 		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		UserRepository userRepository = new SQLUserRepository(conn);
-		TagRepository tagRepository = new SQLTagRepository(conn);
-		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
-		threadCommunicator = new ThreadCommunicator(corpus, messageRepository);
+		threadCommunicator = new ThreadCommunicator(corpus);
 		tagCommunicator = new TagCommunicator(corpus);
 		userCommunicator = new UserCommunicator(userRepository);
 		AttachmentHandler attachmentHandler = null;
@@ -82,8 +80,7 @@ public class Categorizer {
 					loadCurrentUser(request);
 				}
 				User user = request.getCurrentUser();
-				messageCommunicator.setSpeaker(user);
-				MessageAssertion messageAssertion = messageCommunicator.createMessageFromStream(request.bodyInputStream());
+				MessageAssertion messageAssertion = messageCommunicator.createMessageFromStream(request.bodyInputStream(), user);
 				request.prepareResponse("OK", new HashMap<>());
 		        String prototypeJson = "{\"id\":\"IDVALUE\"}";
 		        prototypeJson = prototypeJson.replace("IDVALUE", messageAssertion.getMessage().getId()+"");
@@ -126,7 +123,7 @@ public class Categorizer {
 		}
 		if("GET".equals(request.getMethod())){
 			if(user==null){
-				request.prepareResponse("NotFound", new HashMap<>());
+				request.prepareResponse("Not Found", new HashMap<>());
 				request.getOutputStream().write("Not Found".getBytes());
 				request.finalizeResponse();
 				return;
@@ -182,6 +179,7 @@ public class Categorizer {
 			}
 			request.prepareResponse("OK", new HashMap<>());
 			userCommunicator.logoutUser(request.getCurrentUser(), request.findSessionUUID(), request.getOutputStream());
+			request.clearUser();
 			request.finalizeResponse();
 		}else{
 			throw new Exception("[BadRequest] Unsupported request found");			

@@ -60,10 +60,10 @@ public class App {
 		context.addServlet(new ServletHolder(tagServlet), "/tag/*");
 		FramingServlet userServlet = new FramingServlet("user", categorizer);
 		context.addServlet(new ServletHolder(userServlet), "/user/*");
-		TwitterSigninServlet twitterSignin = new TwitterSigninServlet();
+		TwitterSigninServlet twitterSignin = new TwitterSigninServlet(config);
 		context.addServlet(new ServletHolder(twitterSignin), "/twitter_signin/*");
-		TwitterSigninCallbackServlet twitterSigninCallback = new TwitterSigninCallbackServlet();
-		context.addServlet(new ServletHolder(twitterSignin), "/twitter_callback/*");
+		TwitterSigninCallbackServlet twitterSigninCallback = new TwitterSigninCallbackServlet(config);
+		context.addServlet(new ServletHolder(twitterSigninCallback), "/twitter_callback/*");
 		
 		context.addServlet(DefaultServlet.class, "/");
 		server.setHandler(context);

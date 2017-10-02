@@ -248,4 +248,10 @@ public class LambdaFrame implements Frame {
 		return sessionUUID;
 	}
 
+	@Override
+	public void clearUser() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

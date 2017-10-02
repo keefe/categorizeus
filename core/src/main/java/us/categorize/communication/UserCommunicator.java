@@ -61,7 +61,7 @@ public class UserCommunicator {
 		String password = DigestUtils.sha256Hex(bodyObj.get("password").asText());
 		User user = userRepository.validateUser(username, password);
 		if(user!=null){
-			userRepository.createSessionUser(sessionUUID, user);//TODO wtf is this?
+			userRepository.createSessionUser(sessionUUID, user);
 			mapper.writeValue(output, user);
 		}
 		return user;

@@ -1,10 +1,52 @@
+1. Setup basic development
 
- sudo apt-get install postgresql postgresql-contrib pgadmin3
+install java, git, eclipse
+create github ssh credentials and add ssh key to github
+
+2. Setup eclipse project
+
+mvn eclipse:eclipse -DdownloadSources=true -DdownloadJavadocs=true
+
+3. Install Databases
+
+sudo apt-get install postgresql postgresql-contrib pgadmin3 libpostgresql-jdbc-java libpostgresql-jdbc-java-doc
 sudo -u postgres psql postgres
 create a new user
 create user categorizeus with password 'password';
 create database categories;
 GRANT ALL PRIVILEGES ON DATABASE categories to categorizeus;
+
+In order to connect to the database on linux, make sure to connect via a socket if the categorizeus user
+doesn't exist on the local system, e.g.
+psql -h 127.0.0.1 -U categorizeus -W categories
+
+4. Ignore the properties file, you don't want your password in git
+
+git update-index --assume-unchanged src/main/resources/categorizeus.properties
+
+5. Update core/src/main/resources/categorizeus.properties
+make sure your password and directories correspond to your local machine
+Right now SQL_BASE needs a specific directory and appends a path
+SQL_BASE=/home/keefe/oss/categorizeus/
+
+also, for the time being, specify the categorizeus.properties location in App.java (fixing soon)
+mvn exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args=""
+
+6. Initialize the system from eclipse or command line
+mvn exec:java -Dexec.mainClass="us.categorize.App" -Dexec.args="initialize"
+this sets up the database
+
+run this command to verify that the basics are up
+
+curl http://localhost:8080/msg/1
+{"title":"Thread:Here is the title1","body":"Here is the body1","postedBy":{"userName":"keefe","email":"keefe@categorize.us","userId":1},"id":1,"link":null,"thumbLink":null,"imgWidth":0,"imgHeight":0,"thumbWidth":0,"thumbHeight":0}
+visit http://localhost:8080 and you should see a UI
+
+Currently, development happens before adding https so make sure chromium doesn't auto redirect http to https, if this happens visit chrome://net-internals/#hsts and delete localhost
+
+
+
+---some notes----
 
 On a mac, there is a standalone app that is worth using.
 

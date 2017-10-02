@@ -83,15 +83,22 @@ public class Config {
 		return new SQLCorpus(conn);
 	}
 
-
 	public Twitter configureTwitter(){
+
+		return configureTwitter(true);
+	}
+
+	public Twitter configureTwitter(boolean systemAccessToken){
 		System.out.println("Twitter Read as " + twitterConsumerKey+","+twitterConsumerSecret+","+twitterAccessToken+","+twitterAccessSecret); 
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)//TODO what do about this?
 		  .setOAuthConsumerKey(twitterConsumerKey)
-		  .setOAuthConsumerSecret(twitterConsumerSecret)
-		  .setOAuthAccessToken(twitterAccessToken)
-		  .setOAuthAccessTokenSecret(twitterAccessSecret);
+		  .setOAuthConsumerSecret(twitterConsumerSecret);
+		
+		if(systemAccessToken) {
+			  cb.setOAuthAccessToken(twitterAccessToken)
+			  .setOAuthAccessTokenSecret(twitterAccessSecret);			
+		}
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		return tf.getInstance();
 	}

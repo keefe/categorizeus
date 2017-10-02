@@ -28,7 +28,6 @@ import java.util.*;
 
 public class MessageCommunicator {
 	
-	private User speaker;//how does this make sense? I think only works in lambda
 	private AttachmentHandler attachmentHandler;
 	private double maxThumbWidth, maxThumbHeight, maxUploadSize;
 	private Corpus corpus;
@@ -41,7 +40,7 @@ public class MessageCommunicator {
 		this.maxUploadSize = maxUploadSize;
 	}
 	
-	public MessageAssertion createMessageFromStream(InputStream stream) throws Exception{
+	public MessageAssertion createMessageFromStream(InputStream stream, User speaker) throws Exception{
 		
 		MessageAssertion assertion = readMessageAssertion(stream);
 		assertion.getMessage().setPostedBy(speaker);
@@ -130,13 +129,6 @@ public class MessageCommunicator {
 		return returns;
 	}
 
-	public User getSpeaker() {
-		return speaker;
-	}
-
-	public void setSpeaker(User speaker) {
-		this.speaker = speaker;
-	}
 	
 	public Message readMessage(InputStream stream) throws Exception{
 		ObjectMapper mapper = new ObjectMapper();

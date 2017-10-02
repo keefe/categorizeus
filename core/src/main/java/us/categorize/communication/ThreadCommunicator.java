@@ -12,16 +12,14 @@ import us.categorize.model.*;
 import us.categorize.repository.*;
 
 public class ThreadCommunicator {
-	private MessageRepository messageRepository;
 	private Corpus corpus;
-	public ThreadCommunicator(Corpus corpus, MessageRepository messageRepository) {
+	public ThreadCommunicator(Corpus corpus) {
 		this.corpus = corpus;
-		this.messageRepository = messageRepository;
 	}
 	
 	public void queryStreams(InputStream input, OutputStream output) throws Exception{
 		ThreadCriteria criteria = readThreadCriteria(input);
-		MessageThread thread = messageRepository.loadThread(criteria);
+		MessageThread thread = corpus.loadThread(criteria);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(output, thread);
 	}
