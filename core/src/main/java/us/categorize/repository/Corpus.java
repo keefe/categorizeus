@@ -2,6 +2,8 @@ package us.categorize.repository;
 
 import us.categorize.model.*;
 import us.categorize.api.*;
+import us.categorize.communication.query.ThreadCriteria;
+
 import java.util.*;
 
 public interface Corpus{
@@ -17,7 +19,8 @@ public interface Corpus{
     public boolean readOrCreate(Tag tag);
     public Tag tagFor(String tag);
     public boolean read(User user);
-
+    
+	MessageThread loadThread(ThreadCriteria criteria);
     
     public List<Message> tagSearch(TagSearchRequest request);
     public boolean tagMessage(Message message, List<Tag> tags);

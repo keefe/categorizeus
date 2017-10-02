@@ -2,6 +2,8 @@ package us.categorize.repository;
 
 import us.categorize.model.*;
 import us.categorize.api.*;
+import us.categorize.communication.query.ThreadCriteria;
+
 import java.util.*;
 import java.sql.*;
 import java.io.*;
@@ -411,6 +413,153 @@ public class SQLCorpus implements Corpus{
 		
 	}   
     
-    
+	
+	
+	//TODO this stuff is being phased out, we're going to merge it in here to be able to kill extraneous files
+	@Override
+	public MessageThread loadThread(ThreadCriteria criteria) {
+		// TODO research combining these calls
+		System.out.println(criteria.toString());
+		List<Message> rootMessages = findMessages(criteria.getSearchTags(), criteria.getStartingId(), criteria.getMaxResults(), criteria.isReverse());
+		Set<Long> seenMessages = new HashSet<>();
+		List<Long> messageIds = new LinkedList<>();
+		for(Message message: rootMessages){
+			seenMessages.add(message.getId());
+			messageIds.add(message.getId());
+		}
+		MessageThread thread = new MessageThread();
+		thread.setSearchCriteria(criteria);
+		thread.setThread(rootMessages);
+		List<Long> newMessageIds = new LinkedList<>();
+		List<long[]> relations = new LinkedList<>();
+		loadTransitiveThread(thread, messageIds, seenMessages,newMessageIds, relations, 0);
+		for(long newId : newMessageIds){//TODO this is obviously very inefficient, but efficiency after correctness
+			try {
+				Message message =new Message(newId);
+				read(message);
+				thread.getRelatedMessages().add(message);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		Map<Long, Message> id2Message = new HashMap<>();//just more inefficient by the line, this is where maintaining 1:1 is good
+		for(Message message: thread.getThread()){
+			id2Message.put(message.getId(), message);
+		}
+		for(Message message: thread.getRelatedMessages()){
+			id2Message.put(message.getId(), message);
+		}
+		Map<Long, Tag> id2Tag = new HashMap<>();
+		for(Tag t : thread.getSearchCriteria().getTransitiveTags()){
+			id2Tag.put(t.getId(), t);
+		}
+		for(long[] rel : relations){
+			MessageRelation relation = new MessageRelation(id2Message.get(rel[0]), id2Tag.get(rel[1]),id2Message.get(rel[2]));
+			thread.getRelations().add(relation);
+		}
+		return thread;
+	}
+
+	//TODO it is pretty confusing what source and sink means here and what to query, for things like repliesTo this is the pattern, maybe this is a property on the relationship or something, think about this
+	private void loadTransitiveThread(MessageThread thread, List<Long> currentLevel, Set<Long> seenMessages, List<Long> newIds, List<long[]> relations, int level) {
+		String sql = "SELECT message_relations.* from message_relations where";
+		LinkedList<Long> tagIds = new LinkedList<>();
+		for(Tag t : thread.getSearchCriteria().getTransitiveTags()) tagIds.push(t.getId());
+		sql = sql+" tag_id "+buildOrList(tagIds);
+		sql = sql+" AND message_sink_id " + buildOrList(currentLevel);
+		if(currentLevel.size()==0) return;
+		currentLevel = new LinkedList<>();//dupes in here?
+		System.out.println("Finding Related with \n" + sql);
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet matching = stmt.executeQuery(sql);
+			while(matching.next()){
+				long source = matching.getLong("message_source_id");
+				long sink = matching.getLong("message_sink_id");
+				long tag = matching.getLong("tag_id");
+				currentLevel.add(source);
+				if(!seenMessages.contains(source)){
+					seenMessages.add(source);
+					newIds.add(source);
+				}
+				boolean found = false;//TODO this is really horrible, but this whole part is getting rewritten
+				for(long[] oldRel:relations){
+					if(oldRel[0]==source && oldRel[1]==tag&&oldRel[2]==sink){
+						found = true;
+						break;
+					}
+				}
+				if(!found){
+					relations.add(new long[]{source, tag, sink});					
+				}
+			}
+			level++;
+			if(level < thread.getSearchCriteria().getMaxTransitiveDepth() && currentLevel.size()>0){
+				loadTransitiveThread(thread, currentLevel, seenMessages, newIds, relations, level);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+
+	public List<Message> findMessages(Tag[] tags, Integer startId, Integer limit, boolean reverse) {//TODO think about callback form or streaming, something not in RAM
+		String idOp = "<";
+		String sortOp = "DESC";
+		if(reverse){
+			idOp = ">";
+			sortOp = "ASC";
+		}
+		String sql = "";
+		if(tags.length==0){
+			sql = "SELECT messages.id* from messages";
+			if(startId !=null){
+				sql+=" where id"+idOp+startId;
+			}
+		}else{
+			sql = "SELECT messages.* from messages, message_tags where message_tags.message_id = messages.id AND tag_id = "+tags[0].getId();
+			for(int i=1; i<tags.length;i++){
+				sql = sql + " AND " + tagSubquery(tags[i]);
+			}
+		}
+		if(startId!=null){
+			sql+=" AND id"+idOp+startId;//TODO more sophisticated query for different ordering etc
+		}
+
+		sql+=" order by id ";
+		sql+=sortOp;
+		if(limit!=null){
+			sql+=" LIMIT " + limit;
+		}
+		System.out.println(sql);
+		LinkedList<Message> messages = new LinkedList<Message>(); 
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			LinkedList<Long> messageIds = new LinkedList<Long>();//TODO check if we should be using HashSet<Long> here, ugh ordering issue
+			while(rs.next()){
+				if(reverse){
+					messageIds.addFirst(rs.getLong("id"));
+				}else{
+					messageIds.add(rs.getLong("id"));
+				}
+			}
+			for(long msgId : messageIds){
+				Message message = new Message(msgId);
+				read(message);
+				messages.add(message);
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return messages;		
+		
+	}
 
 }

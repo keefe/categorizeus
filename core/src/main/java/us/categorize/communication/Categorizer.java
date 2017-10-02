@@ -28,9 +28,7 @@ public class Categorizer {
 		System.out.println("Connecting " + config.getConnectString()+","+config.getDbUser()+","+config.getDbPass());
 		Connection conn = DriverManager.getConnection(config.getConnectString(), config.getDbUser(), config.getDbPass());
 		UserRepository userRepository = new SQLUserRepository(conn);
-		TagRepository tagRepository = new SQLTagRepository(conn);
-		MessageRepository messageRepository = new SQLMessageRepository(conn, userRepository);
-		threadCommunicator = new ThreadCommunicator(corpus, messageRepository);
+		threadCommunicator = new ThreadCommunicator(corpus);
 		tagCommunicator = new TagCommunicator(corpus);
 		userCommunicator = new UserCommunicator(userRepository);
 		AttachmentHandler attachmentHandler = null;
