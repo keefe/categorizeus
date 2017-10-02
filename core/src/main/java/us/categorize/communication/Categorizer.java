@@ -80,8 +80,7 @@ public class Categorizer {
 					loadCurrentUser(request);
 				}
 				User user = request.getCurrentUser();
-				messageCommunicator.setSpeaker(user);
-				MessageAssertion messageAssertion = messageCommunicator.createMessageFromStream(request.bodyInputStream());
+				MessageAssertion messageAssertion = messageCommunicator.createMessageFromStream(request.bodyInputStream(), user);
 				request.prepareResponse("OK", new HashMap<>());
 		        String prototypeJson = "{\"id\":\"IDVALUE\"}";
 		        prototypeJson = prototypeJson.replace("IDVALUE", messageAssertion.getMessage().getId()+"");
