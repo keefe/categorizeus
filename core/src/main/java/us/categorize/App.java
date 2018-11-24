@@ -37,7 +37,6 @@ public class App {
 		serverUpGeneric();
 	}
 	public static void serverUpGeneric() throws Exception{
-		System.out.println("How are my new lines?");
 		Categorizer categorizer = new Categorizer();
 		Config config = categorizer.getConfig();
 		System.out.println("Starting Server on Port " + config.getPort());
